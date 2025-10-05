@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import axios from "axios";
 import { useAsync } from "react-use";
+import { AppProviders } from "./providers/index.tsx";
 
 const root = document.getElementById("root");
 if (!root) {
@@ -27,7 +28,9 @@ export function Main() {
 
   return (
     <StrictMode>
-      <App />
+      <AppProviders>
+        <App />
+      </AppProviders>
     </StrictMode>
   );
 }
