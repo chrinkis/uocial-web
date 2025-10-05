@@ -13,7 +13,7 @@ import { notifications } from "@mantine/notifications";
 import axios from "axios";
 
 export interface LoginFormPropsType {
-  redirect: string;
+  redirect?: string;
 }
 
 export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
