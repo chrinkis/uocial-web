@@ -5,8 +5,8 @@ export default function Page() {
   const { user } = useUser();
 
   if (!user) {
-    return <Navigate to="/about" />;
+    return <Navigate to="/about" replace />;
   }
 
-  return <Navigate to="/app" />;
+  return <Navigate to="/app" replace />;
 }
