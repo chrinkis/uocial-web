@@ -8,7 +8,7 @@ import "@mantine/notifications/styles.css";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
-    <MantineProvider>
+    <MantineProvider defaultColorScheme="auto">
       <Notifications />
       <UserProvider>{children}</UserProvider>
     </MantineProvider>
