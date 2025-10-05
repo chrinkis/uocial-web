@@ -1,8 +1,7 @@
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import axios from "axios";
-import { useAsync } from "react-use";
 import { AppProviders } from "./providers/index.tsx";
 
 const root = document.getElementById("root");
@@ -10,21 +9,17 @@ if (!root) {
   throw new Error();
 }
 
-axios.defaults.withCredentials = true;
-axios.defaults.withXSRFToken = true;
+async function init() {
+  axios.defaults.withCredentials = true;
+  axios.defaults.withXSRFToken = true;
+
+  await axios.get("/sanctum/csrf-cookie");
+}
 
 export function Main() {
-  const { loading, error } = useAsync(
-    async () => await axios.get("/sanctum/csrf-cookie"),
-  );
-
-  if (loading) {
-    return; // FIXME
-  }
-
-  if (error) {
-    return; // FIXME
-  }
+  useEffect(() => {
+    void init();
+  }, []);
 
   return (
     <StrictMode>
