@@ -4,6 +4,8 @@ import App from "./App.tsx";
 import axios from "axios";
 import { AppProviders } from "./providers/index.tsx";
 
+import "./index.css";
+
 const root = document.getElementById("root");
 if (!root) {
   throw new Error();
