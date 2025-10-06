@@ -23,7 +23,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     showLoading();
 
     try {
-      await axios.post("api/auth/logout");
+      await axios.post("/api/auth/logout");
       window.location.href = "/";
     } catch (error) {
       notifications.show({
