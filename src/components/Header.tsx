@@ -12,32 +12,14 @@ import { NavLink, useNavigate } from "react-router";
 import { Avatar } from "@mantine/core";
 import { IconLogout, IconSettings } from "@tabler/icons-react";
 import invariant from "tiny-invariant";
-import { useLoadingOverlay } from "@/providers/loading-overlay/hook";
-import axios from "axios";
-import { notifications } from "@mantine/notifications";
-import { getErrorMessage } from "@/utils/error";
 
 function UserMenu() {
-  const { user } = useUser();
-  const { show: showLoading, hide: hideLoading } = useLoadingOverlay();
+  const { user, logout } = useUser();
 
   invariant(user);
 
-  async function handleLogout() {
-    showLoading();
-
-    try {
-      await axios.post("api/auth/logout");
-      window.location.href = "/";
-    } catch (error) {
-      hideLoading();
-      notifications.show({
-        title: "Couldn't logout",
-        message: getErrorMessage(error),
-        color: "red",
-        position: "top-right",
-      });
-    }
+  function handleLogout() {
+    void logout();
   }
 
   return (
