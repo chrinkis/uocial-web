@@ -12,11 +12,33 @@ import { NavLink, useNavigate } from "react-router";
 import { Avatar } from "@mantine/core";
 import { IconLogout, IconSettings } from "@tabler/icons-react";
 import invariant from "tiny-invariant";
+import { useLoadingOverlay } from "@/providers/loading-overlay/hook";
+import axios from "axios";
+import { notifications } from "@mantine/notifications";
+import { getErrorMessage } from "@/utils/error";
 
 function UserMenu() {
   const { user } = useUser();
+  const { show: showLoading, hide: hideLoading } = useLoadingOverlay();
 
   invariant(user);
+
+  async function handleLogout() {
+    showLoading();
+
+    try {
+      await axios.post("api/auth/logout");
+      window.location.href = "/";
+    } catch (error) {
+      hideLoading();
+      notifications.show({
+        title: "Couldn't logout",
+        message: getErrorMessage(error),
+        color: "red",
+        position: "top-right",
+      });
+    }
+  }
 
   return (
     <Menu>
@@ -28,7 +50,12 @@ function UserMenu() {
 
       <Menu.Dropdown>
         <Menu.Item leftSection={<IconSettings size={14} />}>Settings</Menu.Item>
-        <Menu.Item leftSection={<IconLogout size={14} />}>Logout</Menu.Item>
+        <Menu.Item
+          leftSection={<IconLogout size={14} />}
+          onClick={handleLogout}
+        >
+          Logout
+        </Menu.Item>
       </Menu.Dropdown>
     </Menu>
   );
