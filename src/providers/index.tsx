@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router";
 
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import { LoadingOverlayProvider } from "./loading-overlay/Provider";
 
 const theme = createTheme({
   primaryColor: "violet",
@@ -15,9 +16,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <MantineProvider defaultColorScheme="auto" theme={theme}>
       <Notifications />
-      <UserProvider>
-        <BrowserRouter>{children}</BrowserRouter>
-      </UserProvider>
+      <LoadingOverlayProvider>
+        <UserProvider>
+          <BrowserRouter>{children}</BrowserRouter>
+        </UserProvider>
+      </LoadingOverlayProvider>
     </MantineProvider>
   );
 }
