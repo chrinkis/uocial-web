@@ -37,7 +37,7 @@ export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
   });
 
   return (
-    <Paper maw={280} p="md" withBorder>
+    <Paper w={280} p="md" withBorder>
       <Stack>
         <Title order={2} ta="center">
           Login

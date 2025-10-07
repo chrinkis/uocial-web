@@ -3,7 +3,7 @@ import { IconMail } from "@tabler/icons-react";
 
 export default function Page() {
   return (
-    <Paper maw={334} p="xl" withBorder>
+    <Paper w={334} p="xl" withBorder>
       <Stack>
         <Title order={2} ta="center">
           Thanks for Signing Up!

@@ -49,7 +49,7 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
   });
 
   return (
-    <Paper maw={280} p="md" withBorder>
+    <Paper w={280} p="md" withBorder>
       <Stack>
         <Title order={2} ta="center">
           Sign-Up
