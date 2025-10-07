@@ -33,3 +33,8 @@ export function getErrorMessage(error: unknown): string {
     `Server returned with status ${String(error.response.status)}`
   );
 }
+
+export interface LaravelValidationResponse {
+  message: string;
+  errors: Record<string, string[]>;
+}

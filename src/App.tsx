@@ -4,6 +4,7 @@ import IndexLayout from "@/pages/layout";
 import AboutPage from "@/pages/about/page";
 import AppPage from "@/pages/app/page";
 import LoginPage from "@/pages/auth/login/page";
+import RegisterPage from "@/pages/auth/register/page";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="about" element={<AboutPage />} />
         <Route path="app" element={<AppPage />} />
         <Route path="auth/login" element={<LoginPage />} />
+        <Route path="auth/register" element={<RegisterPage />} />
       </Route>
     </Routes>
   );
