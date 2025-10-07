@@ -4,6 +4,6 @@ export interface User {
   readonly id: number;
   name: string;
   email: string;
-  email_verified_at: Date;
+  email_verified_at: Date | null;
   role: UserRole;
 }

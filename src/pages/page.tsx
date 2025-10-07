@@ -8,5 +8,9 @@ export default function Page() {
     return <Navigate to="/about" replace />;
   }
 
+  if (!user.email_verified_at) {
+    return <Navigate to="/auth/verify-email" replace />;
+  }
+
   return <Navigate to="/app" replace />;
 }
