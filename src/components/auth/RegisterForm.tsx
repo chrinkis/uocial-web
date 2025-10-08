@@ -1,4 +1,5 @@
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
+import { validatePassword } from "@/utils/password";
 import {
   Button,
   Group,
@@ -25,6 +26,12 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
       password: "",
       password_confirmation: "",
     },
+    validate: {
+      password: (value, values) => {
+        return validatePassword(value, [values.email, values.name]);
+      },
+    },
+    validateInputOnChange: true,
   });
 
   const handleSubmit = form.onSubmit(async (values) => {
@@ -80,6 +87,7 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
           <PasswordInput
             label="Password"
             key={form.key("password")}
+            minLength={12}
             {...form.getInputProps("password")}
             required
           />

@@ -1,4 +1,5 @@
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
+import { validatePassword } from "@/utils/password";
 import { type ApiResponse } from "@/utils/response";
 import {
   Title,
@@ -27,6 +28,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormPropsType) {
       password: "",
       password_confirmation: "",
     },
+    validate: {
+      password: (value, values) => {
+        return validatePassword(value, [values.email]);
+      },
+    },
+    validateInputOnChange: true,
   });
 
   const handleSubmit = form.onSubmit(async (values) => {
@@ -84,6 +91,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormPropsType) {
             <PasswordInput
               label="New Password"
               key={form.key("password")}
+              minLength={12}
               {...form.getInputProps("password")}
               required
             />
