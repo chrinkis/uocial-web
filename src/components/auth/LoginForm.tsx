@@ -1,4 +1,4 @@
-import { getErrorMessage } from "@/utils/error";
+import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
 import {
   Button,
   Group,
@@ -35,6 +35,13 @@ export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
         color: "red",
         position: "top-right",
       });
+
+      if (!axios.isAxiosError(error) || !error.response) {
+        return;
+      }
+
+      const data = error.response.data as LaravelValidationResponse | undefined;
+      form.setErrors(data?.errors ?? {});
     }
   });
 
