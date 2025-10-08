@@ -7,10 +7,12 @@ import {
   Stack,
   TextInput,
   Title,
+  Anchor,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
+import { NavLink } from "react-router";
 
 export interface LoginFormPropsType {
   redirect?: string;
@@ -63,6 +65,15 @@ export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
             />
 
             <Group justify="flex-end">
+              <Anchor
+                component={NavLink}
+                to="/auth/password/forgot"
+                ta="center"
+                style={{ flexGrow: 1 }}
+                size="sm"
+              >
+                Forgot your password?
+              </Anchor>
               <Button type="submit" loading={form.submitting}>
                 Login
               </Button>

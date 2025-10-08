@@ -8,6 +8,8 @@ import RegisterPage from "@/pages/auth/register/page";
 import VerifyEmailPage from "@/pages/auth/verify-email/page";
 import { LoggedInGuard } from "./guards/LoggedInGuard";
 import { VerifiedGuard } from "./guards/VerifiedGuard";
+import ResetPasswordPage from "@/pages/auth/password/reset/page";
+import ForgotPasswordPage from "@/pages/auth/password/forgot/page";
 
 function getOpenRoutes() {
   return (
@@ -15,6 +17,11 @@ function getOpenRoutes() {
       <Route path="about" element={<AboutPage />} />
       <Route path="auth/login" element={<LoginPage />} />
       <Route path="auth/register" element={<RegisterPage />} />
+      <Route
+        path="auth/password/reset/:token"
+        element={<ResetPasswordPage />}
+      />
+      <Route path="auth/password/forgot" element={<ForgotPasswordPage />} />
     </>
   );
 }
