@@ -10,6 +10,7 @@ import { LoggedInGuard } from "./guards/LoggedInGuard";
 import { VerifiedGuard } from "./guards/VerifiedGuard";
 import ResetPasswordPage from "@/pages/auth/password/reset/page";
 import ForgotPasswordPage from "@/pages/auth/password/forgot/page";
+import VerifyEmailActionPage from "@/pages/auth/email/verify/page";
 
 function getOpenRoutes() {
   return (
@@ -30,6 +31,7 @@ function getLoggedInRoutes() {
   return (
     <>
       <Route path="auth/verify-email" element={<VerifyEmailPage />} />
+      <Route path="auth/email/verify" element={<VerifyEmailActionPage />} />
     </>
   );
 }
