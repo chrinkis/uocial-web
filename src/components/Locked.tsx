@@ -2,6 +2,7 @@ import { Button, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { IconLock, IconMail } from "@tabler/icons-react";
 import { useLocation, useNavigate } from "react-router";
 import invariant from "tiny-invariant";
+import { SendVerificationEmailButton } from "./auth/SendVerificationEmailButton";
 
 export interface LockedPropsType {
   reason: "unauthorized" | "unverified";
@@ -58,6 +59,9 @@ function LockedUnverified() {
           You can't access this page, until you verify your email. Once you
           verify it, reload this page.
         </Text>
+        <Group justify="center">
+          <SendVerificationEmailButton />
+        </Group>
       </Stack>
     </Paper>
   );

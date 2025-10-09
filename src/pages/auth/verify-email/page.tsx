@@ -1,5 +1,6 @@
 import { Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { IconMail } from "@tabler/icons-react";
+import { SendVerificationEmailButton } from "@/components/auth/SendVerificationEmailButton";
 
 export default function Page() {
   return (
@@ -15,6 +16,9 @@ export default function Page() {
           Please check your email and click the verification link to activate
           your account.
         </Text>
+        <Group justify="center">
+          <SendVerificationEmailButton />
+        </Group>
       </Stack>
     </Paper>
   );
