@@ -6,6 +6,7 @@ import { UserContext } from "./Context";
 import { useLoadingOverlay } from "@/providers/loading-overlay/hook";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
+import { Loader } from "@mantine/core";
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const { show: showLoading, hide: hideLoading } = useLoadingOverlay();
@@ -40,7 +41,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const contextValue = useMemo(() => ({ user, logout }), [user, logout]);
 
   if (loading) {
-    return; // FIXME
+    return <Loader />;
   }
 
   return <UserContext value={contextValue}>{children}</UserContext>;
