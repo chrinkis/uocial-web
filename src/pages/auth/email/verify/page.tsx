@@ -9,6 +9,7 @@ import {
   Stack,
   Group,
   Button,
+  Modal,
 } from "@mantine/core";
 import {
   IconRosetteDiscountCheck,
@@ -71,7 +72,14 @@ export default function Page() {
   invariant(value?.data);
 
   return (
-    <Paper withBorder p="xl" w={250}>
+    <Modal
+      opened
+      onClose={() => {
+        return;
+      }}
+      withCloseButton={false}
+      centered
+    >
       <Stack>
         <Title order={2} ta="center">
           Done!
@@ -87,6 +95,6 @@ export default function Page() {
           <Button onClick={handleContinueClick}>Continue</Button>
         </Group>
       </Stack>
-    </Paper>
+    </Modal>
   );
 }
