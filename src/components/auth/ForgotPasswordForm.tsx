@@ -18,7 +18,7 @@ import { useNavigate } from "react-router";
 
 function Success({ message }: { message: string }) {
   return (
-    <Paper w={200} p="md" withBorder>
+    <Paper w={300} p="md" withBorder>
       <Stack>
         <Title order={2} ta="center">
           Done!
@@ -28,7 +28,7 @@ function Success({ message }: { message: string }) {
           <IconCircleCheck size={128} />
         </Group>
 
-        <Text ta="justify">{message}</Text>
+        <Text ta="center">{message}</Text>
       </Stack>
     </Paper>
   );
