@@ -1,3 +1,4 @@
+import { useUser } from "@/providers/user/hook";
 import { getErrorMessage } from "@/utils/error";
 import { type ApiResponse } from "@/utils/response";
 import { Button } from "@mantine/core";
@@ -6,6 +7,7 @@ import axios from "axios";
 import { useState } from "react";
 
 export function SendVerificationEmailButton() {
+  const { user } = useUser();
   const [sending, setSending] = useState(false);
 
   async function handleClick() {
@@ -34,7 +36,11 @@ export function SendVerificationEmailButton() {
   }
 
   return (
-    <Button onClick={() => void handleClick()} loading={sending}>
+    <Button
+      onClick={() => void handleClick()}
+      loading={sending}
+      disabled={!!user?.email_verified_at}
+    >
       Resend Email
     </Button>
   );

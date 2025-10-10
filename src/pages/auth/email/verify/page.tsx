@@ -1,3 +1,4 @@
+import { SendVerificationEmailButton } from "@/components/auth/SendVerificationEmailButton";
 import { getErrorMessage } from "@/utils/error";
 import { type ApiResponse } from "@/utils/response";
 import {
@@ -46,7 +47,6 @@ export default function Page() {
   }
 
   if (error) {
-    // FIXME
     return (
       <Paper withBorder p="lg">
         <Stack>
@@ -59,6 +59,10 @@ export default function Page() {
           </Group>
 
           <Text ta="center">{getErrorMessage(error)}</Text>
+
+          <Group justify="center">
+            <SendVerificationEmailButton />
+          </Group>
         </Stack>
       </Paper>
     );
