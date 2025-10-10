@@ -15,7 +15,7 @@ const theme = createTheme({
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <MantineProvider defaultColorScheme="auto" theme={theme}>
-      <Notifications />
+      <Notifications position="top-center" />
       <LoadingOverlayProvider>
         <UserProvider>
           <BrowserRouter>{children}</BrowserRouter>

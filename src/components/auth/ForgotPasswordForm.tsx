@@ -57,7 +57,6 @@ export function ForgotPasswordForm() {
         title: "Password Reset Failed",
         message: getErrorMessage(error),
         color: "red",
-        position: "top-right",
       });
 
       if (!axios.isAxiosError(error) || !error.response) {

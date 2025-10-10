@@ -48,7 +48,6 @@ export function ResetPasswordForm({ token }: ResetPasswordFormPropsType) {
       notifications.show({
         title: "Success",
         message: response.data.message,
-        position: "top-right",
       });
 
       void navigate("/auth/login");
@@ -57,7 +56,6 @@ export function ResetPasswordForm({ token }: ResetPasswordFormPropsType) {
         title: "Password Reset Failed",
         message: getErrorMessage(error),
         color: "red",
-        position: "top-right",
       });
 
       if (!axios.isAxiosError(error) || !error.response) {

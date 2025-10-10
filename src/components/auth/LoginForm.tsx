@@ -33,7 +33,6 @@ export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
         title: "Login failed",
         message: getErrorMessage(error),
         color: "red",
-        position: "top-right",
       });
 
       if (!axios.isAxiosError(error) || !error.response) {

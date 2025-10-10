@@ -21,13 +21,11 @@ export function SendVerificationEmailButton() {
       notifications.show({
         title: "Email Sent!",
         message: response.data.message,
-        position: "top-left",
       });
     } catch (error) {
       notifications.show({
         title: "Email was not sent.",
         message: getErrorMessage(error),
-        position: "top-left",
         color: "red",
       });
     } finally {

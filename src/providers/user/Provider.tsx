@@ -31,7 +31,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         title: "Couldn't logout",
         message: getErrorMessage(error),
         color: "red",
-        position: "top-right",
       });
     }
 
