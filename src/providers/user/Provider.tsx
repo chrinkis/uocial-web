@@ -27,14 +27,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
       await axios.post("/api/auth/logout");
       window.location.href = "/";
     } catch (error) {
+      hideLoading();
       notifications.show({
         title: "Couldn't logout",
         message: getErrorMessage(error),
         color: "red",
       });
     }
-
-    hideLoading();
   }, [showLoading, hideLoading]);
 
   const contextValue = useMemo(() => ({ user, logout }), [user, logout]);
