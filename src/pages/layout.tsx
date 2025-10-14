@@ -4,12 +4,13 @@ import { Outlet } from "react-router";
 
 export default function Layout() {
   return (
-    <Flex direction="column" justify="center" align="center" h="100%">
+    <Flex direction="column" justify="safe center" align="center" h="100%">
       <Header />
       <Flex
         direction="column"
-        justify="center"
+        justify="safe center"
         align="center"
+        p="md"
         style={{ flexGrow: 1 }}
       >
         <Outlet />
