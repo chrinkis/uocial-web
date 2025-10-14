@@ -1,3 +1,5 @@
+import { Navigate } from "react-router";
+
 export default function Page() {
-  return "The main app";
+  return <Navigate to="/app/posts/" replace />;
 }

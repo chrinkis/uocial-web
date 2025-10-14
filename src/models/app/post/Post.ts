@@ -1,7 +1,9 @@
+import axios from "axios";
 import type { Hashtag } from "../Hashtag";
 import type { Commment } from "./Comment";
 import type { Label } from "./Label";
 import type { Reaction } from "./Reaction";
+import type { PaginatedResponse } from "@/utils/response";
 
 export interface Post {
   readonly id: number;
@@ -22,4 +24,11 @@ export interface Post {
     most_popular: Commment[];
     most_recent: Commment[];
   };
+}
+
+export async function fetchPage(page: number | string) {
+  const { data } = await axios.get<PaginatedResponse<Post>>(
+    `/api/app/posts?page=${String(page)}`,
+  );
+  return data;
 }
