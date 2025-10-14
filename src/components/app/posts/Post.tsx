@@ -185,21 +185,27 @@ function PostReactions({ post }: PostPropsType) {
 }
 
 export function PostOptions(props: PostPropsType) {
+  const buttonProps = {
+    variant: "light",
+    w: "90%",
+    maw: "12rem",
+  };
+
   return (
-    <Stack>
-      <Button variant="light">
+    <Stack align="center">
+      <Button {...buttonProps}>
         <Group gap="0.1rem">
           <IconBookmark size="1.1rem" />
           Save
         </Group>
       </Button>
-      <Button variant="light">
+      <Button {...buttonProps}>
         <Group gap="0.1rem">
           <IconShare size="1.1rem" />
           Share
         </Group>
       </Button>
-      <Button variant="light">
+      <Button {...buttonProps}>
         <Group gap="0.1rem">
           <IconFlag size="1.1rem" />
           Report
