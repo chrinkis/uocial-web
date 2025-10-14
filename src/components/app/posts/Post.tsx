@@ -10,17 +10,25 @@ import {
   Badge,
   Anchor,
   UnstyledButton,
+  useMantineTheme,
+  Button,
 } from "@mantine/core";
 import {
   IconArrowBigDown,
   IconArrowBigDownFilled,
   IconArrowBigUp,
   IconArrowBigUpFilled,
+  IconBookmark,
   IconClock,
+  IconFlag,
   IconMessageCircle,
+  IconShare,
 } from "@tabler/icons-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { NavLink } from "react-router";
+import { Carousel } from "@mantine/carousel";
+import { useMeasure } from "react-use";
+import { useRef, useState } from "react";
 
 export interface PostPropsType {
   post: post.Post;
@@ -176,16 +184,94 @@ function PostReactions({ post }: PostPropsType) {
   );
 }
 
-export function Post(props: PostPropsType) {
+export function PostOptions(props: PostPropsType) {
   return (
-    <Paper w="90%" p="md" maw="50rem" withBorder>
-      <Stack>
-        <PostTitle {...props} />
-        <PostMetaData {...props} />
-        <PostBody {...props} />
-        <PostHashtags {...props} />
-        <PostReactions {...props} />
-      </Stack>
-    </Paper>
+    <Stack>
+      <Button variant="light">
+        <Group gap="0.1rem">
+          <IconBookmark size="1.1rem" />
+          Save
+        </Group>
+      </Button>
+      <Button variant="light">
+        <Group gap="0.1rem">
+          <IconShare size="1.1rem" />
+          Share
+        </Group>
+      </Button>
+      <Button variant="light">
+        <Group gap="0.1rem">
+          <IconFlag size="1.1rem" />
+          Report
+        </Group>
+      </Button>
+    </Stack>
+  );
+}
+
+export function Post(props: PostPropsType) {
+  const theme = useMantineTheme();
+  const [firstSlideRef, { height: firstSlideHeight }] =
+    useMeasure<HTMLDivElement>();
+  const [secondSlideRef, { height: secondSlideHeight }] =
+    useMeasure<HTMLDivElement>();
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  function handleSlideChange(index: number) {
+    setSlideIndex(index);
+
+    requestAnimationFrame(() => {
+      if (carouselRef.current) {
+        const rect = carouselRef.current.getBoundingClientRect();
+        // Check if the top of the carousel is above the viewport (not visible)
+        if (rect.top < 0) {
+          carouselRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }
+    });
+  }
+
+  return (
+    <Carousel
+      withIndicators
+      withControls={false}
+      onSlideChange={handleSlideChange}
+      ref={carouselRef}
+      styles={{
+        indicator: { backgroundColor: theme.colors[theme.primaryColor][5] },
+      }}
+      w="90%"
+      h={slideIndex ? secondSlideHeight : firstSlideHeight}
+      maw="50rem"
+    >
+      <Carousel.Slide>
+        <div ref={firstSlideRef}>
+          <Paper p="md" withBorder>
+            <Stack>
+              <PostTitle {...props} />
+              <PostMetaData {...props} />
+              <PostBody {...props} />
+              <PostHashtags {...props} />
+              <PostReactions {...props} />
+            </Stack>
+          </Paper>
+        </div>
+      </Carousel.Slide>
+
+      <Carousel.Slide>
+        <div
+          ref={secondSlideRef}
+          style={{ maxHeight: firstSlideHeight, overflowY: "auto" }}
+        >
+          <Paper p="xl" withBorder>
+            <PostOptions {...props} />
+          </Paper>
+        </div>
+      </Carousel.Slide>
+    </Carousel>
   );
 }

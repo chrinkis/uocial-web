@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import { LoadingOverlayProvider } from "./loading-overlay/Provider";
+import "@mantine/carousel/styles.css";
 
 const theme = createTheme({
   primaryColor: "violet",
