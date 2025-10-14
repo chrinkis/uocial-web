@@ -249,6 +249,7 @@ export function Post(props: PostPropsType) {
       ref={carouselRef}
       styles={{
         indicator: { backgroundColor: theme.colors[theme.primaryColor][5] },
+        root: { transition: "height 0.3s ease" },
       }}
       w="90%"
       h={slideIndex ? secondSlideHeight : firstSlideHeight}
