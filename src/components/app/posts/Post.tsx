@@ -81,13 +81,13 @@ function PostMetaData({ post }: PostPropsType) {
         ))}
       </Group>
 
-      <Group justify="flex-end" gap={5} wrap="nowrap">
-        <IconClock color="var(--mantine-color-dimmed)" size="1.2rem" />
+      <Group justify="flex-end" gap={3} wrap="nowrap">
+        <IconClock color="var(--mantine-color-dimmed)" size="1rem" />
         <Tooltip
           label={format(createdAt, "PP·p")}
           events={{ touch: true, hover: true, focus: false }}
         >
-          <Text c="dimmed">
+          <Text c="dimmed" size="xs">
             {formatDistanceToNow(createdAt, { addSuffix: true })}
           </Text>
         </Tooltip>
