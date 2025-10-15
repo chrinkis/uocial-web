@@ -38,7 +38,7 @@ export default function Page() {
   }
 
   return (
-    <Stack align="center">
+    <Stack align="safe center" w="100%">
       {data?.pages.map((page) =>
         page.data.map((p) => <Post post={p} key={p.id} />),
       )}

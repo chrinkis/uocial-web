@@ -12,6 +12,7 @@ import {
   UnstyledButton,
   useMantineTheme,
   Button,
+  Box,
 } from "@mantine/core";
 import {
   IconArrowBigDown,
@@ -28,11 +29,19 @@ import { format, formatDistanceToNow } from "date-fns";
 import { NavLink } from "react-router";
 import { Carousel } from "@mantine/carousel";
 import { useMeasure } from "react-use";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { Comment } from "./Comment";
+import { zip, flatten, uniqBy } from "lodash";
 
 export interface PostPropsType {
   post: post.Post;
 }
+
+const BUTTON_PROPS = {
+  variant: "light",
+  w: "90%",
+  maw: "12rem",
+};
 
 function PostTitle({ post }: PostPropsType) {
   return (
@@ -59,14 +68,14 @@ function PostMetaData({ post }: PostPropsType) {
   const createdAt = new Date(post.created_at);
 
   return (
-    <Group justify="space-between" wrap="nowrap">
-      <Group wrap="wrap" style={{ flex: 1 }}>
+    <Group justify="space-between" wrap="nowrap" gap="xs">
+      <Group wrap="wrap" style={{ flex: 1 }} gap={6}>
         <Badge
           size="md"
           variant="gradient"
           gradient={{ from: "grape", to: "violet", deg: 90 }}
         >
-          !{post.id}
+          #{post.id}
         </Badge>
 
         {post.labels.map((l) => (
@@ -185,27 +194,21 @@ function PostReactions({ post }: PostPropsType) {
 }
 
 export function PostOptions(props: PostPropsType) {
-  const buttonProps = {
-    variant: "light",
-    w: "90%",
-    maw: "12rem",
-  };
-
   return (
     <Stack align="center">
-      <Button {...buttonProps}>
+      <Button {...BUTTON_PROPS}>
         <Group gap="0.1rem">
           <IconBookmark size="1.1rem" />
           Save
         </Group>
       </Button>
-      <Button {...buttonProps}>
+      <Button {...BUTTON_PROPS}>
         <Group gap="0.1rem">
           <IconShare size="1.1rem" />
           Share
         </Group>
       </Button>
-      <Button {...buttonProps}>
+      <Button {...BUTTON_PROPS}>
         <Group gap="0.1rem">
           <IconFlag size="1.1rem" />
           Report
@@ -215,11 +218,48 @@ export function PostOptions(props: PostPropsType) {
   );
 }
 
+export function PostPeakedComments(props: PostPropsType) {
+  const selectedComments = useMemo(
+    () =>
+      uniqBy(
+        flatten(
+          zip(
+            props.post.comments.most_popular.map((c) => ({
+              comment: c,
+              label: "top",
+            })),
+            props.post.comments.most_recent.map((c) => ({
+              comment: c,
+              label: "new",
+            })),
+          ),
+        ).filter((c) => c !== undefined),
+        "comment.id",
+      ),
+    [props.post.comments],
+  );
+
+  return (
+    <Stack align="center" gap="xs">
+      {selectedComments.map((c) => (
+        <Comment comment={c.comment} key={c.comment.id} label={c.label} />
+      ))}
+      <Button {...BUTTON_PROPS} size="compact-md">
+        <Group gap="0.1rem">
+          <IconMessageCircle size="1.1rem" />
+          More comments
+        </Group>
+      </Button>
+    </Stack>
+  );
+}
 export function Post(props: PostPropsType) {
   const theme = useMantineTheme();
   const [firstSlideRef, { height: firstSlideHeight }] =
     useMeasure<HTMLDivElement>();
   const [secondSlideRef, { height: secondSlideHeight }] =
+    useMeasure<HTMLDivElement>();
+  const [thirdSlideRef, { height: thirdSlideHeight }] =
     useMeasure<HTMLDivElement>();
   const carouselRef = useRef<HTMLDivElement>(null);
   const [slideIndex, setSlideIndex] = useState(0);
@@ -242,43 +282,60 @@ export function Post(props: PostPropsType) {
   }
 
   return (
-    <Carousel
-      withIndicators
-      withControls={false}
-      onSlideChange={handleSlideChange}
-      ref={carouselRef}
-      styles={{
-        indicator: { backgroundColor: theme.colors[theme.primaryColor][5] },
-        root: { transition: "height 0.3s ease" },
-      }}
-      w="90%"
-      h={slideIndex ? secondSlideHeight : firstSlideHeight}
-      maw="50rem"
-    >
-      <Carousel.Slide>
-        <div ref={firstSlideRef}>
-          <Paper p="md" withBorder>
-            <Stack>
-              <PostTitle {...props} />
-              <PostMetaData {...props} />
-              <PostBody {...props} />
-              <PostHashtags {...props} />
-              <PostReactions {...props} />
-            </Stack>
-          </Paper>
-        </div>
-      </Carousel.Slide>
+    <Paper withBorder w="90%" maw="50rem">
+      <Carousel
+        withIndicators
+        withControls={false}
+        onSlideChange={handleSlideChange}
+        ref={carouselRef}
+        styles={{
+          indicator: { backgroundColor: theme.colors[theme.primaryColor][5] },
+          root: { transition: "height 0.3s ease" },
+        }}
+        h={
+          slideIndex === 0
+            ? firstSlideHeight
+            : slideIndex === 1
+              ? secondSlideHeight
+              : thirdSlideHeight
+        }
+      >
+        <Carousel.Slide>
+          <div ref={firstSlideRef}>
+            <Box p="md">
+              <Stack>
+                <PostTitle {...props} />
+                <PostMetaData {...props} />
+                <PostBody {...props} />
+                <PostHashtags {...props} />
+                <PostReactions {...props} />
+              </Stack>
+            </Box>
+          </div>
+        </Carousel.Slide>
 
-      <Carousel.Slide>
-        <div
-          ref={secondSlideRef}
-          style={{ maxHeight: firstSlideHeight, overflowY: "auto" }}
-        >
-          <Paper p="xl" withBorder>
-            <PostOptions {...props} />
-          </Paper>
-        </div>
-      </Carousel.Slide>
-    </Carousel>
+        <Carousel.Slide>
+          <div
+            ref={secondSlideRef}
+            style={{ maxHeight: firstSlideHeight, overflowY: "auto" }}
+          >
+            <Box p="xl">
+              <PostPeakedComments {...props} />
+            </Box>
+          </div>
+        </Carousel.Slide>
+
+        <Carousel.Slide>
+          <div
+            ref={thirdSlideRef}
+            style={{ maxHeight: firstSlideHeight, overflowY: "auto" }}
+          >
+            <Box p="xl">
+              <PostOptions {...props} />
+            </Box>
+          </div>
+        </Carousel.Slide>
+      </Carousel>
+    </Paper>
   );
 }

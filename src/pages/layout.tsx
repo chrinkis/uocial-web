@@ -12,6 +12,7 @@ export default function Layout() {
         align="center"
         p="md"
         style={{ flexGrow: 1 }}
+        w="100%"
       >
         <Outlet />
       </Flex>
