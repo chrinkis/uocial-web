@@ -1,9 +1,8 @@
 import { Button, Loader, Stack } from "@mantine/core";
 import { Post } from "@/components/app/posts/Post";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
-import { fetchPost } from "@/api/app/post/post";
+import { usePosts } from "@/queries/app/post/post";
 
 export default function Page() {
   const {
@@ -13,17 +12,7 @@ export default function Page() {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useInfiniteQuery({
-    queryKey: ["posts"],
-    queryFn: ({ pageParam }) => fetchPost(pageParam),
-    initialPageParam: 1,
-    getNextPageParam: (lastResponse) => {
-      if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
-        return lastResponse.meta.current_page + 1;
-      }
-      return undefined;
-    },
-  });
+  } = usePosts();
 
   if (isLoading) {
     return <Loader />;
