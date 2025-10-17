@@ -23,7 +23,7 @@ function LockedAnauthorized() {
   }
 
   return (
-    <Paper w={330} p="xl" withBorder>
+    <Paper w={270} p="xl" withBorder>
       <Stack>
         <Title order={2} ta="center">
           Locked
@@ -47,7 +47,7 @@ function LockedAnauthorized() {
 
 function LockedUnverified() {
   return (
-    <Paper w={330} p="xl" withBorder>
+    <Paper w={300} p="xl" withBorder>
       <Stack>
         <Title order={2} ta="center">
           One step left...
