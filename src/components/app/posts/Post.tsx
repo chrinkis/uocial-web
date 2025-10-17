@@ -29,7 +29,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { NavLink } from "react-router";
 import { Carousel } from "@mantine/carousel";
 import { useMeasure } from "react-use";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Comment } from "./Comment";
 import { zip, flatten, uniqBy } from "lodash";
 import type { EmblaCarouselType } from "embla-carousel";
@@ -255,7 +255,7 @@ export function PostPeakedComments(props: PostPropsType) {
   );
 }
 
-export function Post(props: PostPropsType) {
+export const Post = memo((props: PostPropsType) => {
   const theme = useMantineTheme();
   const [firstSlideRef, { height: firstSlideHeight }] =
     useMeasure<HTMLDivElement>();
@@ -355,4 +355,4 @@ export function Post(props: PostPropsType) {
       </Carousel>
     </Paper>
   );
-}
+});
