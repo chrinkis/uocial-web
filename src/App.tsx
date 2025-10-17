@@ -11,7 +11,7 @@ import { VerifiedGuard } from "./guards/VerifiedGuard";
 import ResetPasswordPage from "@/pages/auth/password/reset/page";
 import ForgotPasswordPage from "@/pages/auth/password/forgot/page";
 import VerifyEmailActionPage from "@/pages/auth/email/verify/page";
-import PostsPage from "@/pages/app/posts/index";
+import PostsPage from "@/pages/app/posts/page";
 
 function getOpenRoutes() {
   return (
