@@ -316,11 +316,11 @@ export function Post(props: PostPropsType) {
           root: { transition: "height 0.3s ease" },
         }}
         h={
-          slideForHeight === 0
+          (slideForHeight === 0
             ? firstSlideHeight
             : slideForHeight === 1
               ? secondSlideHeight
-              : thirdSlideHeight
+              : thirdSlideHeight) || "auto"
         }
       >
         <Carousel.Slide>
