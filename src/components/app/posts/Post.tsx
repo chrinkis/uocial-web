@@ -29,9 +29,10 @@ import { format, formatDistanceToNow } from "date-fns";
 import { NavLink } from "react-router";
 import { Carousel } from "@mantine/carousel";
 import { useMeasure } from "react-use";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Comment } from "./Comment";
 import { zip, flatten, uniqBy } from "lodash";
+import type { EmblaCarouselType } from "embla-carousel";
 
 export interface PostPropsType {
   post: post.Post;
@@ -262,11 +263,30 @@ export function Post(props: PostPropsType) {
   const [thirdSlideRef, { height: thirdSlideHeight }] =
     useMeasure<HTMLDivElement>();
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [slideIndex, setSlideIndex] = useState(0);
+  const [slideForHeight, setSlideForHeight] = useState(0);
+  const emblaRef = useRef<EmblaCarouselType | null>(null);
 
-  function handleSlideChange(index: number) {
-    setSlideIndex(index);
+  const setEmblaApi = useCallback(
+    (embla: EmblaCarouselType) => {
+      const height = [firstSlideHeight, secondSlideHeight, thirdSlideHeight];
 
+      emblaRef.current = embla;
+
+      function onSlidesInView() {
+        const slidesInView = embla.slidesInView();
+        setSlideForHeight(
+          height.indexOf(Math.max(...slidesInView.map((i) => height[i]))),
+        );
+      }
+
+      embla.on("slidesInView", onSlidesInView);
+
+      onSlidesInView();
+    },
+    [firstSlideHeight, secondSlideHeight, thirdSlideHeight],
+  );
+
+  function handleSlideChange() {
     requestAnimationFrame(() => {
       if (carouselRef.current) {
         const rect = carouselRef.current.getBoundingClientRect();
@@ -287,15 +307,17 @@ export function Post(props: PostPropsType) {
         withIndicators
         withControls={false}
         onSlideChange={handleSlideChange}
+        getEmblaApi={setEmblaApi}
         ref={carouselRef}
+        emblaOptions={{ inViewThreshold: 0.055 }}
         styles={{
           indicator: { backgroundColor: theme.colors[theme.primaryColor][5] },
           root: { transition: "height 0.3s ease" },
         }}
         h={
-          slideIndex === 0
+          slideForHeight === 0
             ? firstSlideHeight
-            : slideIndex === 1
+            : slideForHeight === 1
               ? secondSlideHeight
               : thirdSlideHeight
         }
@@ -315,10 +337,7 @@ export function Post(props: PostPropsType) {
         </Carousel.Slide>
 
         <Carousel.Slide>
-          <div
-            ref={secondSlideRef}
-            style={{ maxHeight: firstSlideHeight, overflowY: "auto" }}
-          >
+          <div ref={secondSlideRef}>
             <Box p="xl">
               <PostPeakedComments {...props} />
             </Box>
@@ -326,10 +345,7 @@ export function Post(props: PostPropsType) {
         </Carousel.Slide>
 
         <Carousel.Slide>
-          <div
-            ref={thirdSlideRef}
-            style={{ maxHeight: firstSlideHeight, overflowY: "auto" }}
-          >
+          <div ref={thirdSlideRef}>
             <Box p="xl">
               <PostOptions {...props} />
             </Box>
