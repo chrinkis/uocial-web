@@ -4,7 +4,7 @@ import { SendVerificationEmailButton } from "@/components/auth/SendVerificationE
 
 export default function Page() {
   return (
-    <Paper w={334} p="xl" withBorder>
+    <Paper w={300} p="xl" withBorder>
       <Stack>
         <Title order={2} ta="center">
           Thanks for Signing Up!
