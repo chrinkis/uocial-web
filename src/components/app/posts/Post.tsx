@@ -254,6 +254,7 @@ export function PostPeakedComments(props: PostPropsType) {
     </Stack>
   );
 }
+
 export function Post(props: PostPropsType) {
   const theme = useMantineTheme();
   const [firstSlideRef, { height: firstSlideHeight }] =
