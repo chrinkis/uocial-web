@@ -22,4 +22,5 @@ export interface Post {
     most_popular: Commment[];
     most_recent: Commment[];
   };
+  saved: boolean;
 }

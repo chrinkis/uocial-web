@@ -21,6 +21,7 @@ import {
   IconArrowBigUp,
   IconArrowBigUpFilled,
   IconBookmark,
+  IconBookmarkFilled,
   IconClock,
   IconFlag,
   IconMessageCircle,
@@ -201,10 +202,17 @@ export function PostOptions(props: PostPropsType) {
   return (
     <Stack align="center">
       <Button {...BUTTON_PROPS}>
-        <Group gap="0.1rem">
-          <IconBookmark size="1.1rem" />
-          Save
-        </Group>
+        {props.post.saved ? (
+          <Group gap="0.1rem">
+            <IconBookmarkFilled size="1.1rem" />
+            Saved
+          </Group>
+        ) : (
+          <Group gap="0.1rem">
+            <IconBookmark size="1.1rem" />
+            Save
+          </Group>
+        )}
       </Button>
       <Button {...BUTTON_PROPS}>
         <Group gap="0.1rem">
