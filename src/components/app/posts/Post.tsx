@@ -237,7 +237,7 @@ export function PostPeakedComments(props: PostPropsType) {
           })),
         ],
         "comment.id",
-      ),
+      ).slice(0, 4),
     [props.post.comments],
   );
 
