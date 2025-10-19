@@ -13,6 +13,7 @@ import {
   useMantineTheme,
   Button,
   Box,
+  Typography,
 } from "@mantine/core";
 import {
   IconArrowBigDown,
@@ -23,6 +24,8 @@ import {
   IconClock,
   IconFlag,
   IconMessageCircle,
+  IconMessageCirclePlus,
+  IconMessageCircleX,
   IconShare,
 } from "@tabler/icons-react";
 import { format, formatDistanceToNow } from "date-fns";
@@ -240,6 +243,21 @@ export function PostPeakedComments(props: PostPropsType) {
     [props.post.comments],
   );
 
+  if (selectedComments.length === 0) {
+    return (
+      <Stack align="center">
+        <IconMessageCircleX size={40} color="var(--mantine-color-dimmed)" />
+        <Typography c="var(--mantine-color-dimmed)">No comments yet</Typography>
+        <Button {...BUTTON_PROPS} size="compact-md">
+          <Group gap="0.2rem">
+            <IconMessageCirclePlus size="1.1rem" />
+            Add a comment
+          </Group>
+        </Button>
+      </Stack>
+    );
+  }
+
   return (
     <Stack align="center" gap="xs">
       {selectedComments.map((c) => (
@@ -248,7 +266,7 @@ export function PostPeakedComments(props: PostPropsType) {
       <Button {...BUTTON_PROPS} size="compact-md">
         <Group gap="0.1rem">
           <IconMessageCircle size="1.1rem" />
-          More comments
+          All comments
         </Group>
       </Button>
     </Stack>
