@@ -226,18 +226,16 @@ export function PostPeakedComments(props: PostPropsType) {
   const selectedComments = useMemo(
     () =>
       uniqBy(
-        flatten(
-          zip(
-            props.post.comments.most_popular.map((c) => ({
-              comment: c,
-              label: "top",
-            })),
-            props.post.comments.most_recent.map((c) => ({
-              comment: c,
-              label: "new",
-            })),
-          ),
-        ).filter((c) => c !== undefined),
+        [
+          ...props.post.comments.most_popular.map((c) => ({
+            comment: c,
+            label: "top",
+          })),
+          ...props.post.comments.most_recent.map((c) => ({
+            comment: c,
+            label: "new",
+          })),
+        ],
         "comment.id",
       ),
     [props.post.comments],
