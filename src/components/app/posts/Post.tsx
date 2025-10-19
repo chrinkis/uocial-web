@@ -34,7 +34,7 @@ import { Carousel } from "@mantine/carousel";
 import { useMeasure } from "react-use";
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Comment } from "./Comment";
-import { zip, flatten, uniqBy } from "lodash";
+import { uniqBy } from "lodash";
 import type { EmblaCarouselType } from "embla-carousel";
 
 export interface PostPropsType {
