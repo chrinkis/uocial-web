@@ -334,7 +334,7 @@ export const Post = memo((props: PostPropsType) => {
         onSlideChange={handleSlideChange}
         getEmblaApi={setEmblaApi}
         ref={carouselRef}
-        emblaOptions={{ inViewThreshold: 0.055 }}
+        emblaOptions={{ inViewThreshold: 0.02 }}
         styles={{
           indicator: { backgroundColor: theme.colors[theme.primaryColor][5] },
           root: { transition: "height 0.3s ease" },
