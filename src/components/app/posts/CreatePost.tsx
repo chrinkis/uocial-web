@@ -13,11 +13,17 @@ import {
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
+import { uniq } from "lodash";
 
 export function CreatePost() {
   const form = useForm({
     mode: "controlled",
-    initialValues: { title: "", location: "Universal", body: "", hashtags: [] },
+    initialValues: {
+      title: "",
+      location: "Universal",
+      body: "",
+      hashtags: [] as string[],
+    },
     transformValues: (values) => ({
       ...values,
       location: values.location === "Universal" ? null : values.location,
@@ -87,7 +93,15 @@ export function CreatePost() {
               flex={1}
               splitChars={[" ", "#"]}
               key={form.key("hashtags")}
-              {...form.getInputProps("hashtags")}
+              value={form.values.hashtags}
+              onChange={(value) => {
+                const hashtags: string[] = [];
+                for (const hashtag of value) {
+                  hashtags.push(...hashtag.split("#").filter((h) => h !== ""));
+                }
+                form.setFieldValue("hashtags", uniq(hashtags));
+              }}
+              error={form.errors.hashtags}
             />
             <Button type="submit" variant="outline" loading={form.submitting}>
               Post
