@@ -3,8 +3,9 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { createPost, fetchPost } from "@/api/app/post/post";
+import { createPost, fetchPost, reactToPost } from "@/api/app/post/post";
 import type { Post } from "@/models/app/post/Post";
+import type { ReactionValue } from "@/models/app/post/Reaction";
 import type { PaginatedResponse } from "@/utils/response";
 
 export function usePosts() {
@@ -44,6 +45,44 @@ export function useCreatePost() {
                 }
               : page,
           ),
+        };
+      });
+    },
+  });
+}
+
+export function useReactToPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      reaction,
+      postId,
+    }: {
+      reaction?: ReactionValue;
+      postId: number;
+    }) => reactToPost({ reaction, postId }),
+    onSuccess: ({ reactions }, variables) => {
+      queryClient.setQueryData<{
+        pages: PaginatedResponse<Post>[];
+        pageParams: unknown[];
+      }>(["posts"], (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.map((post) => {
+              if (post.id === variables.postId) {
+                return {
+                  ...post,
+                  reactions,
+                };
+              }
+              return post;
+            }),
+          })),
         };
       });
     },

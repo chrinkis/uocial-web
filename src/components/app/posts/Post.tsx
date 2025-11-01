@@ -14,6 +14,7 @@ import {
   Button,
   Box,
   Typography,
+  Loader,
 } from "@mantine/core";
 import {
   IconArrowBigDown,
@@ -37,6 +38,10 @@ import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Comment } from "./Comment";
 import { uniqBy } from "lodash";
 import type { EmblaCarouselType } from "embla-carousel";
+import { useReactToPost } from "@/queries/app/post/post";
+import { notifications } from "@mantine/notifications";
+import { getErrorMessage } from "@/utils/error";
+import type { ReactionValue } from "@/models/app/post/Reaction";
 
 export interface PostPropsType {
   post: post.Post;
@@ -165,16 +170,37 @@ function PostHashtags({ post }: PostPropsType) {
 }
 
 function PostReactions({ post }: PostPropsType) {
+  const reactToPost = useReactToPost();
+
+  async function handleReaction(reaction?: ReactionValue) {
+    try {
+      await reactToPost.mutateAsync({ postId: post.id, reaction });
+    } catch (error) {
+      notifications.show({
+        title: "Login failed",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+    }
+  }
+
   return (
     <Group justify="space-between">
       <Group>
         <Group gap={2} align="stretch">
           {post.reactions.user?.reaction === "Upvote" ? (
-            <UnstyledButton c="violet">
+            <UnstyledButton
+              c="violet"
+              onClick={() => void handleReaction()}
+              disabled={reactToPost.isPending}
+            >
               <IconArrowBigUpFilled />
             </UnstyledButton>
           ) : (
-            <UnstyledButton>
+            <UnstyledButton
+              onClick={() => void handleReaction("Upvote")}
+              disabled={reactToPost.isPending}
+            >
               <IconArrowBigUp />
             </UnstyledButton>
           )}
@@ -186,11 +212,18 @@ function PostReactions({ post }: PostPropsType) {
           <Text>{post.reactions.total.downvotes}</Text>
 
           {post.reactions.user?.reaction === "Downvote" ? (
-            <UnstyledButton c="violet">
+            <UnstyledButton
+              c="violet"
+              onClick={() => void handleReaction()}
+              disabled={reactToPost.isPending}
+            >
               <IconArrowBigDownFilled />
             </UnstyledButton>
           ) : (
-            <UnstyledButton>
+            <UnstyledButton
+              onClick={() => void handleReaction("Downvote")}
+              disabled={reactToPost.isPending}
+            >
               <IconArrowBigDown />
             </UnstyledButton>
           )}

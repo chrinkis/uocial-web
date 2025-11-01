@@ -1,7 +1,7 @@
 import type { Hashtag } from "../Hashtag";
 import type { Commment } from "./Comment";
 import type { Label } from "./Label";
-import type { Reaction } from "./Reaction";
+import type { PostReactions } from "./PostReactions";
 
 export interface Post {
   readonly id: number;
@@ -11,13 +11,7 @@ export interface Post {
   created_at: string;
   hashtags: Hashtag[];
   labels: Label[];
-  reactions: {
-    user: Reaction | null;
-    total: {
-      upvotes: number;
-      downvotes: number;
-    };
-  };
+  reactions: PostReactions;
   comments: {
     total: number;
     most_popular: Commment[];
