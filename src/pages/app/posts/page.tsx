@@ -3,6 +3,7 @@ import { Post } from "@/components/app/posts/Post";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import { usePosts } from "@/queries/app/post/post";
+import { CreatePost } from "@/components/app/posts/CreatePost";
 
 export default function Page() {
   const {
@@ -28,6 +29,7 @@ export default function Page() {
 
   return (
     <Stack align="safe center" w="100%">
+      <CreatePost />
       {data?.pages.map((page) =>
         page.data.map((p) => <Post post={p} key={p.id} />),
       )}

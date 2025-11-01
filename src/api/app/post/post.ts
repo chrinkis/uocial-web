@@ -9,3 +9,14 @@ export async function fetchPost(page: number | string) {
 
   return data;
 }
+
+export async function createPost(formData: Record<string, unknown>) {
+  const {
+    data: { post, message },
+  } = await axios.post<{ message: string; post: Post }>(
+    `/api/app/posts`,
+    formData,
+  );
+
+  return { message, post };
+}
