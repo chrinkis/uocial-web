@@ -6,6 +6,7 @@ import type { Reaction } from "./Reaction";
 export interface Post {
   readonly id: number;
   title: string;
+  location?: "Rethymno" | "Heraklion";
   body: string;
   created_at: string;
   hashtags: Hashtag[];

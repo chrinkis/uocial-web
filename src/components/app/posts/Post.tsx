@@ -83,6 +83,16 @@ function PostMetaData({ post }: PostPropsType) {
           #{post.id}
         </Badge>
 
+        {post.location && (
+          <Badge
+            size="md"
+            variant="gradient"
+            gradient={{ from: "grape", to: "violet", deg: 90 }}
+          >
+            {post.location}
+          </Badge>
+        )}
+
         {post.labels.map((l) => (
           <Badge
             key={l.value}
