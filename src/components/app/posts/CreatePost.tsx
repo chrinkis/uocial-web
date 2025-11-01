@@ -89,7 +89,7 @@ export function CreatePost() {
               key={form.key("hashtags")}
               {...form.getInputProps("hashtags")}
             />
-            <Button type="submit" loading={form.submitting}>
+            <Button type="submit" variant="outline" loading={form.submitting}>
               Post
             </Button>
           </Group>
