@@ -42,6 +42,7 @@ import { useReactToPost } from "@/queries/app/post/post";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
+import { motion, AnimatePresence } from "framer-motion";
 
 export interface PostPropsType {
   post: post.Post;
@@ -188,45 +189,93 @@ function PostReactions({ post }: PostPropsType) {
     <Group justify="space-between">
       <Group>
         <Group gap={2} align="stretch">
-          {post.reactions.user?.reaction === "Upvote" ? (
-            <UnstyledButton
-              c="violet"
-              onClick={() => void handleReaction()}
-              disabled={reactToPost.isPending}
-            >
-              <IconArrowBigUpFilled />
-            </UnstyledButton>
-          ) : (
-            <UnstyledButton
-              onClick={() => void handleReaction("Upvote")}
-              disabled={reactToPost.isPending}
-            >
+          <UnstyledButton
+            c={
+              post.reactions.user?.reaction === "Upvote" ? "violet" : undefined
+            }
+            onClick={() =>
+              void handleReaction(
+                post.reactions.user?.reaction === "Upvote"
+                  ? undefined
+                  : "Upvote",
+              )
+            }
+            disabled={reactToPost.isPending}
+          >
+            <Box style={{ position: "relative", display: "flex" }}>
               <IconArrowBigUp />
-            </UnstyledButton>
-          )}
+              <motion.div
+                style={{ position: "absolute", top: 0, left: 0 }}
+                initial={false}
+                animate={{
+                  opacity: post.reactions.user?.reaction === "Upvote" ? 1 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <IconArrowBigUpFilled />
+              </motion.div>
+            </Box>
+          </UnstyledButton>
 
-          <Text>{post.reactions.total.upvotes}</Text>
+          <Box style={{ position: "relative", overflow: "hidden" }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={post.reactions.total.upvotes}
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 20, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Text>{post.reactions.total.upvotes}</Text>
+              </motion.div>
+            </AnimatePresence>
+          </Box>
         </Group>
 
         <Group gap={2} align="stretch">
-          <Text>{post.reactions.total.downvotes}</Text>
+          <Box style={{ position: "relative", overflow: "hidden" }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={post.reactions.total.downvotes}
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 20, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Text>{post.reactions.total.downvotes}</Text>
+              </motion.div>
+            </AnimatePresence>
+          </Box>
 
-          {post.reactions.user?.reaction === "Downvote" ? (
-            <UnstyledButton
-              c="violet"
-              onClick={() => void handleReaction()}
-              disabled={reactToPost.isPending}
-            >
-              <IconArrowBigDownFilled />
-            </UnstyledButton>
-          ) : (
-            <UnstyledButton
-              onClick={() => void handleReaction("Downvote")}
-              disabled={reactToPost.isPending}
-            >
+          <UnstyledButton
+            c={
+              post.reactions.user?.reaction === "Downvote"
+                ? "violet"
+                : undefined
+            }
+            onClick={() =>
+              void handleReaction(
+                post.reactions.user?.reaction === "Downvote"
+                  ? undefined
+                  : "Downvote",
+              )
+            }
+            disabled={reactToPost.isPending}
+          >
+            <Box style={{ position: "relative", display: "flex" }}>
               <IconArrowBigDown />
-            </UnstyledButton>
-          )}
+              <motion.div
+                style={{ position: "absolute", top: 0, left: 0 }}
+                initial={false}
+                animate={{
+                  opacity: post.reactions.user?.reaction === "Downvote" ? 1 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <IconArrowBigDownFilled />
+              </motion.div>
+            </Box>
+          </UnstyledButton>
         </Group>
       </Group>
 
