@@ -14,7 +14,6 @@ import {
   Button,
   Box,
   Typography,
-  Loader,
 } from "@mantine/core";
 import {
   IconArrowBigDown,
