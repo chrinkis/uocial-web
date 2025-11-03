@@ -33,8 +33,8 @@ import { format, formatDistanceToNow } from "date-fns";
 import { NavLink } from "react-router";
 import { Carousel } from "@mantine/carousel";
 import { useMeasure } from "react-use";
-import { memo, useCallback, useMemo, useRef, useState } from "react";
-import { Comment } from "./Comment";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CommentPreview } from "./CommentPreview";
 import { uniqBy } from "lodash";
 import type { EmblaCarouselType } from "embla-carousel";
 import { useReactToPost } from "@/queries/app/post/post";
@@ -42,6 +42,9 @@ import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import { motion, AnimatePresence } from "framer-motion";
+import { modals } from "@mantine/modals";
+import { Comments } from "./Comments";
+import { useModal } from "@/hooks/useModal";
 
 export interface PostPropsType {
   post: post.Post;
@@ -322,6 +325,8 @@ export function PostOptions(props: PostPropsType) {
 }
 
 export function PostPeakedComments(props: PostPropsType) {
+  const openModal = useModal();
+
   const selectedComments = useMemo(
     () =>
       uniqBy(
@@ -339,6 +344,14 @@ export function PostPeakedComments(props: PostPropsType) {
       ).slice(0, 4),
     [props.post.comments],
   );
+
+  function handleAllCommentsClick() {
+    openModal({
+      fullScreen: true,
+      title: `Comments of #${String(props.post.id)}`,
+      children: <Comments post={props.post} />,
+    });
+  }
 
   if (selectedComments.length === 0) {
     return (
@@ -358,9 +371,17 @@ export function PostPeakedComments(props: PostPropsType) {
   return (
     <Stack align="center" gap="xs">
       {selectedComments.map((c) => (
-        <Comment comment={c.comment} key={c.comment.id} label={c.label} />
+        <CommentPreview
+          comment={c.comment}
+          key={c.comment.id}
+          label={c.label}
+        />
       ))}
-      <Button {...BUTTON_PROPS} size="compact-md">
+      <Button
+        {...BUTTON_PROPS}
+        size="compact-md"
+        onClick={handleAllCommentsClick}
+      >
         <Group gap="0.1rem">
           <IconMessageCircle size="1.1rem" />
           All comments

@@ -1,47 +1,18 @@
-import { Button, Loader, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import { Post } from "@/components/app/posts/Post";
-import { notifications } from "@mantine/notifications";
-import { getErrorMessage } from "@/utils/error";
 import { usePosts } from "@/queries/app/post/post";
 import { CreatePost } from "@/components/app/posts/CreatePost";
+import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 
 export default function Page() {
-  const {
-    data,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = usePosts();
-
-  if (isLoading) {
-    return <Loader />;
-  }
-
-  if (error) {
-    notifications.show({
-      title: "Couldn't fetch posts",
-      message: getErrorMessage(error),
-      color: "red",
-    });
-  }
-
   return (
     <Stack align="safe center" w="100%">
       <CreatePost />
-      {data?.pages.map((page) =>
-        page.data.map((p) => <Post post={p} key={p.id} />),
-      )}
-      {hasNextPage && (
-        <Button
-          variant="light"
-          onClick={() => void fetchNextPage()}
-          loading={isFetchingNextPage}
-        >
-          Load More
-        </Button>
-      )}
+      <InfiniteScrolling
+        useQuery={usePosts}
+        name="posts"
+        Component={({ data }) => <Post post={data} />}
+      />
     </Stack>
   );
 }
