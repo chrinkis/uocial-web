@@ -3,7 +3,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { createPost, fetchPost, reactToPost } from "@/api/app/post/post";
+import { createPost, fetchPosts, reactToPost } from "@/api/app/post/post";
 import type { Post } from "@/models/app/post/Post";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import type { PaginatedResponse } from "@/utils/response";
@@ -11,7 +11,7 @@ import type { PaginatedResponse } from "@/utils/response";
 export function usePosts() {
   return useInfiniteQuery({
     queryKey: ["posts"],
-    queryFn: ({ pageParam }) => fetchPost(pageParam),
+    queryFn: ({ pageParam }) => fetchPosts(pageParam),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {

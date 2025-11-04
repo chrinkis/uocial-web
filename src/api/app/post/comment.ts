@@ -2,7 +2,7 @@ import axios from "axios";
 import type { PaginatedResponse } from "@/utils/response";
 import type { Commment } from "@/models/app/post/Comment";
 
-export async function fetchComment(
+export async function fetchComments(
   page: number | string,
   { postId }: { postId: number | string },
 ) {
