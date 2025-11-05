@@ -6,7 +6,6 @@ import {
   Title,
   Text,
   Spoiler,
-  Tooltip,
   Badge,
   Anchor,
   UnstyledButton,
@@ -16,24 +15,18 @@ import {
   Typography,
 } from "@mantine/core";
 import {
-  IconArrowBigDown,
-  IconArrowBigDownFilled,
-  IconArrowBigUp,
-  IconArrowBigUpFilled,
   IconBookmark,
   IconBookmarkFilled,
-  IconClock,
   IconFlag,
   IconMessageCircle,
   IconMessageCirclePlus,
   IconMessageCircleX,
   IconShare,
 } from "@tabler/icons-react";
-import { format, formatDistanceToNow } from "date-fns";
 import { NavLink } from "react-router";
 import { Carousel } from "@mantine/carousel";
 import { useMeasure } from "react-use";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { CommentPreview } from "./CommentPreview";
 import { uniqBy } from "lodash";
 import type { EmblaCarouselType } from "embla-carousel";
@@ -41,10 +34,10 @@ import { useReactToPost } from "@/queries/app/post/post";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
-import { motion, AnimatePresence } from "framer-motion";
-import { modals } from "@mantine/modals";
 import { Comments } from "./Comments";
 import { useModal } from "@/hooks/useModal";
+import { Timestamp } from "@/components/Time";
+import { ReactButton } from "@/components/app/posts/ReactButton";
 
 export interface PostPropsType {
   post: post.Post;
@@ -78,8 +71,6 @@ function PostTitle({ post }: PostPropsType) {
 }
 
 function PostMetaData({ post }: PostPropsType) {
-  const createdAt = new Date(post.created_at);
-
   return (
     <Group justify="space-between" wrap="nowrap" gap="xs">
       <Group wrap="wrap" style={{ flex: 1 }} gap={6}>
@@ -113,17 +104,7 @@ function PostMetaData({ post }: PostPropsType) {
         ))}
       </Group>
 
-      <Group justify="flex-end" gap={3} wrap="nowrap">
-        <IconClock color="var(--mantine-color-dimmed)" size="1rem" />
-        <Tooltip
-          label={format(createdAt, "PP·p")}
-          events={{ touch: true, hover: true, focus: false }}
-        >
-          <Text c="dimmed" size="xs">
-            {formatDistanceToNow(createdAt, { addSuffix: true })}
-          </Text>
-        </Tooltip>
-      </Group>
+      <Timestamp date={post.created_at} />
     </Group>
   );
 }
@@ -189,96 +170,21 @@ function PostReactions({ post }: PostPropsType) {
 
   return (
     <Group justify="space-between">
-      <Group>
-        <Group gap={2} align="stretch">
-          <UnstyledButton
-            c={
-              post.reactions.user?.reaction === "Upvote" ? "violet" : undefined
-            }
-            onClick={() =>
-              void handleReaction(
-                post.reactions.user?.reaction === "Upvote"
-                  ? undefined
-                  : "Upvote",
-              )
-            }
-            disabled={reactToPost.isPending}
-          >
-            <Box style={{ position: "relative", display: "flex" }}>
-              <IconArrowBigUp />
-              <motion.div
-                style={{ position: "absolute", top: 0, left: 0 }}
-                initial={false}
-                animate={{
-                  opacity: post.reactions.user?.reaction === "Upvote" ? 1 : 0,
-                }}
-                transition={{ duration: 0.3 }}
-              >
-                <IconArrowBigUpFilled />
-              </motion.div>
-            </Box>
-          </UnstyledButton>
-
-          <Box style={{ position: "relative", overflow: "hidden" }}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={post.reactions.total.upvotes}
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 20, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Text>{post.reactions.total.upvotes}</Text>
-              </motion.div>
-            </AnimatePresence>
-          </Box>
-        </Group>
-
-        <Group gap={2} align="stretch">
-          <Box style={{ position: "relative", overflow: "hidden" }}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={post.reactions.total.downvotes}
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 20, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Text>{post.reactions.total.downvotes}</Text>
-              </motion.div>
-            </AnimatePresence>
-          </Box>
-
-          <UnstyledButton
-            c={
-              post.reactions.user?.reaction === "Downvote"
-                ? "violet"
-                : undefined
-            }
-            onClick={() =>
-              void handleReaction(
-                post.reactions.user?.reaction === "Downvote"
-                  ? undefined
-                  : "Downvote",
-              )
-            }
-            disabled={reactToPost.isPending}
-          >
-            <Box style={{ position: "relative", display: "flex" }}>
-              <IconArrowBigDown />
-              <motion.div
-                style={{ position: "absolute", top: 0, left: 0 }}
-                initial={false}
-                animate={{
-                  opacity: post.reactions.user?.reaction === "Downvote" ? 1 : 0,
-                }}
-                transition={{ duration: 0.3 }}
-              >
-                <IconArrowBigDownFilled />
-              </motion.div>
-            </Box>
-          </UnstyledButton>
-        </Group>
+      <Group gap="xs">
+        <ReactButton
+          reaction="Upvote"
+          total={post.reactions.total.upvotes}
+          user={post.reactions.user?.reaction}
+          onClick={handleReaction}
+          loading={reactToPost.isPending}
+        />
+        <ReactButton
+          reaction="Downvote"
+          total={post.reactions.total.downvotes}
+          user={post.reactions.user?.reaction}
+          onClick={handleReaction}
+          loading={reactToPost.isPending}
+        />
       </Group>
 
       <Group gap={2} align="stretch">

@@ -1,3 +1,4 @@
+import { Timestamp } from "@/components/Time";
 import type { Commment } from "@/models/app/post/Comment";
 import {
   Badge,
@@ -6,7 +7,6 @@ import {
   Paper,
   Stack,
   Text,
-  Tooltip,
   UnstyledButton,
 } from "@mantine/core";
 import {
@@ -14,9 +14,7 @@ import {
   IconArrowBigDownFilled,
   IconArrowBigUp,
   IconArrowBigUpFilled,
-  IconClock,
 } from "@tabler/icons-react";
-import { format, formatDistanceToNow } from "date-fns";
 import { useState, type MouseEvent } from "react";
 
 export function CommentPreview({
@@ -30,8 +28,6 @@ export function CommentPreview({
   const TEXT_SIZE = "xs";
 
   const [expanded, setExpanded] = useState(false);
-
-  const createdAt = new Date(comment.created_at);
 
   function handleClick() {
     setExpanded((clamped) => !clamped);
@@ -70,17 +66,7 @@ export function CommentPreview({
               )}
             </Group>
 
-            <Group justify="flex-end" gap={3} wrap="nowrap">
-              <IconClock color="var(--mantine-color-dimmed)" size="1rem" />
-              <Tooltip
-                label={format(createdAt, "PP·p")}
-                events={{ touch: true, hover: true, focus: false }}
-              >
-                <Text c="dimmed" size="xs">
-                  {formatDistanceToNow(createdAt, { addSuffix: true })}
-                </Text>
-              </Tooltip>
-            </Group>
+            <Timestamp date={comment.created_at} />
           </Group>
         </Collapse>
 

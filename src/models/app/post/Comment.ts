@@ -10,4 +10,8 @@ export interface Commment {
     upvotes: number;
     downvotes: number;
   };
+  author: {
+    pseudonym: string;
+    is_post_author: boolean;
+  };
 }
