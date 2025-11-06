@@ -14,4 +14,7 @@ export interface Commment {
     pseudonym: string;
     is_post_author: boolean;
   };
+  replies: {
+    count: number;
+  };
 }

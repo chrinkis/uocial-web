@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "@/components/Time";
 import type { Commment } from "@/models/app/post/Comment";
 import { readablePseudonym } from "@/utils/pseudonym";
@@ -10,8 +12,13 @@ import {
   Spoiler,
   Paper,
   Popover,
+  UnstyledButton,
+  Box,
+  Collapse,
 } from "@mantine/core";
 import { ReactButton } from "./ReactButton";
+import { InfiniteScrolling } from "@/components/InfiniteScrolling";
+import { useReplies } from "@/queries/app/post/comment";
 
 export function CommentHeader({ comment }: { comment: Commment }) {
   return (
@@ -67,7 +74,15 @@ export function CommentBody({ comment }: { comment: Commment }) {
   );
 }
 
-export function CommentFooter({ comment }: { comment: Commment }) {
+export function CommentFooter({
+  comment,
+  onToggleReplies,
+  showReplies,
+}: {
+  comment: Commment;
+  onToggleReplies?: () => void;
+  showReplies?: boolean;
+}) {
   return (
     <Group justify="space-between">
       <Group gap="xs">
@@ -88,6 +103,26 @@ export function CommentFooter({ comment }: { comment: Commment }) {
       </Group>
 
       <Group gap="xs">
+        {comment.replies.count > 0 && (
+          <UnstyledButton onClick={onToggleReplies}>
+            <Text size="sm" c="dimmed" component="span">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={showReplies ? "hide" : "show"}
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 5 }}
+                  transition={{ duration: 0.15 }}
+                  style={{ display: "inline-block" }}
+                >
+                  {showReplies ? "Hide" : "Show"}
+                </motion.span>
+              </AnimatePresence>{" "}
+              {comment.replies.count}{" "}
+              {comment.replies.count === 1 ? "reply" : "replies"}
+            </Text>
+          </UnstyledButton>
+        )}
         <Badge
           size="sm"
           variant="gradient"
@@ -101,13 +136,32 @@ export function CommentFooter({ comment }: { comment: Commment }) {
 }
 
 export function Comment({ comment }: { comment: Commment }) {
+  const [showReplies, setShowReplies] = useState(false);
+
   return (
-    <Paper withBorder p="xs" w="98%" maw={512}>
-      <Stack gap={5}>
-        <CommentHeader comment={comment} />
-        <CommentBody comment={comment} />
-        <CommentFooter comment={comment} />
-      </Stack>
-    </Paper>
+    <Stack gap="xs" maw={512} w="98%">
+      <Paper withBorder p="xs">
+        <Stack gap={5}>
+          <CommentHeader comment={comment} />
+          <CommentBody comment={comment} />
+          <CommentFooter
+            comment={comment}
+            onToggleReplies={() => setShowReplies(!showReplies)}
+            showReplies={showReplies}
+          />
+        </Stack>
+      </Paper>
+
+      <Collapse in={showReplies} transitionDuration={400}>
+        <Box pl="md">
+          <InfiniteScrolling
+            useQuery={useReplies}
+            queryArgs={[comment.post_id, comment.id]}
+            name="replies"
+            Component={({ data }) => <Comment comment={data} />}
+          />
+        </Box>
+      </Collapse>
+    </Stack>
   );
 }

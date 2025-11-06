@@ -12,3 +12,17 @@ export async function fetchComments(
 
   return data;
 }
+
+export async function fetchReplies(
+  page: number | string,
+  {
+    postId,
+    commentId,
+  }: { postId: number | string; commentId: number | string },
+) {
+  const { data } = await axios.get<PaginatedResponse<Commment>>(
+    `/api/app/posts/${String(postId)}/comments/${String(commentId)}/replies?page=${String(page)}`,
+  );
+
+  return data;
+}
