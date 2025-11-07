@@ -2,12 +2,22 @@ import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { useComments } from "@/queries/app/post/comment";
 import type { Post } from "@/models/app/post/Post";
 import { Comment } from "./Comment";
-import { Stack, Box } from "@mantine/core";
+import { Stack, Box, Text } from "@mantine/core";
 import { CommentCreate } from "./CommentCreate";
 import { useState, useCallback, useMemo } from "react";
+import { IconMessageCircleX } from "@tabler/icons-react";
 
 interface CommentsProps {
   post: Post;
+}
+
+function EmptyCommentList() {
+  return (
+    <Stack align="center">
+      <IconMessageCircleX size={40} color="var(--mantine-color-dimmed)" />
+      <Text c="var(--mantine-color-dimmed)">No comments yet</Text>
+    </Stack>
+  );
 }
 
 export function Comments({ post }: CommentsProps) {
@@ -37,6 +47,7 @@ export function Comments({ post }: CommentsProps) {
           useQuery={useComments}
           queryArgs={[post.id]}
           Component={CommentComponent}
+          Fallback={EmptyCommentList}
         />
       </Box>
 
