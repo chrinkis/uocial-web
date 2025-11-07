@@ -173,16 +173,18 @@ export const Comment = memo(function Comment({
       </Paper>
 
       <Collapse in={showReplies} transitionDuration={400}>
-        <Box pl="md">
-          <InfiniteScrolling
-            useQuery={useReplies}
-            queryArgs={[comment.post_id, comment.id]}
-            name="replies"
-            Component={({ data }) => (
-              <Comment comment={data} onReplyTo={onReplyTo} />
-            )}
-          />
-        </Box>
+        {showReplies && (
+          <Box pl="md">
+            <InfiniteScrolling
+              useQuery={useReplies}
+              queryArgs={[comment.post_id, comment.id]}
+              name="replies"
+              Component={({ data }) => (
+                <Comment comment={data} onReplyTo={onReplyTo} />
+              )}
+            />
+          </Box>
+        )}
       </Collapse>
     </Stack>
   );
