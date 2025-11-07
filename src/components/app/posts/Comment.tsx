@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "@/components/Time";
 import type { Commment } from "@/models/app/post/Comment";
@@ -15,10 +15,12 @@ import {
   UnstyledButton,
   Box,
   Collapse,
+  Tooltip,
 } from "@mantine/core";
 import { ReactButton } from "./ReactButton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { useReplies } from "@/queries/app/post/comment";
+import { IconBubblePlus } from "@tabler/icons-react";
 
 export function CommentHeader({ comment }: { comment: Commment }) {
   return (
@@ -78,11 +80,17 @@ export function CommentFooter({
   comment,
   onToggleReplies,
   showReplies,
+  onReplyTo,
 }: {
   comment: Commment;
   onToggleReplies?: () => void;
   showReplies?: boolean;
+  onReplyTo?: (id: number | string) => void;
 }) {
+  function handleReplyTo() {
+    onReplyTo?.(comment.id);
+  }
+
   return (
     <Group justify="space-between">
       <Group gap="xs">
@@ -100,6 +108,11 @@ export function CommentFooter({
           iconSize={18}
           textSize="sm"
         />
+        <Tooltip label="Reply to this comment">
+          <UnstyledButton onClick={handleReplyTo}>
+            <IconBubblePlus size={16} />
+          </UnstyledButton>
+        </Tooltip>
       </Group>
 
       <Group gap="xs">
@@ -135,7 +148,13 @@ export function CommentFooter({
   );
 }
 
-export function Comment({ comment }: { comment: Commment }) {
+export const Comment = memo(function Comment({
+  comment,
+  onReplyTo,
+}: {
+  comment: Commment;
+  onReplyTo?: (id: number | string) => void;
+}) {
   const [showReplies, setShowReplies] = useState(false);
 
   return (
@@ -148,6 +167,7 @@ export function Comment({ comment }: { comment: Commment }) {
             comment={comment}
             onToggleReplies={() => setShowReplies(!showReplies)}
             showReplies={showReplies}
+            onReplyTo={onReplyTo}
           />
         </Stack>
       </Paper>
@@ -158,10 +178,12 @@ export function Comment({ comment }: { comment: Commment }) {
             useQuery={useReplies}
             queryArgs={[comment.post_id, comment.id]}
             name="replies"
-            Component={({ data }) => <Comment comment={data} />}
+            Component={({ data }) => (
+              <Comment comment={data} onReplyTo={onReplyTo} />
+            )}
           />
         </Box>
       </Collapse>
     </Stack>
   );
-}
+});

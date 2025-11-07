@@ -256,6 +256,11 @@ export function PostPeakedComments(props: PostPropsType) {
       fullScreen: true,
       title: `Comments of #${String(props.post.id)}`,
       children: <Comments post={props.post} />,
+      styles: {
+        content: { display: "flex", flexDirection: "column", height: "100%" },
+        header: { flexShrink: 0 },
+        body: { flex: 1, overflow: "hidden" },
+      },
     });
   }
 

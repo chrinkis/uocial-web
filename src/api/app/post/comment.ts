@@ -26,3 +26,23 @@ export async function fetchReplies(
 
   return data;
 }
+
+export async function createComment({
+  postId,
+  comment,
+  reply_to,
+}: {
+  postId: number | string;
+  comment: string;
+  reply_to?: number | string;
+}) {
+  const { data } = await axios.post<{
+    message: string;
+    comment: Commment;
+  }>(`/api/app/posts/${String(postId)}/comments`, {
+    comment,
+    reply_to,
+  });
+
+  return data;
+}
