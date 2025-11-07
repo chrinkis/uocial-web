@@ -40,8 +40,8 @@ export function Comments({ post }: CommentsProps) {
   );
 
   return (
-    <Stack h="100%" justify="space-between">
-      <Box style={{ overflow: "auto", flex: 1 }}>
+    <Stack h="100%" justify="space-between" align="center" w="100%">
+      <Box style={{ overflow: "auto", flex: 1 }} w="100%">
         <InfiniteScrolling
           name="comments"
           useQuery={useComments}

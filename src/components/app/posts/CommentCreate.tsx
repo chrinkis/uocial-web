@@ -62,7 +62,7 @@ export function CommentCreate({
   });
 
   return (
-    <Stack gap="xs">
+    <Stack gap="xs" maw={512} w="100%">
       {replyTo && (
         <Group gap="xs">
           <Blockquote
