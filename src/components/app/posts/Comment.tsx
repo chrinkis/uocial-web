@@ -14,7 +14,6 @@ import {
   Popover,
   UnstyledButton,
   Box,
-  Collapse,
   Tooltip,
 } from "@mantine/core";
 import { ReactButton } from "./ReactButton";
@@ -172,20 +171,27 @@ export const Comment = memo(function Comment({
         </Stack>
       </Paper>
 
-      <Collapse in={showReplies} transitionDuration={400}>
+      <AnimatePresence>
         {showReplies && (
-          <Box pl="md">
-            <InfiniteScrolling
-              useQuery={useReplies}
-              queryArgs={[comment.post_id, comment.id]}
-              name="replies"
-              Component={({ data }) => (
-                <Comment comment={data} onReplyTo={onReplyTo} />
-              )}
-            />
-          </Box>
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+          >
+            <Box pl="md">
+              <InfiniteScrolling
+                useQuery={useReplies}
+                queryArgs={[comment.post_id, comment.id]}
+                name="replies"
+                Component={({ data }) => (
+                  <Comment comment={data} onReplyTo={onReplyTo} />
+                )}
+              />
+            </Box>
+          </motion.div>
         )}
-      </Collapse>
+      </AnimatePresence>
     </Stack>
   );
 });
