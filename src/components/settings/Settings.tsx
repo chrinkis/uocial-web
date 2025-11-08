@@ -8,7 +8,7 @@ export function Settings() {
   return (
     <Switch
       label="Show YOU/YOURS badge"
-      description="The http request will still fetch the information, but it will not be displayed in the ui."
+      description="The HTTP request will continue to fetch this information, even when it isn’t displayed in the UI."
       checked={settings.showYouBadge}
       onChange={(event) => {
         const showYouBadge = event.currentTarget.checked;
