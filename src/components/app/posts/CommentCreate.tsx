@@ -85,6 +85,7 @@ export function CommentCreate({
             maxRows={3}
             key={form.key("comment")}
             {...form.getInputProps("comment")}
+            required
           />
           <ActionIcon
             type="submit"
