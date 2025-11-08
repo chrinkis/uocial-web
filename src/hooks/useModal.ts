@@ -3,6 +3,13 @@ import { useCallback } from "react";
 
 export function useModal() {
   return useCallback((props: Parameters<typeof modals.open>[0]) => {
+    let shouldNavigateBack = true;
+
+    function handleBack() {
+      shouldNavigateBack = false;
+      modals.close(modalId);
+    }
+
     const modalId = modals.open({
       ...props,
       onClose: () => {
@@ -10,7 +17,9 @@ export function useModal() {
           modalOpen?: boolean;
         } | null;
 
-        if (historyState?.modalOpen) {
+        if (shouldNavigateBack && historyState?.modalOpen) {
+          shouldNavigateBack = false;
+          window.removeEventListener("popstate", handleBack);
           window.history.back();
         }
 
@@ -19,10 +28,6 @@ export function useModal() {
     });
 
     window.history.pushState({ modalOpen: true }, "");
-
-    function handleBack() {
-      modals.close(modalId);
-    }
 
     window.addEventListener("popstate", handleBack, { once: true });
 
