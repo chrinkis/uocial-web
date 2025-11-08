@@ -18,4 +18,7 @@ export interface Post {
     most_recent: Commment[];
   };
   saved: boolean;
+  author: {
+    is_current_user: boolean;
+  };
 }

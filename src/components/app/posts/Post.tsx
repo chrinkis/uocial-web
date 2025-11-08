@@ -13,6 +13,7 @@ import {
   Button,
   Box,
   Typography,
+  Popover,
 } from "@mantine/core";
 import {
   IconBookmark,
@@ -38,6 +39,7 @@ import { Comments } from "./Comments";
 import { useModal } from "@/hooks/useModal";
 import { Timestamp } from "@/components/Time";
 import { ReactButton } from "@/components/app/posts/ReactButton";
+import { useSettings } from "@/providers/settings/hook";
 
 export interface PostPropsType {
   post: post.Post;
@@ -71,6 +73,8 @@ function PostTitle({ post }: PostPropsType) {
 }
 
 function PostMetaData({ post }: PostPropsType) {
+  const { settings } = useSettings();
+
   return (
     <Group justify="space-between" wrap="nowrap" gap="xs">
       <Group wrap="wrap" style={{ flex: 1 }} gap={6}>
@@ -90,6 +94,26 @@ function PostMetaData({ post }: PostPropsType) {
           >
             {post.location}
           </Badge>
+        )}
+
+        {settings.showYouBadge && post.author.is_current_user && (
+          <Popover>
+            <Popover.Target>
+              <Badge
+                size="md"
+                variant="gradient"
+                gradient={{ from: "grape", to: "violet", deg: 90 }}
+              >
+                yours
+              </Badge>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <Text maw={300}>
+                This post was created by you. You can hide this badge through
+                settings.
+              </Text>
+            </Popover.Dropdown>
+          </Popover>
         )}
 
         {post.labels.map((l) => (

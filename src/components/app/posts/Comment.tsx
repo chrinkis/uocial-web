@@ -20,18 +20,34 @@ import { ReactButton } from "./ReactButton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { useReplies } from "@/queries/app/post/comment";
 import { IconBubblePlus } from "@tabler/icons-react";
+import { useSettings } from "@/providers/settings/hook";
 
 export function CommentHeader({ comment }: { comment: Commment }) {
+  const { settings } = useSettings();
+
   return (
     <Group justify="space-between">
-      <Popover withArrow arrowSize={12}>
-        <Popover.Target>
-          <Group gap={5} style={{ cursor: "pointer" }}>
-            <Avatar size="sm" variant="light" color="violet" />
-            <Text size="sm" c="dimmed" fw={700}>
-              {readablePseudonym(comment.author.pseudonym)}
+      <Group gap={5} style={{ cursor: "pointer" }}>
+        <Popover withArrow arrowSize={12}>
+          <Popover.Target>
+            <Group gap={5} style={{ cursor: "pointer" }}>
+              <Avatar size="sm" variant="light" color="violet" />
+              <Text size="sm" c="dimmed" fw={700}>
+                {readablePseudonym(comment.author.pseudonym)}
+              </Text>
+            </Group>
+          </Popover.Target>
+          <Popover.Dropdown>
+            <Text maw={300}>
+              This usernmae in this post reffers to the same user. It is picked
+              by Uocial and not by the commenter. It may be reused on a
+              different post for a different user.
             </Text>
-            {comment.author.is_post_author && (
+          </Popover.Dropdown>
+        </Popover>
+        {comment.author.is_post_author && (
+          <Popover withArrow arrowSize={12}>
+            <Popover.Target>
               <Badge
                 size="xs"
                 variant="gradient"
@@ -39,17 +55,35 @@ export function CommentHeader({ comment }: { comment: Commment }) {
               >
                 op
               </Badge>
-            )}
-          </Group>
-        </Popover.Target>
-        <Popover.Dropdown>
-          <Text maw={300}>
-            This usernmae in this post reffers to the same user. It is picked by
-            Uocial and not by the commenter. It may be reused on a different
-            post for a different user.
-          </Text>
-        </Popover.Dropdown>
-      </Popover>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <Text maw={300}>
+                Original Poster: The user who created the post that this comment
+                belongs to.
+              </Text>
+            </Popover.Dropdown>
+          </Popover>
+        )}
+        {settings.showYouBadge && comment.author.is_current_user && (
+          <Popover withArrow arrowSize={12}>
+            <Popover.Target>
+              <Badge
+                size="xs"
+                variant="gradient"
+                gradient={{ from: "grape", to: "violet", deg: 90 }}
+              >
+                you
+              </Badge>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <Text maw={300}>
+                You created this comment. You can hide this badge through
+                settings.
+              </Text>
+            </Popover.Dropdown>
+          </Popover>
+        )}
+      </Group>
 
       <Timestamp date={comment.created_at} />
     </Group>

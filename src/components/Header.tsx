@@ -15,11 +15,16 @@ import invariant from "tiny-invariant";
 
 function UserMenu() {
   const { user, logout } = useUser();
+  const navigate = useNavigate();
 
   invariant(user);
 
   function handleLogout() {
     void logout();
+  }
+
+  async function handleSettings() {
+    await navigate("/settings");
   }
 
   return (
@@ -31,7 +36,12 @@ function UserMenu() {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item leftSection={<IconSettings size={14} />}>Settings</Menu.Item>
+        <Menu.Item
+          leftSection={<IconSettings size={14} />}
+          onClick={() => void handleSettings()}
+        >
+          Settings
+        </Menu.Item>
         <Menu.Item
           leftSection={<IconLogout size={14} />}
           onClick={handleLogout}

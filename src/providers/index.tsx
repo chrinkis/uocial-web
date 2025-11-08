@@ -10,6 +10,7 @@ import "@mantine/notifications/styles.css";
 import { LoadingOverlayProvider } from "./loading-overlay/Provider";
 import "@mantine/carousel/styles.css";
 import { ModalsProvider } from "@mantine/modals";
+import { SettingsProvider } from "./settings/Provider";
 
 const theme = createTheme({
   primaryColor: "violet",
@@ -24,9 +25,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <LoadingOverlayProvider>
           <UserProvider>
-            <ModalsProvider>
-              <BrowserRouter>{children}</BrowserRouter>
-            </ModalsProvider>
+            <SettingsProvider>
+              <ModalsProvider>
+                <BrowserRouter>{children}</BrowserRouter>
+              </ModalsProvider>
+            </SettingsProvider>
           </UserProvider>
         </LoadingOverlayProvider>
       </QueryClientProvider>

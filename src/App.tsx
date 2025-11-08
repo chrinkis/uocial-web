@@ -12,6 +12,7 @@ import ResetPasswordPage from "@/pages/auth/password/reset/page";
 import ForgotPasswordPage from "@/pages/auth/password/forgot/page";
 import VerifyEmailActionPage from "@/pages/auth/email/verify/page";
 import PostsPage from "@/pages/app/posts/page";
+import SettingsPage from "@/pages/settings/page";
 
 function getOpenRoutes() {
   return (
@@ -40,6 +41,7 @@ function getLoggedInRoutes() {
 function getVerifiedRoutes() {
   return (
     <>
+      <Route path="settings" element={<SettingsPage />} />
       <Route path="app" element={<AppPage />} />
       <Route path="app/posts" element={<PostsPage />} />
     </>

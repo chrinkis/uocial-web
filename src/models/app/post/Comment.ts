@@ -12,6 +12,7 @@ export interface Commment {
   };
   author: {
     pseudonym: string;
+    is_current_user: boolean;
     is_post_author: boolean;
   };
   replies: {
