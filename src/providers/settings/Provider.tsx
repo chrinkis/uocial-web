@@ -1,6 +1,6 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { SettingsContext } from "./Context";
-import { getSettings } from "@/utils/storage/settings";
+import { getSettings, saveSettings } from "@/utils/storage/settings";
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState(getSettings());
@@ -12,6 +12,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }),
     [settings, setSettings],
   );
+
+  useEffect(() => {
+    saveSettings(settings);
+  }, [settings]);
 
   return <SettingsContext value={contextValue}>{children}</SettingsContext>;
 }
