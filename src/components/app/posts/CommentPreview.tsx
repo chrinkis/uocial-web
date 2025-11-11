@@ -82,47 +82,28 @@ export function CommentPreview({
           </Text>
 
           <Stack gap={expanded ? 10 : 0} align="safe center">
-            {expanded ? (
-              <>
-                <ReactButton
-                  reaction="Upvote"
-                  total={comment.reactions.total.upvotes}
-                  user={comment.reactions.user?.reaction}
-                  onClick={handleReaction}
-                  loading={reactToComment.isPending}
-                  iconSize={ICON_SIZE}
-                  textSize={TEXT_SIZE}
-                />
-                <ReactButton
-                  reaction="Downvote"
-                  total={comment.reactions.total.downvotes}
-                  user={comment.reactions.user?.reaction}
-                  onClick={handleReaction}
-                  loading={reactToComment.isPending}
-                  iconSize={ICON_SIZE}
-                  textSize={TEXT_SIZE}
-                />
-              </>
-            ) : (
-              <>
-                <ReactButton
-                  reaction="Upvote"
-                  total=""
-                  user={comment.reactions.user?.reaction}
-                  onClick={handleReaction}
-                  loading={reactToComment.isPending}
-                  iconSize={ICON_SIZE}
-                />
-                <ReactButton
-                  reaction="Downvote"
-                  total=""
-                  user={comment.reactions.user?.reaction}
-                  onClick={handleReaction}
-                  loading={reactToComment.isPending}
-                  iconSize={ICON_SIZE}
-                />
-              </>
-            )}
+            <ReactButton
+              reaction="Upvote"
+              total={comment.reactions.total.upvotes}
+              user={comment.reactions.user?.reaction}
+              onClick={handleReaction}
+              loading={reactToComment.isPending}
+              iconSize={ICON_SIZE}
+              textSize={TEXT_SIZE}
+              vertical
+              hideTotal={!expanded}
+            />
+            <ReactButton
+              reaction="Downvote"
+              total={comment.reactions.total.downvotes}
+              user={comment.reactions.user?.reaction}
+              onClick={handleReaction}
+              loading={reactToComment.isPending}
+              iconSize={ICON_SIZE}
+              textSize={TEXT_SIZE}
+              vertical
+              hideTotal={!expanded}
+            />
           </Stack>
         </Group>
       </Stack>

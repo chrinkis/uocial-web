@@ -1,10 +1,10 @@
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import {
   Box,
-  Group,
   UnstyledButton,
   type MantineSize,
   Text,
+  Flex,
 } from "@mantine/core";
 import {
   IconArrowBigDown,
@@ -23,6 +23,8 @@ interface ReactButtonPropsType {
   textSize?: MantineSize;
   iconSize?: number;
   buttonSize?: MantineSize | number;
+  hideTotal?: boolean;
+  vertical?: boolean;
 }
 
 export function ReactButton({
@@ -34,9 +36,15 @@ export function ReactButton({
   user,
   onClick: handleReaction,
   loading,
+  hideTotal,
+  vertical,
 }: ReactButtonPropsType) {
   return (
-    <Group gap={2} align="stretch">
+    <Flex
+      gap={2}
+      align="stretch"
+      direction={`${vertical ? "column" : "row"}${reaction === "Downvote" ? "-reverse" : ""}`}
+    >
       <UnstyledButton
         c={user === reaction ? "violet" : undefined}
         onClick={() =>
@@ -68,19 +76,23 @@ export function ReactButton({
         </Box>
       </UnstyledButton>
 
-      <Box style={{ position: "relative", overflow: "hidden" }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={total}
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Text size={textSize}>{total}</Text>
-          </motion.div>
-        </AnimatePresence>
-      </Box>
-    </Group>
+      {!hideTotal && (
+        <Box style={{ position: "relative", overflow: "hidden" }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={total}
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Text size={textSize} ta="center">
+                {total}
+              </Text>
+            </motion.div>
+          </AnimatePresence>
+        </Box>
+      )}
+    </Flex>
   );
 }
