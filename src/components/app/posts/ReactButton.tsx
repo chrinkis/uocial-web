@@ -20,7 +20,7 @@ interface ReactButtonPropsType {
   user?: ReactionValue;
   onClick?: (reaction?: ReactionValue) => Promise<void>;
   loading?: boolean;
-  textSize?: MantineSize | number;
+  textSize?: MantineSize;
   iconSize?: number;
   buttonSize?: MantineSize | number;
 }

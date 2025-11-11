@@ -198,7 +198,9 @@ export const Comment = memo(function Comment({
           <CommentBody comment={comment} />
           <CommentFooter
             comment={comment}
-            onToggleReplies={() => setShowReplies(!showReplies)}
+            onToggleReplies={() => {
+              setShowReplies(!showReplies);
+            }}
             showReplies={showReplies}
             onReplyTo={onReplyTo}
           />
