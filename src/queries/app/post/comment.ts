@@ -157,7 +157,7 @@ export function useCreateComment() {
           };
         });
 
-        // Update post's comment count in posts cache
+        // Update post's comment count and most_recent in posts cache
         queryClient.setQueryData<{
           pages: PaginatedResponse<Post>[];
           pageParams: unknown[];
@@ -175,6 +175,10 @@ export function useCreateComment() {
                       comments: {
                         ...post.comments,
                         total: post.comments.total + 1,
+                        most_recent: [comment, ...post.comments.most_recent].slice(
+                          0,
+                          post.comments.most_recent.length || 1,
+                        ),
                       },
                     }
                   : post,
