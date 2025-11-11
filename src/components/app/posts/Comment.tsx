@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "@/components/Timestamp";
 import type { Commment } from "@/models/app/post/Comment";
@@ -218,6 +218,13 @@ export const Comment = memo(function Comment({
     }
   }
 
+  const renderReply = useCallback(
+    ({ data }: { data: Commment }) => (
+      <Comment comment={data} onReplyTo={onReplyTo} />
+    ),
+    [onReplyTo],
+  );
+
   return (
     <Stack gap="xs" maw={512} w="98%">
       <Paper withBorder p="xs">
@@ -250,9 +257,7 @@ export const Comment = memo(function Comment({
                 useQuery={useReplies}
                 queryArgs={[comment.post_id, comment.id]}
                 name="replies"
-                Component={({ data }) => (
-                  <Comment comment={data} onReplyTo={onReplyTo} />
-                )}
+                Component={renderReply}
               />
             </Box>
           </motion.div>
