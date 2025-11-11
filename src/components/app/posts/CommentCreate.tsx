@@ -70,8 +70,9 @@ export function CommentCreate({
             style={{ fontSize: 14 }}
             styles={{ root: { color: "var(--mantine-color-dimmed)" } }}
             flex={1}
+            fs="italic"
           >
-            You are replying to comment !{replyTo}
+            You are replying to comment <strong>!{replyTo}</strong>
           </Blockquote>
           <CloseButton onClick={onClearReply} size="md" />
         </Group>
