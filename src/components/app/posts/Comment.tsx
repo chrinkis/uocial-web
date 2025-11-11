@@ -18,9 +18,12 @@ import {
 } from "@mantine/core";
 import { ReactButton } from "./ReactButton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
-import { useReplies } from "@/queries/app/post/comment";
+import { useReplies, useReactToComment } from "@/queries/app/post/comment";
 import { IconBubblePlus } from "@tabler/icons-react";
 import { useSettings } from "@/providers/settings/hook";
+import { notifications } from "@mantine/notifications";
+import { getErrorMessage } from "@/utils/error";
+import type { ReactionValue } from "@/models/app/post/Reaction";
 
 export function CommentHeader({ comment }: { comment: Commment }) {
   const { settings } = useSettings();
@@ -114,11 +117,15 @@ export function CommentFooter({
   onToggleReplies,
   showReplies,
   onReplyTo,
+  onReaction,
+  reactionLoading,
 }: {
   comment: Commment;
   onToggleReplies?: () => void;
   showReplies?: boolean;
   onReplyTo?: (id: number | string) => void;
+  onReaction?: (reaction?: ReactionValue) => Promise<void>;
+  reactionLoading?: boolean;
 }) {
   function handleReplyTo() {
     onReplyTo?.(comment.id);
@@ -133,6 +140,8 @@ export function CommentFooter({
           user={comment.reactions.user?.reaction}
           iconSize={18}
           textSize="sm"
+          onClick={onReaction}
+          loading={reactionLoading}
         />
         <ReactButton
           reaction="Downvote"
@@ -140,6 +149,8 @@ export function CommentFooter({
           user={comment.reactions.user?.reaction}
           iconSize={18}
           textSize="sm"
+          onClick={onReaction}
+          loading={reactionLoading}
         />
         <Tooltip label="Reply to this comment">
           <UnstyledButton onClick={handleReplyTo}>
@@ -189,6 +200,23 @@ export const Comment = memo(function Comment({
   onReplyTo?: (id: number | string) => void;
 }) {
   const [showReplies, setShowReplies] = useState(false);
+  const reactToComment = useReactToComment();
+
+  async function handleReaction(reaction?: ReactionValue) {
+    try {
+      await reactToComment.mutateAsync({
+        postId: comment.post_id,
+        commentId: comment.id,
+        reaction,
+      });
+    } catch (error) {
+      notifications.show({
+        title: "Reaction failed",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+    }
+  }
 
   return (
     <Stack gap="xs" maw={512} w="98%">
@@ -203,6 +231,8 @@ export const Comment = memo(function Comment({
             }}
             showReplies={showReplies}
             onReplyTo={onReplyTo}
+            onReaction={handleReaction}
+            reactionLoading={reactToComment.isPending}
           />
         </Stack>
       </Paper>

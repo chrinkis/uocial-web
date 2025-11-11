@@ -7,38 +7,47 @@ import {
   Paper,
   Stack,
   Text,
-  UnstyledButton,
 } from "@mantine/core";
-import {
-  IconArrowBigDown,
-  IconArrowBigDownFilled,
-  IconArrowBigUp,
-  IconArrowBigUpFilled,
-} from "@tabler/icons-react";
-import { useState, type MouseEvent } from "react";
+import { useState } from "react";
+import { useReactToComment } from "@/queries/app/post/comment";
+import { notifications } from "@mantine/notifications";
+import { getErrorMessage } from "@/utils/error";
+import type { ReactionValue } from "@/models/app/post/Reaction";
+import { ReactButton } from "@/components/app/posts/ReactButton";
 
 export function CommentPreview({
   comment,
+  postId,
   label,
 }: {
   comment: Commment;
+  postId: number;
   label?: string;
 }) {
   const ICON_SIZE = 18;
   const TEXT_SIZE = "xs";
 
   const [expanded, setExpanded] = useState(false);
+  const reactToComment = useReactToComment();
 
   function handleClick() {
     setExpanded((clamped) => !clamped);
   }
 
-  function handleUpvoteClick(e: MouseEvent) {
-    e.stopPropagation();
-  }
-
-  function handleDownvoteClick(e: MouseEvent) {
-    e.stopPropagation();
+  async function handleReaction(reaction?: ReactionValue) {
+    try {
+      await reactToComment.mutateAsync({
+        postId,
+        commentId: comment.id,
+        reaction,
+      });
+    } catch (error) {
+      notifications.show({
+        title: "Reaction failed",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+    }
   }
 
   return (
@@ -70,56 +79,57 @@ export function CommentPreview({
           </Group>
         </Collapse>
 
-        <Group wrap="nowrap" align="center" onClick={handleClick}>
+        <Group wrap="nowrap" align="center">
           <Text
             lineClamp={expanded ? undefined : 2}
             style={{ cursor: "pointer", flex: 1 }}
+            onClick={handleClick}
           >
             {comment.comment}
           </Text>
 
           <Stack gap={expanded ? 10 : 0} align="safe center">
-            <Stack gap={0} align="safe center">
-              {comment.reactions.user?.reaction === "Upvote" ? (
-                <UnstyledButton c="violet" onClick={handleUpvoteClick}>
-                  <IconArrowBigUpFilled size={ICON_SIZE} />
-                </UnstyledButton>
-              ) : (
-                <UnstyledButton
-                  c="var(--mantine-color-dimmed)"
-                  onClick={handleUpvoteClick}
-                >
-                  <IconArrowBigUp size={ICON_SIZE} />
-                </UnstyledButton>
-              )}
-
-              {expanded && (
-                <Text size={TEXT_SIZE} c="var(--mantine-color-dimmed)">
-                  {comment.reactions.total.upvotes}
-                </Text>
-              )}
-            </Stack>
-
-            <Stack gap={0} align="safe center">
-              {expanded && (
-                <Text size={TEXT_SIZE} c="var(--mantine-color-dimmed)">
-                  {comment.reactions.total.downvotes}
-                </Text>
-              )}
-
-              {comment.reactions.user?.reaction === "Downvote" ? (
-                <UnstyledButton c="violet" onClick={handleDownvoteClick}>
-                  <IconArrowBigDownFilled size={ICON_SIZE} />
-                </UnstyledButton>
-              ) : (
-                <UnstyledButton
-                  c="var(--mantine-color-dimmed)"
-                  onClick={handleDownvoteClick}
-                >
-                  <IconArrowBigDown size={ICON_SIZE} />
-                </UnstyledButton>
-              )}
-            </Stack>
+            {expanded ? (
+              <>
+                <ReactButton
+                  reaction="Upvote"
+                  total={comment.reactions.total.upvotes}
+                  user={comment.reactions.user?.reaction}
+                  onClick={handleReaction}
+                  loading={reactToComment.isPending}
+                  iconSize={ICON_SIZE}
+                  textSize={TEXT_SIZE}
+                />
+                <ReactButton
+                  reaction="Downvote"
+                  total={comment.reactions.total.downvotes}
+                  user={comment.reactions.user?.reaction}
+                  onClick={handleReaction}
+                  loading={reactToComment.isPending}
+                  iconSize={ICON_SIZE}
+                  textSize={TEXT_SIZE}
+                />
+              </>
+            ) : (
+              <>
+                <ReactButton
+                  reaction="Upvote"
+                  total=""
+                  user={comment.reactions.user?.reaction}
+                  onClick={handleReaction}
+                  loading={reactToComment.isPending}
+                  iconSize={ICON_SIZE}
+                />
+                <ReactButton
+                  reaction="Downvote"
+                  total=""
+                  user={comment.reactions.user?.reaction}
+                  onClick={handleReaction}
+                  loading={reactToComment.isPending}
+                  iconSize={ICON_SIZE}
+                />
+              </>
+            )}
           </Stack>
         </Group>
       </Stack>

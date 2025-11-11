@@ -312,6 +312,7 @@ export function PostPeakedComments(props: PostPropsType) {
       {selectedComments.map((c) => (
         <CommentPreview
           comment={c.comment}
+          postId={props.post.id}
           key={c.comment.id}
           label={c.label}
         />

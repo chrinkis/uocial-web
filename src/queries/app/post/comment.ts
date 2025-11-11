@@ -7,10 +7,12 @@ import {
   fetchComments,
   fetchReplies,
   createComment,
+  reactToComment,
 } from "@/api/app/post/comment";
 import type { Commment } from "@/models/app/post/Comment";
 import type { PaginatedResponse } from "@/utils/response";
 import type { Post } from "@/models/app/post/Post";
+import type { ReactionValue } from "@/models/app/post/Reaction";
 
 export function useComments(postId: number) {
   return useInfiniteQuery({
@@ -181,6 +183,117 @@ export function useCreateComment() {
           };
         });
       }
+    },
+  });
+}
+
+export function useReactToComment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      reaction,
+      postId,
+      commentId,
+    }: {
+      reaction?: ReactionValue;
+      postId: number;
+      commentId: number;
+    }) => reactToComment({ reaction, postId, commentId }),
+    onSuccess: ({ reactions }, variables) => {
+      // Update comment reactions in comments cache
+      queryClient.setQueryData<{
+        pages: PaginatedResponse<Commment>[];
+        pageParams: unknown[];
+      }>(["comments", variables.postId], (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.map((comment) =>
+              comment.id === variables.commentId
+                ? {
+                    ...comment,
+                    reactions,
+                  }
+                : comment,
+            ),
+          })),
+        };
+      });
+
+      // Update comment reactions in ALL replies caches (for nested comments)
+      const queries = queryClient.getQueryCache().getAll();
+      queries.forEach((query) => {
+        const [key, postId] = query.queryKey;
+        if (key === "replies" && postId === variables.postId) {
+          queryClient.setQueryData<{
+            pages: PaginatedResponse<Commment>[];
+            pageParams: unknown[];
+          }>(query.queryKey, (oldData) => {
+            if (!oldData) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                data: page.data.map((comment) =>
+                  comment.id === variables.commentId
+                    ? {
+                        ...comment,
+                        reactions,
+                      }
+                    : comment,
+                ),
+              })),
+            };
+          });
+        }
+      });
+
+      // Update comment reactions in posts cache (for comments preview in posts)
+      queryClient.setQueryData<{
+        pages: PaginatedResponse<Post>[];
+        pageParams: unknown[];
+      }>(["posts"], (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.map((post) => {
+              if (post.id === variables.postId) {
+                return {
+                  ...post,
+                  comments: {
+                    ...post.comments,
+                    most_popular: post.comments.most_popular.map((comment) =>
+                      comment.id === variables.commentId
+                        ? {
+                            ...comment,
+                            reactions,
+                          }
+                        : comment,
+                    ),
+                    most_recent: post.comments.most_recent.map((comment) =>
+                      comment.id === variables.commentId
+                        ? {
+                            ...comment,
+                            reactions,
+                          }
+                        : comment,
+                    ),
+                  },
+                };
+              }
+              return post;
+            }),
+          })),
+        };
+      });
     },
   });
 }
