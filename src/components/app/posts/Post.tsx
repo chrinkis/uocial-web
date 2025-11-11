@@ -96,6 +96,23 @@ function PostMetaData({ post }: PostPropsType) {
           </Badge>
         )}
 
+        {post.is_official && (
+          <Popover withArrow arrowSize={12}>
+            <Popover.Target>
+              <Badge
+                size="md"
+                variant="gradient"
+                gradient={{ from: "grape", to: "violet", deg: 90 }}
+              >
+                official
+              </Badge>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <Text maw={300}>This post was created by Uocial owners.</Text>
+            </Popover.Dropdown>
+          </Popover>
+        )}
+
         {settings.showYouBadge && post.author.is_current_user && (
           <Popover withArrow arrowSize={12}>
             <Popover.Target>
@@ -115,17 +132,6 @@ function PostMetaData({ post }: PostPropsType) {
             </Popover.Dropdown>
           </Popover>
         )}
-
-        {post.labels.map((l) => (
-          <Badge
-            key={l.value}
-            size="md"
-            variant="gradient"
-            gradient={{ from: "grape", to: "violet", deg: 90 }}
-          >
-            {l.value}
-          </Badge>
-        ))}
       </Group>
 
       <Timestamp date={post.created_at} />
