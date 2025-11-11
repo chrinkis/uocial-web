@@ -76,8 +76,8 @@ function PostMetaData({ post }: PostPropsType) {
   const { settings } = useSettings();
 
   return (
-    <Group justify="space-between" wrap="nowrap" gap="xs">
-      <Group wrap="wrap" style={{ flex: 1 }} gap={6}>
+    <Group justify="space-between" gap="xs" wrap="wrap">
+      <Group gap={6}>
         <Badge
           size="md"
           variant="gradient"
