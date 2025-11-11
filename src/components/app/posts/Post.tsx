@@ -37,7 +37,7 @@ import { getErrorMessage } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import { Comments } from "./Comments";
 import { useModal } from "@/hooks/useModal";
-import { Timestamp } from "@/components/Time";
+import { Timestamp } from "@/components/Timestamp";
 import { ReactButton } from "@/components/app/posts/ReactButton";
 import { useSettings } from "@/providers/settings/hook";
 

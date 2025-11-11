@@ -1,6 +1,6 @@
 import { useState, memo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Timestamp } from "@/components/Time";
+import { Timestamp } from "@/components/Timestamp";
 import type { Commment } from "@/models/app/post/Comment";
 import { readablePseudonym } from "@/utils/pseudonym";
 import {

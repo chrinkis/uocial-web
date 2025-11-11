@@ -1,13 +1,6 @@
-import { Timestamp } from "@/components/Time";
+import { Timestamp } from "@/components/Timestamp";
 import type { Commment } from "@/models/app/post/Comment";
-import {
-  Badge,
-  Collapse,
-  Group,
-  Paper,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Badge, Collapse, Group, Paper, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 import { useReactToComment } from "@/queries/app/post/comment";
 import { notifications } from "@mantine/notifications";
