@@ -97,7 +97,7 @@ function PostMetaData({ post }: PostPropsType) {
         )}
 
         {settings.showYouBadge && post.author.is_current_user && (
-          <Popover>
+          <Popover withArrow arrowSize={12}>
             <Popover.Target>
               <Badge
                 size="md"
