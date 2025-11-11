@@ -95,7 +95,7 @@ export function CommentPreview({
 
               {expanded && (
                 <Text size={TEXT_SIZE} c="var(--mantine-color-dimmed)">
-                  {comment.reactions.upvotes}
+                  {comment.reactions.total.upvotes}
                 </Text>
               )}
             </Stack>
@@ -103,7 +103,7 @@ export function CommentPreview({
             <Stack gap={0} align="safe center">
               {expanded && (
                 <Text size={TEXT_SIZE} c="var(--mantine-color-dimmed)">
-                  {comment.reactions.downvotes}
+                  {comment.reactions.total.downvotes}
                 </Text>
               )}
 

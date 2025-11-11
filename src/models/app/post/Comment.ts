@@ -1,15 +1,11 @@
-import type { Reaction } from "./Reaction";
+import type { PostReactions } from "./PostReactions";
 
 export interface Commment {
   readonly id: number;
   post_id: number;
   comment: string;
   created_at: string;
-  reactions: {
-    user: Reaction | null;
-    upvotes: number;
-    downvotes: number;
-  };
+  reactions: PostReactions;
   author: {
     pseudonym: string;
     is_current_user: boolean;

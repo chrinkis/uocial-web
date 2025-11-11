@@ -129,14 +129,14 @@ export function CommentFooter({
       <Group gap="xs">
         <ReactButton
           reaction="Upvote"
-          total={comment.reactions.upvotes}
+          total={comment.reactions.total.upvotes}
           user={comment.reactions.user?.reaction}
           iconSize={18}
           textSize="sm"
         />
         <ReactButton
           reaction="Downvote"
-          total={comment.reactions.downvotes}
+          total={comment.reactions.total.downvotes}
           user={comment.reactions.user?.reaction}
           iconSize={18}
           textSize="sm"
