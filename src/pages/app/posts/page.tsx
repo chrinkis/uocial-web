@@ -1,4 +1,4 @@
-import { Loader, Paper, Stack, Text, useMantineTheme } from "@mantine/core";
+import { Paper, Stack, Text, useMantineTheme } from "@mantine/core";
 import { Post } from "@/components/app/posts/Post";
 import { usePost, usePosts } from "@/queries/app/post/post";
 import { CreatePost } from "@/components/app/posts/CreatePost";
@@ -8,13 +8,14 @@ import invariant from "tiny-invariant";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import { IconExclamationCircle } from "@tabler/icons-react";
+import { PostSkeleton } from "@/components/app/posts/PostSkeleton";
 
 function SharedPost({ postId }: { postId: number | string }) {
   const theme = useMantineTheme();
   const { data: post, isLoading, error } = usePost(postId);
 
   if (isLoading) {
-    return <Loader />;
+    return <PostSkeleton />;
   }
 
   if (error) {
@@ -53,6 +54,7 @@ export default function Page() {
         useQuery={usePosts}
         name="posts"
         Component={({ data }) => <Post post={data} />}
+        loader={<PostSkeleton />}
       />
     </Stack>
   );

@@ -6,7 +6,7 @@ import type {
   InfiniteData,
 } from "@tanstack/react-query";
 import type { PaginatedResponse } from "@/utils/response";
-import type { ComponentType } from "react";
+import type { ComponentType, ReactElement } from "react";
 
 export function InfiniteScrolling<
   T extends { id: number },
@@ -17,6 +17,7 @@ export function InfiniteScrolling<
   name,
   Component,
   Fallback,
+  loader = <Loader />,
 }: {
   useQuery: (
     ...args: TArgs
@@ -25,6 +26,7 @@ export function InfiniteScrolling<
   name: string;
   Component: React.ComponentType<{ data: T }>;
   Fallback?: ComponentType;
+  loader?: ReactElement;
 }) {
   const {
     data,
@@ -36,7 +38,7 @@ export function InfiniteScrolling<
   } = useQuery(...(queryArgs ?? ([] as unknown as TArgs)));
 
   if (isLoading) {
-    return <Loader />;
+    return loader;
   }
 
   if (error) {

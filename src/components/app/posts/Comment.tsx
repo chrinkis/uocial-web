@@ -24,6 +24,7 @@ import { useSettings } from "@/providers/settings/hook";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
+import { CommentSkeleton } from "./CommentSkeleton";
 
 export function CommentHeader({ comment }: { comment: Commment }) {
   const { settings } = useSettings();
@@ -266,6 +267,7 @@ export const Comment = memo(function Comment({
                 queryArgs={[comment.post_id, comment.id]}
                 name="replies"
                 Component={renderReply}
+                loader={<CommentSkeleton />}
               />
             </Box>
           </motion.div>

@@ -6,6 +6,7 @@ import { Stack, Box, Text } from "@mantine/core";
 import { CommentCreate } from "./CommentCreate";
 import { useState, useCallback, useMemo } from "react";
 import { IconMessageCircleX } from "@tabler/icons-react";
+import { CommentSkeleton } from "./CommentSkeleton";
 
 interface CommentsProps {
   post: Post;
@@ -48,6 +49,7 @@ export function Comments({ post }: CommentsProps) {
           queryArgs={[post.id]}
           Component={CommentComponent}
           Fallback={EmptyCommentList}
+          loader={<CommentSkeleton />}
         />
       </Box>
 
