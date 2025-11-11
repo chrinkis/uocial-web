@@ -78,13 +78,20 @@ function PostMetaData({ post }: PostPropsType) {
   return (
     <Group justify="space-between" gap="xs" wrap="wrap">
       <Group gap={6}>
-        <Badge
-          size="md"
-          variant="gradient"
-          gradient={{ from: "grape", to: "violet", deg: 90 }}
-        >
-          #{post.id}
-        </Badge>
+        <Popover withArrow arrowSize={12}>
+          <Popover.Target>
+            <Badge
+              size="md"
+              variant="gradient"
+              gradient={{ from: "grape", to: "violet", deg: 90 }}
+            >
+              #{post.id}
+            </Badge>
+          </Popover.Target>
+          <Popover.Dropdown>
+            <Text maw={300}>Each post has a unique id.</Text>
+          </Popover.Dropdown>
+        </Popover>
 
         {post.location && (
           <Badge

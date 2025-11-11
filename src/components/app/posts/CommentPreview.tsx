@@ -1,6 +1,14 @@
 import { Timestamp } from "@/components/Timestamp";
 import type { Commment } from "@/models/app/post/Comment";
-import { Badge, Collapse, Group, Paper, Stack, Text } from "@mantine/core";
+import {
+  Badge,
+  Collapse,
+  Group,
+  Paper,
+  Popover,
+  Stack,
+  Text,
+} from "@mantine/core";
 import { useState } from "react";
 import { useReactToComment } from "@/queries/app/post/comment";
 import { notifications } from "@mantine/notifications";
@@ -49,13 +57,20 @@ export function CommentPreview({
         <Collapse in={expanded} transitionDuration={500}>
           <Group justify="space-between">
             <Group gap={3}>
-              <Badge
-                size="sm"
-                variant="gradient"
-                gradient={{ from: "grape", to: "violet", deg: 90 }}
-              >
-                !{comment.id}
-              </Badge>
+              <Popover withArrow arrowSize={12}>
+                <Popover.Target>
+                  <Badge
+                    size="sm"
+                    variant="gradient"
+                    gradient={{ from: "grape", to: "violet", deg: 90 }}
+                  >
+                    !{comment.id}
+                  </Badge>
+                </Popover.Target>
+                <Popover.Dropdown>
+                  <Text maw={300}>Each comment has a unique id.</Text>
+                </Popover.Dropdown>
+              </Popover>
 
               {label && (
                 <Badge

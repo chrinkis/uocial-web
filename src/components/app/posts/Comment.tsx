@@ -180,13 +180,21 @@ export function CommentFooter({
             </Text>
           </UnstyledButton>
         )}
-        <Badge
-          size="sm"
-          variant="gradient"
-          gradient={{ from: "grape", to: "violet", deg: 90 }}
-        >
-          !{comment.id}
-        </Badge>
+
+        <Popover withArrow arrowSize={12}>
+          <Popover.Target>
+            <Badge
+              size="sm"
+              variant="gradient"
+              gradient={{ from: "grape", to: "violet", deg: 90 }}
+            >
+              !{comment.id}
+            </Badge>
+          </Popover.Target>
+          <Popover.Dropdown>
+            <Text maw={300}>Each comment has a unique id.</Text>
+          </Popover.Dropdown>
+        </Popover>
       </Group>
     </Group>
   );
