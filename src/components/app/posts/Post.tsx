@@ -43,6 +43,7 @@ import { useSettings } from "@/providers/settings/hook";
 
 export interface PostPropsType {
   post: post.Post;
+  highlight?: boolean;
 }
 
 const BUTTON_PROPS = {
@@ -236,6 +237,20 @@ function PostReactions({ post }: PostPropsType) {
 }
 
 export function PostOptions(props: PostPropsType) {
+  async function handleShareClick() {
+    const url = `${window.location.origin}/app/posts?postId=${String(props.post.id)}`;
+
+    if (typeof navigator.share !== "function") {
+      await navigator.clipboard.writeText(url);
+      notifications.show({
+        title: "Success",
+        message: "Url copied to clipboard",
+      });
+    }
+
+    void navigator.share({ url });
+  }
+
   return (
     <Stack align="center">
       <Button {...BUTTON_PROPS}>
@@ -251,7 +266,7 @@ export function PostOptions(props: PostPropsType) {
           </Group>
         )}
       </Button>
-      <Button {...BUTTON_PROPS}>
+      <Button {...BUTTON_PROPS} onClick={() => void handleShareClick()}>
         <Group gap="0.1rem">
           <IconShare size="1.1rem" />
           Share
@@ -392,7 +407,12 @@ export const Post = memo((props: PostPropsType) => {
   }
 
   return (
-    <Paper withBorder w="90%" maw="50rem">
+    <Paper
+      withBorder
+      w="90%"
+      maw="50rem"
+      style={{ borderColor: props.highlight ? theme.primaryColor : undefined }}
+    >
       <Carousel
         withIndicators
         withControls={false}

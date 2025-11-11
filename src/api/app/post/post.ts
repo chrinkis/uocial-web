@@ -12,6 +12,12 @@ export async function fetchPosts(page: number | string) {
   return data;
 }
 
+export async function fetchPost(postId: number | string) {
+  const { data } = await axios.get<Post>(`/api/app/posts/${String(postId)}`);
+
+  return data;
+}
+
 export async function createPost(formData: Record<string, unknown>) {
   const {
     data: { post, message },

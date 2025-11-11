@@ -1,9 +1,15 @@
 import {
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { createPost, fetchPosts, reactToPost } from "@/api/app/post/post";
+import {
+  createPost,
+  fetchPost,
+  fetchPosts,
+  reactToPost,
+} from "@/api/app/post/post";
 import type { Post } from "@/models/app/post/Post";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import type { PaginatedResponse } from "@/utils/response";
@@ -20,6 +26,13 @@ export function usePosts() {
 
       return undefined;
     },
+  });
+}
+
+export function usePost(postId: number | string) {
+  return useQuery({
+    queryKey: ["posts", String(postId)],
+    queryFn: () => fetchPost(postId),
   });
 }
 
@@ -47,6 +60,9 @@ export function useCreatePost() {
           ),
         };
       });
+
+      // Update individual post cache
+      queryClient.setQueryData<Post>(["posts", String(post.id)], post);
     },
   });
 }
@@ -85,6 +101,19 @@ export function useReactToPost() {
           })),
         };
       });
+
+      // Update individual post cache
+      queryClient.setQueryData<Post>(
+        ["posts", String(variables.postId)],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            reactions,
+          };
+        },
+      );
     },
   });
 }

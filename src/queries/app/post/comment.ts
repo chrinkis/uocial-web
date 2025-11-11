@@ -136,6 +136,48 @@ export function useCreateComment() {
             });
           }
         });
+
+        // Update individual post cache - increment total comment count for replies too
+        queryClient.setQueryData<Post>(
+          ["posts", String(variables.postId)],
+          (oldData) => {
+            if (!oldData) return oldData;
+
+            return {
+              ...oldData,
+              comments: {
+                ...oldData.comments,
+                total: oldData.comments.total + 1,
+              },
+            };
+          },
+        );
+
+        // Update posts list cache - increment total comment count for replies too
+        queryClient.setQueryData<{
+          pages: PaginatedResponse<Post>[];
+          pageParams: unknown[];
+        }>(["posts"], (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              data: page.data.map((post) =>
+                post.id === variables.postId
+                  ? {
+                      ...post,
+                      comments: {
+                        ...post.comments,
+                        total: post.comments.total + 1,
+                      },
+                    }
+                  : post,
+              ),
+            })),
+          };
+        });
       } else {
         // Update comments query cache
         queryClient.setQueryData<{
@@ -186,6 +228,26 @@ export function useCreateComment() {
             })),
           };
         });
+
+        // Update individual post cache
+        queryClient.setQueryData<Post>(
+          ["posts", String(variables.postId)],
+          (oldData) => {
+            if (!oldData) return oldData;
+
+            return {
+              ...oldData,
+              comments: {
+                ...oldData.comments,
+                total: oldData.comments.total + 1,
+                most_recent: [comment, ...oldData.comments.most_recent].slice(
+                  0,
+                  oldData.comments.most_recent.length || 1,
+                ),
+              },
+            };
+          },
+        );
       }
     },
   });
@@ -298,6 +360,37 @@ export function useReactToComment() {
           })),
         };
       });
+
+      // Update comment reactions in individual post cache
+      queryClient.setQueryData<Post>(
+        ["posts", String(variables.postId)],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            comments: {
+              ...oldData.comments,
+              most_popular: oldData.comments.most_popular.map((comment) =>
+                comment.id === variables.commentId
+                  ? {
+                      ...comment,
+                      reactions,
+                    }
+                  : comment,
+              ),
+              most_recent: oldData.comments.most_recent.map((comment) =>
+                comment.id === variables.commentId
+                  ? {
+                      ...comment,
+                      reactions,
+                    }
+                  : comment,
+              ),
+            },
+          };
+        },
+      );
     },
   });
 }
