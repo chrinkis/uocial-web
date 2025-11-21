@@ -9,6 +9,7 @@ import {
   fetchPost,
   fetchPosts,
   reactToPost,
+  reportPost,
 } from "@/api/app/post/post";
 import type { Post } from "@/models/app/post/Post";
 import type { ReactionValue } from "@/models/app/post/Reaction";
@@ -111,6 +112,57 @@ export function useReactToPost() {
           return {
             ...oldData,
             reactions,
+          };
+        },
+      );
+    },
+  });
+}
+
+export function useReportPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      comment,
+      postId,
+    }: {
+      comment?: string;
+      postId: number | string;
+    }) => reportPost({ comment, postId }),
+    onSuccess: (_, variables) => {
+      queryClient.setQueryData<{
+        pages: PaginatedResponse<Post>[];
+        pageParams: unknown[];
+      }>(["posts"], (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.map((post) => {
+              if (post.id === Number(variables.postId)) {
+                return {
+                  ...post,
+                  reported_by_the_user: true,
+                };
+              }
+              return post;
+            }),
+          })),
+        };
+      });
+
+      // Update individual post cache
+      queryClient.setQueryData<Post>(
+        ["posts", String(variables.postId)],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            reported_by_the_user: true,
           };
         },
       );

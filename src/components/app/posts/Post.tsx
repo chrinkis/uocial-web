@@ -19,6 +19,7 @@ import {
   IconBookmark,
   IconBookmarkFilled,
   IconFlag,
+  IconFlagFilled,
   IconMessageCircle,
   IconMessageCirclePlus,
   IconMessageCircleX,
@@ -40,6 +41,8 @@ import { useModal } from "@/hooks/useModal";
 import { Timestamp } from "@/components/Timestamp";
 import { ReactButton } from "@/components/app/posts/ReactButton";
 import { useSettings } from "@/providers/settings/hook";
+import { PostReportForm } from "./PostReportForm";
+import { closeModal } from "@mantine/modals";
 
 export interface PostPropsType {
   post: post.Post;
@@ -237,6 +240,8 @@ function PostReactions({ post }: PostPropsType) {
 }
 
 export function PostOptions(props: PostPropsType) {
+  const openModal = useModal();
+
   async function handleShareClick() {
     const url = `${window.location.origin}/app/posts?postId=${String(props.post.id)}`;
 
@@ -249,6 +254,18 @@ export function PostOptions(props: PostPropsType) {
     }
 
     void navigator.share({ url });
+  }
+
+  function handleReportClick() {
+    const modalName = openModal({
+      title: `Reporting post #${String(props.post.id)}`,
+      children: <PostReportForm postId={props.post.id} onSuccess={onSuccess} />,
+      centered: true,
+    });
+
+    function onSuccess() {
+      closeModal(modalName);
+    }
   }
 
   return (
@@ -272,10 +289,23 @@ export function PostOptions(props: PostPropsType) {
           Share
         </Group>
       </Button>
-      <Button {...BUTTON_PROPS}>
+      <Button
+        {...BUTTON_PROPS}
+        onClick={handleReportClick}
+        disabled={props.post.reported_by_the_user}
+      >
         <Group gap="0.1rem">
-          <IconFlag size="1.1rem" />
-          Report
+          {props.post.reported_by_the_user ? (
+            <>
+              <IconFlagFilled size="1.1rem" />
+              Reported
+            </>
+          ) : (
+            <>
+              <IconFlag size="1.1rem" />
+              Report
+            </>
+          )}
         </Group>
       </Button>
     </Stack>

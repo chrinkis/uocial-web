@@ -20,4 +20,5 @@ export interface Post {
   author: {
     is_current_user: boolean;
   };
+  reported_by_the_user: boolean;
 }
