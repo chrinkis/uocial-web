@@ -15,7 +15,7 @@ import { notifications } from "@mantine/notifications";
 import axios from "axios";
 import { uniq } from "lodash";
 
-export function CreatePost() {
+export function PostCreate() {
   const form = useForm({
     mode: "controlled",
     initialValues: {

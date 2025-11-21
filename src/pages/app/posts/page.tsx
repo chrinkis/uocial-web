@@ -1,7 +1,7 @@
 import { Paper, Stack, Text, useMantineTheme } from "@mantine/core";
 import { Post } from "@/components/app/posts/Post";
 import { usePost, usePosts } from "@/queries/app/post/post";
-import { CreatePost } from "@/components/app/posts/CreatePost";
+import { PostCreate } from "@/components/app/posts/PostCreate";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { useSearchParams } from "react-router";
 import invariant from "tiny-invariant";
@@ -46,7 +46,7 @@ export default function Page() {
 
   return (
     <Stack align="safe center" w="100%">
-      <CreatePost />
+      <PostCreate />
 
       {sharedPostId && <SharedPost postId={sharedPostId} />}
 
