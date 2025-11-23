@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button, Loader, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
@@ -37,7 +38,18 @@ export function InfiniteScrolling<
     isLoading,
   } = useQuery(...(queryArgs ?? ([] as unknown as TArgs)));
 
-  if (isLoading) {
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    // Double requestAnimationFrame ensures loader is painted before heavy render
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setShouldRender(true);
+      });
+    });
+  }, []);
+
+  if (isLoading || !shouldRender) {
     return loader;
   }
 
