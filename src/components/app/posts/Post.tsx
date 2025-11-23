@@ -37,12 +37,11 @@ import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import { Comments } from "./Comments";
-import { useModal } from "@/hooks/useModal";
 import { Timestamp } from "@/components/Timestamp";
 import { ReactButton } from "@/components/app/posts/ReactButton";
 import { useSettings } from "@/providers/settings/hook";
 import { PostReportForm } from "./PostReportForm";
-import { closeModal } from "@mantine/modals";
+import { useModals } from "@/providers/modals/hook";
 
 export interface PostPropsType {
   post: post.Post;
@@ -240,7 +239,7 @@ function PostReactions({ post }: PostPropsType) {
 }
 
 export function PostOptions(props: PostPropsType) {
-  const openModal = useModal();
+  const modals = useModals();
 
   async function handleShareClick() {
     const url = `${window.location.origin}/app/posts?postId=${String(props.post.id)}`;
@@ -257,14 +256,14 @@ export function PostOptions(props: PostPropsType) {
   }
 
   function handleReportClick() {
-    const modalName = openModal({
+    const modalName = modals.open({
       title: `Reporting post #${String(props.post.id)}`,
       children: <PostReportForm postId={props.post.id} onSuccess={onSuccess} />,
       centered: true,
     });
 
     function onSuccess() {
-      closeModal(modalName);
+      modals.close(modalName);
     }
   }
 
@@ -313,7 +312,7 @@ export function PostOptions(props: PostPropsType) {
 }
 
 export function PostPeakedComments(props: PostPropsType) {
-  const openModal = useModal();
+  const modals = useModals();
 
   const selectedComments = useMemo(
     () =>
@@ -334,7 +333,7 @@ export function PostPeakedComments(props: PostPropsType) {
   );
 
   function handleOpenCommentsClick() {
-    openModal({
+    modals.open({
       fullScreen: true,
       title: `Comments of #${String(props.post.id)}`,
       children: <Comments post={props.post} />,

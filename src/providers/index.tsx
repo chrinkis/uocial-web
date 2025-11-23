@@ -9,8 +9,8 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import { LoadingOverlayProvider } from "./loading-overlay/Provider";
 import "@mantine/carousel/styles.css";
-import { ModalsProvider } from "@mantine/modals";
 import { SettingsProvider } from "./settings/Provider";
+import { ModalsProvider } from "./modals/Provider";
 
 const theme = createTheme({
   primaryColor: "violet",

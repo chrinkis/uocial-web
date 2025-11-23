@@ -25,6 +25,8 @@ import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import { CommentSkeleton } from "./CommentSkeleton";
+import { useModals } from "@/providers/modals/hook";
+import { CommentOptions } from "./CommentOptions";
 
 export function CommentHeader({ comment }: { comment: Commment }) {
   const { settings } = useSettings();
@@ -210,6 +212,29 @@ export const Comment = memo(function Comment({
 }) {
   const [showReplies, setShowReplies] = useState(false);
   const reactToComment = useReactToComment();
+  const modals = useModals();
+
+  function handleContextMenu(e: React.MouseEvent) {
+    e.preventDefault();
+
+    const id = modals.open({
+      withCloseButton: false,
+      centered: true,
+      transitionProps: {
+        transition: "fade",
+        duration: 160,
+        timingFunction: "linear",
+      },
+      children: (
+        <CommentOptions comment={comment} onClose={closeOptionsModal} />
+      ),
+      size: "auto",
+    });
+
+    function closeOptionsModal() {
+      modals.close(id);
+    }
+  }
 
   async function handleReaction(reaction?: ReactionValue) {
     try {
@@ -236,7 +261,7 @@ export const Comment = memo(function Comment({
 
   return (
     <Stack gap="xs" maw={512} w="98%">
-      <Paper withBorder p="xs">
+      <Paper withBorder p="xs" onContextMenu={handleContextMenu}>
         <Stack gap={5}>
           <CommentHeader comment={comment} />
           <CommentBody comment={comment} />

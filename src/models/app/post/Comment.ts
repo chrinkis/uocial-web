@@ -14,4 +14,5 @@ export interface Commment {
   replies: {
     count: number;
   };
+  reported_by_the_user: boolean;
 }

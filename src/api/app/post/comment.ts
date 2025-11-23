@@ -72,3 +72,25 @@ export async function reactToComment({
     reactions,
   };
 }
+
+export async function reportComment({
+  comment,
+  postId,
+  commentId,
+}: {
+  comment?: string;
+  postId: number | string;
+  commentId: number | string;
+}) {
+  const {
+    data: { message },
+  } = await axios.post<{
+    message: string;
+  }>(`/api/app/posts/${String(postId)}/comments/${String(commentId)}/report`, {
+    comment,
+  });
+
+  return {
+    message,
+  };
+}
