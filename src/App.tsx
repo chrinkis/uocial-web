@@ -13,6 +13,7 @@ import ForgotPasswordPage from "@/pages/auth/password/forgot/page";
 import VerifyEmailActionPage from "@/pages/auth/email/verify/page";
 import PostsPage from "@/pages/app/posts/page";
 import SettingsPage from "@/pages/settings/page";
+import SavedPostsPage from "@/pages/app/posts/saved/page";
 
 function getOpenRoutes() {
   return (
@@ -44,6 +45,7 @@ function getVerifiedRoutes() {
       <Route path="settings" element={<SettingsPage />} />
       <Route path="app" element={<AppPage />} />
       <Route path="app/posts" element={<PostsPage />} />
+      <Route path="app/posts/saved" element={<SavedPostsPage />} />
     </>
   );
 }

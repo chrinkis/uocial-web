@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import { NavLink, useNavigate } from "react-router";
 import { Avatar } from "@mantine/core";
-import { IconLogout, IconSettings } from "@tabler/icons-react";
+import { IconBookmark, IconLogout, IconSettings } from "@tabler/icons-react";
 import invariant from "tiny-invariant";
 
 function UserMenu() {
@@ -18,6 +18,10 @@ function UserMenu() {
   const navigate = useNavigate();
 
   invariant(user);
+
+  async function handleSavedPosts() {
+    await navigate("app/posts/saved");
+  }
 
   function handleLogout() {
     void logout();
@@ -36,6 +40,12 @@ function UserMenu() {
       </Menu.Target>
 
       <Menu.Dropdown>
+        <Menu.Item
+          leftSection={<IconBookmark size={14} />}
+          onClick={() => void handleSavedPosts()}
+        >
+          Saved Posts
+        </Menu.Item>
         <Menu.Item
           leftSection={<IconSettings size={14} />}
           onClick={() => void handleSettings()}

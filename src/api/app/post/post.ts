@@ -18,6 +18,14 @@ export async function fetchPost(postId: number | string) {
   return data;
 }
 
+export async function fetchSavedPosts(page: number | string) {
+  const { data } = await axios.get<PaginatedResponse<Post>>(
+    `/api/app/posts/saved?page=${String(page)}`,
+  );
+
+  return data;
+}
+
 export async function createPost(formData: Record<string, unknown>) {
   const {
     data: { post, message },
@@ -65,6 +73,30 @@ export async function reportPost({
   }>(`/api/app/posts/${String(postId)}/report`, {
     comment,
   });
+
+  return {
+    message,
+  };
+}
+
+export async function savePost({ postId }: { postId: number | string }) {
+  const {
+    data: { message },
+  } = await axios.post<{
+    message: string;
+  }>(`/api/app/posts/${String(postId)}/save`);
+
+  return {
+    message,
+  };
+}
+
+export async function unsavePost({ postId }: { postId: number | string }) {
+  const {
+    data: { message },
+  } = await axios.post<{
+    message: string;
+  }>(`/api/app/posts/${String(postId)}/unsave`);
 
   return {
     message,

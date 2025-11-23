@@ -32,7 +32,11 @@ import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { CommentPreview } from "./CommentPreview";
 import { uniqBy } from "lodash";
 import type { EmblaCarouselType } from "embla-carousel";
-import { useReactToPost } from "@/queries/app/post/post";
+import {
+  useReactToPost,
+  useSavePost,
+  useUnsavePost,
+} from "@/queries/app/post/post";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
@@ -240,6 +244,8 @@ function PostReactions({ post }: PostPropsType) {
 
 export function PostOptions(props: PostPropsType) {
   const modals = useModals();
+  const savePost = useSavePost();
+  const unsavePost = useUnsavePost();
 
   async function handleShareClick() {
     const url = `${window.location.origin}/app/posts?postId=${String(props.post.id)}`;
@@ -267,21 +273,65 @@ export function PostOptions(props: PostPropsType) {
     }
   }
 
+  async function handleSaveClick() {
+    try {
+      const { message } = await savePost.mutateAsync({ postId: props.post.id });
+      notifications.show({
+        title: "Success",
+        message,
+      });
+    } catch (error) {
+      notifications.show({
+        title: "Failed to save post",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+    }
+  }
+
+  async function handleUnsaveClick() {
+    try {
+      const { message } = await unsavePost.mutateAsync({
+        postId: props.post.id,
+      });
+      notifications.show({
+        title: "Success",
+        message,
+      });
+    } catch (error) {
+      notifications.show({
+        title: "Failed to unsave post",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+    }
+  }
+
   return (
     <Stack align="center">
-      <Button {...BUTTON_PROPS}>
-        {props.post.saved ? (
+      {props.post.saved ? (
+        <Button
+          {...BUTTON_PROPS}
+          loading={unsavePost.isPending}
+          onClick={() => void handleUnsaveClick()}
+        >
           <Group gap="0.1rem">
             <IconBookmarkFilled size="1.1rem" />
             Saved
           </Group>
-        ) : (
+        </Button>
+      ) : (
+        <Button
+          {...BUTTON_PROPS}
+          loading={savePost.isPending}
+          onClick={() => void handleSaveClick()}
+        >
           <Group gap="0.1rem">
             <IconBookmark size="1.1rem" />
             Save
           </Group>
-        )}
-      </Button>
+        </Button>
+      )}
       <Button {...BUTTON_PROPS} onClick={() => void handleShareClick()}>
         <Group gap="0.1rem">
           <IconShare size="1.1rem" />

@@ -179,6 +179,32 @@ export function useCreateComment() {
             })),
           };
         });
+
+        // Update saved posts cache - increment total comment count for replies too
+        queryClient.setQueryData<{
+          pages: PaginatedResponse<Post>[];
+          pageParams: unknown[];
+        }>(["posts", "saved"], (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              data: page.data.map((post) =>
+                post.id === variables.postId
+                  ? {
+                      ...post,
+                      comments: {
+                        ...post.comments,
+                        total: post.comments.total + 1,
+                      },
+                    }
+                  : post,
+              ),
+            })),
+          };
+        });
       } else {
         // Update comments query cache
         queryClient.setQueryData<{
@@ -205,6 +231,36 @@ export function useCreateComment() {
           pages: PaginatedResponse<Post>[];
           pageParams: unknown[];
         }>(["posts"], (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              data: page.data.map((post) =>
+                post.id === variables.postId
+                  ? {
+                      ...post,
+                      comments: {
+                        ...post.comments,
+                        total: post.comments.total + 1,
+                        most_recent: [
+                          comment,
+                          ...post.comments.most_recent,
+                        ].slice(0, post.comments.most_recent.length || 1),
+                      },
+                    }
+                  : post,
+              ),
+            })),
+          };
+        });
+
+        // Update post's comment count and most_recent in saved posts cache
+        queryClient.setQueryData<{
+          pages: PaginatedResponse<Post>[];
+          pageParams: unknown[];
+        }>(["posts", "saved"], (oldData) => {
           if (!oldData) return oldData;
 
           return {
@@ -362,6 +418,48 @@ export function useReactToComment() {
         };
       });
 
+      // Update comment reactions in saved posts cache
+      queryClient.setQueryData<{
+        pages: PaginatedResponse<Post>[];
+        pageParams: unknown[];
+      }>(["posts", "saved"], (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.map((post) => {
+              if (post.id === variables.postId) {
+                return {
+                  ...post,
+                  comments: {
+                    ...post.comments,
+                    most_popular: post.comments.most_popular.map((comment) =>
+                      comment.id === variables.commentId
+                        ? {
+                            ...comment,
+                            reactions,
+                          }
+                        : comment,
+                    ),
+                    most_recent: post.comments.most_recent.map((comment) =>
+                      comment.id === variables.commentId
+                        ? {
+                            ...comment,
+                            reactions,
+                          }
+                        : comment,
+                    ),
+                  },
+                };
+              }
+              return post;
+            }),
+          })),
+        };
+      });
+
       // Update comment reactions in individual post cache
       queryClient.setQueryData<Post>(
         ["posts", String(variables.postId)],
@@ -467,6 +565,48 @@ export function useReportComment() {
         pages: PaginatedResponse<Post>[];
         pageParams: unknown[];
       }>(["posts"], (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.map((post) => {
+              if (post.id === Number(variables.postId)) {
+                return {
+                  ...post,
+                  comments: {
+                    ...post.comments,
+                    most_popular: post.comments.most_popular.map((comment) =>
+                      comment.id === Number(variables.commentId)
+                        ? {
+                            ...comment,
+                            reported_by_the_user: true,
+                          }
+                        : comment,
+                    ),
+                    most_recent: post.comments.most_recent.map((comment) =>
+                      comment.id === Number(variables.commentId)
+                        ? {
+                            ...comment,
+                            reported_by_the_user: true,
+                          }
+                        : comment,
+                    ),
+                  },
+                };
+              }
+              return post;
+            }),
+          })),
+        };
+      });
+
+      // Update comment in saved posts cache
+      queryClient.setQueryData<{
+        pages: PaginatedResponse<Post>[];
+        pageParams: unknown[];
+      }>(["posts", "saved"], (oldData) => {
         if (!oldData) return oldData;
 
         return {
