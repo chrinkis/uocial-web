@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="320mm"
+   height="320mm"
+   viewBox="0 0 320 319.99999"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="logo-uocial.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="true"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.68977494"
+     inkscape:cx="438.54884"
+     inkscape:cy="598.02115"
+     inkscape:window-width="1920"
+     inkscape:window-height="1131"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g5"
+     showborder="false"
+     borderlayer="true" />
+  <defs
+     id="defs1">
+    <rect
+       x="83.102257"
+       y="176.43248"
+       width="149.58405"
+       height="230.12932"
+       id="rect3" />
+    <rect
+       x="177.71098"
+       y="392.49835"
+       width="194.89891"
+       height="235.21831"
+       id="rect1" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(8.0525623,-12.855337)">
+    <g
+       id="g2"
+       transform="matrix(1.4014535,0,0,1.3487953,-4.6575173,-102.07778)">
+      <g
+         id="g4"
+         transform="matrix(1.0222149,0,0,1.0301433,-6.2171044,-3.4103896)">
+        <g
+           id="g5"
+           transform="matrix(0.81013002,0,0,0.90297583,7.2298449,26.90431)">
+          <g
+             id="g1"
+             transform="matrix(1.3202325,0,0,1.4313929,-47.003266,-55.822573)">
+            <text
+               xml:space="preserve"
+               transform="matrix(-0.09213464,-1.6082172,1.3825962,-0.10048097,-525.59452,590.37671)"
+               id="text1"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:192px;font-family:'Droid Sans';-inkscape-font-specification:'Droid Sans, @opsz=32';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'opsz' 32;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect1);display:inline;fill:#7950f2;fill-opacity:1;stroke-width:25.9465"><tspan
+                 x="177.71094"
+                 y="562.61947"
+                 id="tspan2">S</tspan></text>
+            <text
+               xml:space="preserve"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:38.5588px;font-family:'Droid Sans';-inkscape-font-specification:'Droid Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#7950f2;fill-opacity:1;stroke-width:5.21075"
+               x="147.69864"
+               y="212.52895"
+               id="text2"
+               transform="scale(0.96521939,1.0360339)"><tspan
+                 sodipodi:role="line"
+                 id="tspan1"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:38.5588px;font-family:'Droid Sans';-inkscape-font-specification:'Droid Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#7950f2;fill-opacity:1;stroke-width:5.21075"
+                 x="147.69864"
+                 y="212.52895">ocial</tspan></text>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
