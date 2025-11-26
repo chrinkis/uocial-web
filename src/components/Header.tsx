@@ -7,15 +7,24 @@ import {
   Button,
   UnstyledButton,
   Menu,
+  Switch,
 } from "@mantine/core";
 import { NavLink, useNavigate } from "react-router";
 import { Avatar } from "@mantine/core";
-import { IconBookmark, IconLogout, IconSettings } from "@tabler/icons-react";
+import {
+  IconBookmark,
+  IconDeviceDesktopAnalytics,
+  IconLogout,
+  IconSettings,
+} from "@tabler/icons-react";
 import invariant from "tiny-invariant";
+import { useSettings } from "@/providers/settings/hook";
+import { isModerator } from "@/utils/user";
 
 function UserMenu() {
   const { user, logout } = useUser();
   const navigate = useNavigate();
+  const { settings, setSettings } = useSettings();
 
   invariant(user);
 
@@ -31,6 +40,17 @@ function UserMenu() {
     await navigate("/settings");
   }
 
+  function handleModerationToggle() {
+    setSettings((settings) => ({
+      ...settings,
+      moderatorMode: !settings.moderatorMode,
+    }));
+  }
+
+  async function handleDashboard() {
+    await navigate("/app/moderation/dashboard");
+  }
+
   return (
     <Menu>
       <Menu.Target>
@@ -40,18 +60,48 @@ function UserMenu() {
       </Menu.Target>
 
       <Menu.Dropdown>
+        <Menu.Label>Application</Menu.Label>
+
         <Menu.Item
           leftSection={<IconBookmark size={14} />}
           onClick={() => void handleSavedPosts()}
         >
           Saved Posts
         </Menu.Item>
+
         <Menu.Item
           leftSection={<IconSettings size={14} />}
           onClick={() => void handleSettings()}
         >
           Settings
         </Menu.Item>
+
+        {isModerator(user) && (
+          <>
+            <Menu.Divider />
+
+            <Menu.Label>Moderation</Menu.Label>
+
+            <Menu.Item onClick={handleModerationToggle}>
+              <Switch
+                size="xs"
+                checked={settings.moderatorMode}
+                label="Enabled"
+                onClick={handleModerationToggle}
+              />
+            </Menu.Item>
+
+            <Menu.Item
+              leftSection={<IconDeviceDesktopAnalytics size={14} />}
+              onClick={() => void handleDashboard()}
+            >
+              Dashboard
+            </Menu.Item>
+          </>
+        )}
+
+        <Menu.Divider />
+
         <Menu.Item
           leftSection={<IconLogout size={14} />}
           onClick={handleLogout}

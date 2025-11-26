@@ -1,11 +1,11 @@
 import { Button, Group, Paper, Stack, Text, Title } from "@mantine/core";
-import { IconLock, IconMail } from "@tabler/icons-react";
+import { IconBadgeOff, IconLock, IconMail } from "@tabler/icons-react";
 import { useLocation, useNavigate } from "react-router";
 import invariant from "tiny-invariant";
 import { SendVerificationEmailButton } from "./auth/SendVerificationEmailButton";
 
 export interface LockedPropsType {
-  reason: "unauthorized" | "unverified";
+  reason: "unauthorized" | "unverified" | "moderatorsOnly";
 }
 
 function LockedAnauthorized() {
@@ -67,12 +67,30 @@ function LockedUnverified() {
   );
 }
 
+function LockedModeratorsOnly() {
+  return (
+    <Paper w={300} p="xl" withBorder>
+      <Stack>
+        <Title order={2} ta="center">
+          You can't access this page.
+        </Title>
+        <Group justify="center">
+          <IconBadgeOff size={128} />
+        </Group>
+        <Text ta="justify">This page is only available for moderators.</Text>
+      </Stack>
+    </Paper>
+  );
+}
+
 export function Locked({ reason }: LockedPropsType) {
   switch (reason) {
     case "unauthorized":
       return <LockedAnauthorized />;
     case "unverified":
       return <LockedUnverified />;
+    case "moderatorsOnly":
+      return <LockedModeratorsOnly />;
     default:
       invariant(false);
   }

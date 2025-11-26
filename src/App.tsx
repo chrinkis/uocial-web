@@ -14,6 +14,7 @@ import VerifyEmailActionPage from "@/pages/auth/email/verify/page";
 import PostsPage from "@/pages/app/posts/page";
 import SettingsPage from "@/pages/settings/page";
 import SavedPostsPage from "@/pages/app/posts/saved/page";
+import { ModeratorGuard } from "./guards/ModeratorGuard";
 
 function getOpenRoutes() {
   return (
@@ -50,6 +51,10 @@ function getVerifiedRoutes() {
   );
 }
 
+function getModeratorRoutes() {
+  return <></>;
+}
+
 function App() {
   return (
     <Routes>
@@ -61,7 +66,11 @@ function App() {
         <Route element={<LoggedInGuard />}>
           {getLoggedInRoutes()}
 
-          <Route element={<VerifiedGuard />}>{getVerifiedRoutes()}</Route>
+          <Route element={<VerifiedGuard />}>
+            {getVerifiedRoutes()}
+
+            <Route element={<ModeratorGuard />}>{getModeratorRoutes()}</Route>
+          </Route>
         </Route>
       </Route>
     </Routes>
