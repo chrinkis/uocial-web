@@ -1,3 +1,4 @@
+import { resetPassword } from "@/api/user/auth";
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
 import { validatePassword } from "@/utils/password";
 import { type ApiResponse } from "@/utils/response";
@@ -40,11 +41,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormPropsType) {
     try {
       const formData = { ...values, token };
 
-      const response = await axios.post<ApiResponse>(
-        "/api/auth/password/reset",
-        formData,
-      );
-
+      const response = await resetPassword(formData);
       notifications.show({
         title: "Success",
         message: response.data.message,

@@ -1,5 +1,3 @@
-import { type User } from "@/models/User";
-import axios from "axios";
 import { useCallback, useMemo, type ReactNode } from "react";
 import { useAsync } from "react-use";
 import { UserContext } from "./Context";
@@ -7,13 +5,12 @@ import { useLoadingOverlay } from "@/providers/loading-overlay/hook";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import { Loader } from "@mantine/core";
+import { fetchUser, logout as logoutAction } from "@/api/user/auth";
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const { show: showLoading, hide: hideLoading } = useLoadingOverlay();
 
-  const { loading, error, value } = useAsync(
-    async () => await axios.get<User>("/api/user"),
-  );
+  const { loading, error, value } = useAsync(fetchUser);
 
   const user = useMemo(
     () => (error ? null : (value?.data ?? null)),
@@ -24,7 +21,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     showLoading();
 
     try {
-      await axios.post("/api/auth/logout");
+      await logoutAction();
       window.location.href = "/";
     } catch (error) {
       hideLoading();

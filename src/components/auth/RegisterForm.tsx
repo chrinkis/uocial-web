@@ -1,3 +1,4 @@
+import { register } from "@/api/user/auth";
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
 import { validatePassword } from "@/utils/password";
 import {
@@ -36,7 +37,7 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
 
   const handleSubmit = form.onSubmit(async (values) => {
     try {
-      await axios.post("/api/auth/register", values);
+      await register(values);
       window.location.href = redirect;
     } catch (error) {
       notifications.show({

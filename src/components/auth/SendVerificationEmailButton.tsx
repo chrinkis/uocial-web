@@ -1,9 +1,8 @@
+import { resendVerificationEmail } from "@/api/user/auth";
 import { useUser } from "@/providers/user/hook";
 import { getErrorMessage } from "@/utils/error";
-import { type ApiResponse } from "@/utils/response";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import axios from "axios";
 import { useState } from "react";
 
 export function SendVerificationEmailButton() {
@@ -14,10 +13,7 @@ export function SendVerificationEmailButton() {
     setSending(true);
 
     try {
-      const response = await axios.post<ApiResponse>(
-        "/api/auth/email/resend-verification",
-      );
-
+      const response = await resendVerificationEmail();
       notifications.show({
         title: "Email Sent!",
         message: response.data.message,

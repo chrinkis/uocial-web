@@ -1,3 +1,4 @@
+import { login } from "@/api/user/auth";
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
 import {
   Button,
@@ -26,7 +27,7 @@ export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
 
   const handleSubmit = form.onSubmit(async (values) => {
     try {
-      await axios.post("/api/auth/login", values);
+      await login(values);
       window.location.href = redirect;
     } catch (error) {
       notifications.show({

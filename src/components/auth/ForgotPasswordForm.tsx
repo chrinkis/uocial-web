@@ -1,5 +1,5 @@
+import { forgotPassword } from "@/api/user/auth";
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
-import type { ApiResponse } from "@/utils/response";
 import {
   Button,
   Group,
@@ -46,11 +46,7 @@ export function ForgotPasswordForm() {
 
   const handleSubmit = form.onSubmit(async (values) => {
     try {
-      const response = await axios.post<ApiResponse>(
-        "/api/auth/password/forgot",
-        values,
-      );
-
+      const response = await forgotPassword(values);
       setSuccessMessage(response.data.message);
     } catch (error) {
       notifications.show({
