@@ -110,7 +110,9 @@ export function CommentBody({ comment }: { comment: Commment }) {
         },
       }}
     >
-      <Text ta="justify">{comment.comment}</Text>
+      <Text ta="justify" style={{ whiteSpace: "pre-line" }}>
+        {comment.comment}
+      </Text>
     </Spoiler>
   );
 }

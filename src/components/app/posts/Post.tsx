@@ -167,7 +167,9 @@ function PostBody({ post }: PostPropsType) {
         },
       }}
     >
-      <Text ta="justify">{post.body}</Text>
+      <Text ta="justify" style={{ whiteSpace: "pre-line" }}>
+        {post.body}
+      </Text>
     </Spoiler>
   );
 }

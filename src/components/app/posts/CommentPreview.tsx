@@ -90,7 +90,11 @@ export function CommentPreview({
         <Group wrap="nowrap" align="center">
           <Text
             lineClamp={expanded ? undefined : 2}
-            style={{ cursor: "pointer", flex: 1 }}
+            style={{
+              cursor: "pointer",
+              flex: 1,
+              whiteSpace: "pre-line",
+            }}
             onClick={handleClick}
           >
             {comment.comment}
