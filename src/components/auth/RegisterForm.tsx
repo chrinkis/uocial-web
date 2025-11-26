@@ -85,6 +85,7 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
 
           <PasswordInput
             label="Password"
+            description="Use a unique, new  password"
             key={form.key("password")}
             minLength={12}
             {...form.getInputProps("password")}
