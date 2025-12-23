@@ -46,6 +46,9 @@ import { ReactButton } from "@/components/app/posts/ReactButton";
 import { useSettings } from "@/providers/settings/hook";
 import { PostReportForm } from "./PostReportForm";
 import { useModals } from "@/providers/modals/hook";
+import { isModerator } from "@/utils/user";
+import { useUser } from "@/providers/user/hook";
+import invariant from "tiny-invariant";
 
 export interface PostPropsType {
   post: post.Post;
@@ -444,7 +447,52 @@ export function PostPeakedComments(props: PostPropsType) {
   );
 }
 
+function PostModerationReportsButton({ post }: PostPropsType) {
+  return (
+    <Button bg="orange" fullWidth>
+      Reports ({post.moderation?.reports.total})
+    </Button>
+  );
+}
+
+function PostModerationUnhideButton({ post }: PostPropsType) {
+  return (
+    <Button bg="green" flex={1} disabled={!post.moderation?.is_hidden}>
+      Unhide
+    </Button>
+  );
+}
+
+function PostModerationHideButton({ post }: PostPropsType) {
+  return (
+    <Button
+      bg="red"
+      flex={1}
+      disabled={post.moderation?.is_hidden && !post.moderation.is_auto_hidden}
+    >
+      Hide
+    </Button>
+  );
+}
+
+function PostModeration(props: PostPropsType) {
+  return (
+    <Stack gap="xs">
+      {props.post.moderation?.reports.total ? (
+        <PostModerationReportsButton {...props} />
+      ) : undefined}
+
+      <Group gap="xs">
+        <PostModerationUnhideButton {...props} />
+        <PostModerationHideButton {...props} />
+      </Group>
+    </Stack>
+  );
+}
+
 export const Post = memo((props: PostPropsType) => {
+  const { user } = useUser();
+  const { settings } = useSettings();
   const theme = useMantineTheme();
   const [firstSlideRef, { height: firstSlideHeight }] =
     useMeasure<HTMLDivElement>();
@@ -455,6 +503,8 @@ export const Post = memo((props: PostPropsType) => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [slideForHeight, setSlideForHeight] = useState(0);
   const emblaRef = useRef<EmblaCarouselType | null>(null);
+
+  invariant(user);
 
   const setEmblaApi = useCallback(
     (embla: EmblaCarouselType) => {
@@ -498,28 +548,29 @@ export const Post = memo((props: PostPropsType) => {
       maw="50rem"
       style={{ borderColor: props.highlight ? theme.primaryColor : undefined }}
     >
-      <Carousel
-        withIndicators
-        withControls={false}
-        onSlideChange={handleSlideChange}
-        getEmblaApi={setEmblaApi}
-        ref={carouselRef}
-        emblaOptions={{ inViewThreshold: 0.055 }}
-        styles={{
-          indicator: { backgroundColor: theme.colors[theme.primaryColor][5] },
-          root: { transition: "height 0.3s ease" },
-        }}
-        h={
-          (slideForHeight === 0
-            ? firstSlideHeight
-            : slideForHeight === 1
-              ? secondSlideHeight
-              : thirdSlideHeight) || "auto"
-        }
-      >
-        <Carousel.Slide>
-          <div ref={firstSlideRef}>
-            <Box p="md">
+      <Stack p="md">
+        <Carousel
+          withIndicators
+          withControls={false}
+          onSlideChange={handleSlideChange}
+          getEmblaApi={setEmblaApi}
+          ref={carouselRef}
+          emblaOptions={{ inViewThreshold: 0.055 }}
+          styles={{
+            indicator: { backgroundColor: theme.colors[theme.primaryColor][5] },
+            indicators: { bottom: "-0.3rem" },
+            root: { transition: "height 0.3s ease" },
+          }}
+          h={
+            (slideForHeight === 0
+              ? firstSlideHeight
+              : slideForHeight === 1
+                ? secondSlideHeight
+                : thirdSlideHeight) || "auto"
+          }
+        >
+          <Carousel.Slide>
+            <div ref={firstSlideRef}>
               <Stack>
                 <PostTitle {...props} />
                 <PostMetaData {...props} />
@@ -527,26 +578,30 @@ export const Post = memo((props: PostPropsType) => {
                 <PostHashtags {...props} />
                 <PostReactions {...props} />
               </Stack>
-            </Box>
-          </div>
-        </Carousel.Slide>
+            </div>
+          </Carousel.Slide>
 
-        <Carousel.Slide>
-          <div ref={secondSlideRef}>
-            <Box p="xl">
-              <PostPeakedComments {...props} />
-            </Box>
-          </div>
-        </Carousel.Slide>
+          <Carousel.Slide>
+            <div ref={secondSlideRef}>
+              <Box p="xl">
+                <PostPeakedComments {...props} />
+              </Box>
+            </div>
+          </Carousel.Slide>
 
-        <Carousel.Slide>
-          <div ref={thirdSlideRef}>
-            <Box p="xl">
-              <PostOptions {...props} />
-            </Box>
-          </div>
-        </Carousel.Slide>
-      </Carousel>
+          <Carousel.Slide>
+            <div ref={thirdSlideRef}>
+              <Box p="xl">
+                <PostOptions {...props} />
+              </Box>
+            </div>
+          </Carousel.Slide>
+        </Carousel>
+
+        {isModerator(user) && settings.moderatorMode && (
+          <PostModeration {...props} />
+        )}
+      </Stack>
     </Paper>
   );
 });

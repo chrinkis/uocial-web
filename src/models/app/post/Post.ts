@@ -21,4 +21,11 @@ export interface Post {
     is_current_user: boolean;
   };
   reported_by_the_user: boolean;
+  moderation?: {
+    is_hidden: boolean;
+    is_auto_hidden: boolean;
+    reports: {
+      total: number;
+    };
+  };
 }
