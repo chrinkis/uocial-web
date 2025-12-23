@@ -23,10 +23,10 @@ import {
   addPostToSavedCache,
 } from "./cache-utils";
 
-export function usePosts() {
+export function usePosts(params?: { hashtag?: string }) {
   return useInfiniteQuery({
-    queryKey: ["posts"],
-    queryFn: ({ pageParam }) => fetchPosts(pageParam),
+    queryKey: POST_QUERY_KEYS.list(params),
+    queryFn: ({ pageParam }) => fetchPosts(pageParam, params),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
@@ -66,10 +66,26 @@ export function useCreatePost() {
   return useMutation({
     mutationFn: (formData: Record<string, unknown>) => createPost(formData),
     onSuccess: ({ post }) => {
+      // Add to the base (unfiltered) list
       queryClient.setQueryData<InfiniteQueryData<Post>>(
-        POST_QUERY_KEYS.all,
+        POST_QUERY_KEYS.list(),
         (oldData) => addToInfiniteQuery(oldData, post),
       );
+
+      // Invalidate all hashtag-filtered lists since we don't know which ones the new post belongs to
+      queryClient.invalidateQueries({
+        queryKey: ["posts"],
+        predicate: (query) => {
+          // Only invalidate post lists with filters (length > 1), not the base list or saved/detail
+          return (
+            query.queryKey[0] === "posts" &&
+            query.queryKey.length === 2 &&
+            typeof query.queryKey[1] === "object" &&
+            query.queryKey[1] !== null &&
+            !Array.isArray(query.queryKey[1])
+          );
+        },
+      });
 
       queryClient.setQueryData<Post>(POST_QUERY_KEYS.detail(post.id), post);
     },
@@ -129,7 +145,7 @@ export function useSavePost() {
 
       if (!savedPost) {
         const postsData = queryClient.getQueryData<InfiniteQueryData<Post>>(
-          POST_QUERY_KEYS.all,
+          POST_QUERY_KEYS.list(),
         );
         if (postsData) {
           for (const page of postsData.pages) {

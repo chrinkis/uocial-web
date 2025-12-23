@@ -190,7 +190,11 @@ function PostHashtags({ post }: PostPropsType) {
     >
       <Group gap="0.5rem" style={{ rowGap: 0 }}>
         {post.hashtags.map((h) => (
-          <Anchor component={NavLink} key={h.value} to="">
+          <Anchor
+            component={NavLink}
+            key={h.value}
+            to={`/app/posts/hashtags/${h.value}`}
+          >
             #{h.value}
           </Anchor>
         ))}

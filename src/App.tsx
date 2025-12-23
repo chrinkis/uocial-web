@@ -15,6 +15,7 @@ import PostsPage from "@/pages/app/posts/page";
 import SettingsPage from "@/pages/settings/page";
 import SavedPostsPage from "@/pages/app/posts/saved/page";
 import { ModeratorGuard } from "./guards/ModeratorGuard";
+import HashtagsPage from "@/pages/app/posts/hashtags/page";
 
 function getOpenRoutes() {
   return (
@@ -47,6 +48,7 @@ function getVerifiedRoutes() {
       <Route path="app" element={<AppPage />} />
       <Route path="app/posts" element={<PostsPage />} />
       <Route path="app/posts/saved" element={<SavedPostsPage />} />
+      <Route path="app/posts/hashtags/:hashtag" element={<HashtagsPage />} />
     </>
   );
 }

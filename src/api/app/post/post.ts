@@ -4,9 +4,18 @@ import type { Post } from "@/models/app/post/Post";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import type { PostReactions } from "@/models/app/post/PostReactions";
 
-export async function fetchPosts(page: number | string) {
+export async function fetchPosts(
+  page: number | string,
+  params: { hashtag?: string } = {},
+) {
+  const queryParams = new URLSearchParams();
+  queryParams.append("page", String(page));
+  for (const [key, value] of Object.entries(params)) {
+    queryParams.append(key, value);
+  }
+
   const { data } = await axios.get<PaginatedResponse<Post>>(
-    `/api/app/posts?page=${String(page)}`,
+    `/api/app/posts?${queryParams.toString()}`,
   );
 
   return data;

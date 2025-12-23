@@ -9,7 +9,8 @@ import {
 } from "@/utils/cache";
 
 export const POST_QUERY_KEYS = {
-  all: ["posts"] as const,
+  list: (params?: { hashtag?: string }) =>
+    params?.hashtag ? (["posts", params] as const) : (["posts"] as const),
   saved: ["posts", "saved"] as const,
   detail: (id: number) => ["posts", String(id)] as const,
   comments: (postId: number) => ["comments", postId] as const,
@@ -22,16 +23,31 @@ export function updatePostInAllCaches(
   postId: number,
   updates: Partial<Post>,
 ): void {
-  queryClient.setQueryData<InfiniteQueryData<Post>>(
-    POST_QUERY_KEYS.all,
-    (oldData) => updateInfiniteQueryItem(oldData, postId, updates),
-  );
+  // Update all post list caches (with and without filters)
+  const queries = queryClient.getQueryCache().getAll();
+  queries.forEach((query) => {
+    const [key] = query.queryKey;
+    if (key === "posts" && Array.isArray(query.queryKey)) {
+      // Skip saved posts and detail views
+      if (
+        query.queryKey.length === 1 ||
+        (query.queryKey.length === 2 && typeof query.queryKey[1] === "object")
+      ) {
+        queryClient.setQueryData<InfiniteQueryData<Post>>(
+          query.queryKey,
+          (oldData) => updateInfiniteQueryItem(oldData, postId, updates),
+        );
+      }
+    }
+  });
 
+  // Update saved posts cache
   queryClient.setQueryData<InfiniteQueryData<Post>>(
     POST_QUERY_KEYS.saved,
     (oldData) => updateInfiniteQueryItem(oldData, postId, updates),
   );
 
+  // Update detail cache
   queryClient.setQueryData<Post>(POST_QUERY_KEYS.detail(postId), (oldData) => {
     if (!oldData) return oldData;
     return { ...oldData, ...updates };
@@ -60,39 +76,37 @@ export function updateCommentInAllCaches(
     }
   });
 
-  queryClient.setQueryData<InfiniteQueryData<Post>>(
-    POST_QUERY_KEYS.all,
-    (oldData) =>
-      updateInfiniteQueryItemWith(oldData, postId, (post) => ({
-        ...post,
-        comments: {
-          ...post.comments,
-          most_popular: post.comments.most_popular.map((comment) =>
-            comment.id === commentId ? { ...comment, ...updates } : comment,
-          ),
-          most_recent: post.comments.most_recent.map((comment) =>
-            comment.id === commentId ? { ...comment, ...updates } : comment,
-          ),
-        },
-      })),
-  );
-
-  queryClient.setQueryData<InfiniteQueryData<Post>>(
-    POST_QUERY_KEYS.saved,
-    (oldData) =>
-      updateInfiniteQueryItemWith(oldData, postId, (post) => ({
-        ...post,
-        comments: {
-          ...post.comments,
-          most_popular: post.comments.most_popular.map((comment) =>
-            comment.id === commentId ? { ...comment, ...updates } : comment,
-          ),
-          most_recent: post.comments.most_recent.map((comment) =>
-            comment.id === commentId ? { ...comment, ...updates } : comment,
-          ),
-        },
-      })),
-  );
+  // Update all post list caches with comment changes
+  const postQueries = queryClient.getQueryCache().getAll();
+  postQueries.forEach((query) => {
+    const [key] = query.queryKey;
+    if (key === "posts" && Array.isArray(query.queryKey)) {
+      // Match post lists (with or without filters) and saved posts
+      if (
+        query.queryKey.length === 1 ||
+        (query.queryKey.length === 2 &&
+          (typeof query.queryKey[1] === "object" ||
+            query.queryKey[1] === "saved"))
+      ) {
+        queryClient.setQueryData<InfiniteQueryData<Post>>(
+          query.queryKey,
+          (oldData) =>
+            updateInfiniteQueryItemWith(oldData, postId, (post) => ({
+              ...post,
+              comments: {
+                ...post.comments,
+                most_popular: post.comments.most_popular.map((comment) =>
+                  comment.id === commentId ? { ...comment, ...updates } : comment,
+                ),
+                most_recent: post.comments.most_recent.map((comment) =>
+                  comment.id === commentId ? { ...comment, ...updates } : comment,
+                ),
+              },
+            })),
+        );
+      }
+    }
+  });
 
   queryClient.setQueryData<Post>(POST_QUERY_KEYS.detail(postId), (oldData) => {
     if (!oldData) return oldData;
@@ -135,15 +149,25 @@ export function incrementPostCommentCount(
     };
   };
 
-  queryClient.setQueryData<InfiniteQueryData<Post>>(
-    POST_QUERY_KEYS.all,
-    (oldData) => updateInfiniteQueryItemWith(oldData, postId, updater),
-  );
-
-  queryClient.setQueryData<InfiniteQueryData<Post>>(
-    POST_QUERY_KEYS.saved,
-    (oldData) => updateInfiniteQueryItemWith(oldData, postId, updater),
-  );
+  // Update all post list caches
+  const queries = queryClient.getQueryCache().getAll();
+  queries.forEach((query) => {
+    const [key] = query.queryKey;
+    if (key === "posts" && Array.isArray(query.queryKey)) {
+      // Match post lists (with or without filters) and saved posts
+      if (
+        query.queryKey.length === 1 ||
+        (query.queryKey.length === 2 &&
+          (typeof query.queryKey[1] === "object" ||
+            query.queryKey[1] === "saved"))
+      ) {
+        queryClient.setQueryData<InfiniteQueryData<Post>>(
+          query.queryKey,
+          (oldData) => updateInfiniteQueryItemWith(oldData, postId, updater),
+        );
+      }
+    }
+  });
 
   queryClient.setQueryData<Post>(POST_QUERY_KEYS.detail(postId), (oldData) => {
     if (!oldData) return oldData;
