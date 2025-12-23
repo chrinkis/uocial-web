@@ -11,9 +11,14 @@ import {
   reportComment,
 } from "@/api/app/post/comment";
 import type { Commment } from "@/models/app/post/Comment";
-import type { PaginatedResponse } from "@/utils/response";
-import type { Post } from "@/models/app/post/Post";
 import type { ReactionValue } from "@/models/app/post/Reaction";
+import { addToInfiniteQuery, type InfiniteQueryData } from "@/utils/cache";
+import {
+  POST_QUERY_KEYS,
+  updateCommentInAllCaches,
+  incrementPostCommentCount,
+  incrementCommentReplyCount,
+} from "./cache-utils";
 
 export function useComments(postId: number) {
   return useInfiniteQuery({
@@ -59,252 +64,31 @@ export function useCreateComment() {
       reply_to?: number | string;
     }) => createComment({ postId, comment, reply_to }),
     onSuccess: ({ comment }, variables) => {
+      const postId =
+        typeof variables.postId === "number"
+          ? variables.postId
+          : Number(variables.postId);
+
       if (variables.reply_to) {
-        // Update replies query cache - add new reply
-        queryClient.setQueryData<{
-          pages: PaginatedResponse<Commment>[];
-          pageParams: unknown[];
-        }>(["replies", variables.postId, variables.reply_to], (oldData) => {
-          if (!oldData) return oldData;
+        const replyToId =
+          typeof variables.reply_to === "number"
+            ? variables.reply_to
+            : Number(variables.reply_to);
 
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page, index) =>
-              index === 0
-                ? {
-                    ...page,
-                    data: [comment, ...page.data],
-                  }
-                : page,
-            ),
-          };
-        });
-
-        // Update parent comment's reply count in comments cache
-        queryClient.setQueryData<{
-          pages: PaginatedResponse<Commment>[];
-          pageParams: unknown[];
-        }>(["comments", variables.postId], (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              data: page.data.map((c) =>
-                c.id === variables.reply_to
-                  ? {
-                      ...c,
-                      replies: {
-                        ...c.replies,
-                        count: c.replies.count + 1,
-                      },
-                    }
-                  : c,
-              ),
-            })),
-          };
-        });
-
-        // Update parent comment's reply count in ALL replies caches (for nested replies)
-        const queries = queryClient.getQueryCache().getAll();
-        queries.forEach((query) => {
-          const [key, postId] = query.queryKey;
-          if (key === "replies" && postId === variables.postId) {
-            queryClient.setQueryData<{
-              pages: PaginatedResponse<Commment>[];
-              pageParams: unknown[];
-            }>(query.queryKey, (oldData) => {
-              if (!oldData) return oldData;
-
-              return {
-                ...oldData,
-                pages: oldData.pages.map((page) => ({
-                  ...page,
-                  data: page.data.map((c) =>
-                    c.id === variables.reply_to
-                      ? {
-                          ...c,
-                          replies: {
-                            ...c.replies,
-                            count: c.replies.count + 1,
-                          },
-                        }
-                      : c,
-                  ),
-                })),
-              };
-            });
-          }
-        });
-
-        // Update individual post cache - increment total comment count for replies too
-        queryClient.setQueryData<Post>(
-          ["posts", String(variables.postId)],
-          (oldData) => {
-            if (!oldData) return oldData;
-
-            return {
-              ...oldData,
-              comments: {
-                ...oldData.comments,
-                total: oldData.comments.total + 1,
-              },
-            };
-          },
+        queryClient.setQueryData<InfiniteQueryData<Commment>>(
+          POST_QUERY_KEYS.replies(postId, replyToId),
+          (oldData) => addToInfiniteQuery(oldData, comment),
         );
 
-        // Update posts list cache - increment total comment count for replies too
-        queryClient.setQueryData<{
-          pages: PaginatedResponse<Post>[];
-          pageParams: unknown[];
-        }>(["posts"], (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              data: page.data.map((post) =>
-                post.id === variables.postId
-                  ? {
-                      ...post,
-                      comments: {
-                        ...post.comments,
-                        total: post.comments.total + 1,
-                      },
-                    }
-                  : post,
-              ),
-            })),
-          };
-        });
-
-        // Update saved posts cache - increment total comment count for replies too
-        queryClient.setQueryData<{
-          pages: PaginatedResponse<Post>[];
-          pageParams: unknown[];
-        }>(["posts", "saved"], (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              data: page.data.map((post) =>
-                post.id === variables.postId
-                  ? {
-                      ...post,
-                      comments: {
-                        ...post.comments,
-                        total: post.comments.total + 1,
-                      },
-                    }
-                  : post,
-              ),
-            })),
-          };
-        });
+        incrementCommentReplyCount(queryClient, postId, replyToId, 1);
+        incrementPostCommentCount(queryClient, postId, 1);
       } else {
-        // Update comments query cache
-        queryClient.setQueryData<{
-          pages: PaginatedResponse<Commment>[];
-          pageParams: unknown[];
-        }>(["comments", variables.postId], (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page, index) =>
-              index === 0
-                ? {
-                    ...page,
-                    data: [comment, ...page.data],
-                  }
-                : page,
-            ),
-          };
-        });
-
-        // Update post's comment count and most_recent in posts cache
-        queryClient.setQueryData<{
-          pages: PaginatedResponse<Post>[];
-          pageParams: unknown[];
-        }>(["posts"], (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              data: page.data.map((post) =>
-                post.id === variables.postId
-                  ? {
-                      ...post,
-                      comments: {
-                        ...post.comments,
-                        total: post.comments.total + 1,
-                        most_recent: [
-                          comment,
-                          ...post.comments.most_recent,
-                        ].slice(0, post.comments.most_recent.length || 1),
-                      },
-                    }
-                  : post,
-              ),
-            })),
-          };
-        });
-
-        // Update post's comment count and most_recent in saved posts cache
-        queryClient.setQueryData<{
-          pages: PaginatedResponse<Post>[];
-          pageParams: unknown[];
-        }>(["posts", "saved"], (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              data: page.data.map((post) =>
-                post.id === variables.postId
-                  ? {
-                      ...post,
-                      comments: {
-                        ...post.comments,
-                        total: post.comments.total + 1,
-                        most_recent: [
-                          comment,
-                          ...post.comments.most_recent,
-                        ].slice(0, post.comments.most_recent.length || 1),
-                      },
-                    }
-                  : post,
-              ),
-            })),
-          };
-        });
-
-        // Update individual post cache
-        queryClient.setQueryData<Post>(
-          ["posts", String(variables.postId)],
-          (oldData) => {
-            if (!oldData) return oldData;
-
-            return {
-              ...oldData,
-              comments: {
-                ...oldData.comments,
-                total: oldData.comments.total + 1,
-                most_recent: [comment, ...oldData.comments.most_recent].slice(
-                  0,
-                  oldData.comments.most_recent.length || 1,
-                ),
-              },
-            };
-          },
+        queryClient.setQueryData<InfiniteQueryData<Commment>>(
+          POST_QUERY_KEYS.comments(postId),
+          (oldData) => addToInfiniteQuery(oldData, comment),
         );
+
+        incrementPostCommentCount(queryClient, postId, 1, comment);
       }
     },
   });
@@ -324,170 +108,12 @@ export function useReactToComment() {
       commentId: number;
     }) => reactToComment({ reaction, postId, commentId }),
     onSuccess: ({ reactions }, variables) => {
-      // Update comment reactions in comments cache
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Commment>[];
-        pageParams: unknown[];
-      }>(["comments", variables.postId], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((comment) =>
-              comment.id === variables.commentId
-                ? {
-                    ...comment,
-                    reactions,
-                  }
-                : comment,
-            ),
-          })),
-        };
-      });
-
-      // Update comment reactions in ALL replies caches (for nested comments)
-      const queries = queryClient.getQueryCache().getAll();
-      queries.forEach((query) => {
-        const [key, postId] = query.queryKey;
-        if (key === "replies" && postId === variables.postId) {
-          queryClient.setQueryData<{
-            pages: PaginatedResponse<Commment>[];
-            pageParams: unknown[];
-          }>(query.queryKey, (oldData) => {
-            if (!oldData) return oldData;
-
-            return {
-              ...oldData,
-              pages: oldData.pages.map((page) => ({
-                ...page,
-                data: page.data.map((comment) =>
-                  comment.id === variables.commentId
-                    ? {
-                        ...comment,
-                        reactions,
-                      }
-                    : comment,
-                ),
-              })),
-            };
-          });
-        }
-      });
-
-      // Update comment reactions in posts cache (for comments preview in posts)
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === variables.postId) {
-                return {
-                  ...post,
-                  comments: {
-                    ...post.comments,
-                    most_popular: post.comments.most_popular.map((comment) =>
-                      comment.id === variables.commentId
-                        ? {
-                            ...comment,
-                            reactions,
-                          }
-                        : comment,
-                    ),
-                    most_recent: post.comments.most_recent.map((comment) =>
-                      comment.id === variables.commentId
-                        ? {
-                            ...comment,
-                            reactions,
-                          }
-                        : comment,
-                    ),
-                  },
-                };
-              }
-              return post;
-            }),
-          })),
-        };
-      });
-
-      // Update comment reactions in saved posts cache
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts", "saved"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === variables.postId) {
-                return {
-                  ...post,
-                  comments: {
-                    ...post.comments,
-                    most_popular: post.comments.most_popular.map((comment) =>
-                      comment.id === variables.commentId
-                        ? {
-                            ...comment,
-                            reactions,
-                          }
-                        : comment,
-                    ),
-                    most_recent: post.comments.most_recent.map((comment) =>
-                      comment.id === variables.commentId
-                        ? {
-                            ...comment,
-                            reactions,
-                          }
-                        : comment,
-                    ),
-                  },
-                };
-              }
-              return post;
-            }),
-          })),
-        };
-      });
-
-      // Update comment reactions in individual post cache
-      queryClient.setQueryData<Post>(
-        ["posts", String(variables.postId)],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            comments: {
-              ...oldData.comments,
-              most_popular: oldData.comments.most_popular.map((comment) =>
-                comment.id === variables.commentId
-                  ? {
-                      ...comment,
-                      reactions,
-                    }
-                  : comment,
-              ),
-              most_recent: oldData.comments.most_recent.map((comment) =>
-                comment.id === variables.commentId
-                  ? {
-                      ...comment,
-                      reactions,
-                    }
-                  : comment,
-              ),
-            },
-          };
+      updateCommentInAllCaches(
+        queryClient,
+        variables.postId,
+        variables.commentId,
+        {
+          reactions,
         },
       );
     },
@@ -508,171 +134,11 @@ export function useReportComment() {
       commentId: number | string;
     }) => reportComment({ comment, postId, commentId }),
     onSuccess: (_, variables) => {
-      // Update comment in comments cache
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Commment>[];
-        pageParams: unknown[];
-      }>(["comments", Number(variables.postId)], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((comment) =>
-              comment.id === Number(variables.commentId)
-                ? {
-                    ...comment,
-                    reported_by_the_user: true,
-                  }
-                : comment,
-            ),
-          })),
-        };
-      });
-
-      // Update comment in ALL replies caches
-      const queries = queryClient.getQueryCache().getAll();
-      queries.forEach((query) => {
-        const [key, postId] = query.queryKey;
-        if (key === "replies" && postId === Number(variables.postId)) {
-          queryClient.setQueryData<{
-            pages: PaginatedResponse<Commment>[];
-            pageParams: unknown[];
-          }>(query.queryKey, (oldData) => {
-            if (!oldData) return oldData;
-
-            return {
-              ...oldData,
-              pages: oldData.pages.map((page) => ({
-                ...page,
-                data: page.data.map((comment) =>
-                  comment.id === Number(variables.commentId)
-                    ? {
-                        ...comment,
-                        reported_by_the_user: true,
-                      }
-                    : comment,
-                ),
-              })),
-            };
-          });
-        }
-      });
-
-      // Update comment in posts cache (for comments preview in posts)
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === Number(variables.postId)) {
-                return {
-                  ...post,
-                  comments: {
-                    ...post.comments,
-                    most_popular: post.comments.most_popular.map((comment) =>
-                      comment.id === Number(variables.commentId)
-                        ? {
-                            ...comment,
-                            reported_by_the_user: true,
-                          }
-                        : comment,
-                    ),
-                    most_recent: post.comments.most_recent.map((comment) =>
-                      comment.id === Number(variables.commentId)
-                        ? {
-                            ...comment,
-                            reported_by_the_user: true,
-                          }
-                        : comment,
-                    ),
-                  },
-                };
-              }
-              return post;
-            }),
-          })),
-        };
-      });
-
-      // Update comment in saved posts cache
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts", "saved"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === Number(variables.postId)) {
-                return {
-                  ...post,
-                  comments: {
-                    ...post.comments,
-                    most_popular: post.comments.most_popular.map((comment) =>
-                      comment.id === Number(variables.commentId)
-                        ? {
-                            ...comment,
-                            reported_by_the_user: true,
-                          }
-                        : comment,
-                    ),
-                    most_recent: post.comments.most_recent.map((comment) =>
-                      comment.id === Number(variables.commentId)
-                        ? {
-                            ...comment,
-                            reported_by_the_user: true,
-                          }
-                        : comment,
-                    ),
-                  },
-                };
-              }
-              return post;
-            }),
-          })),
-        };
-      });
-
-      // Update comment in individual post cache
-      queryClient.setQueryData<Post>(
-        ["posts", String(variables.postId)],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            comments: {
-              ...oldData.comments,
-              most_popular: oldData.comments.most_popular.map((comment) =>
-                comment.id === Number(variables.commentId)
-                  ? {
-                      ...comment,
-                      reported_by_the_user: true,
-                    }
-                  : comment,
-              ),
-              most_recent: oldData.comments.most_recent.map((comment) =>
-                comment.id === Number(variables.commentId)
-                  ? {
-                      ...comment,
-                      reported_by_the_user: true,
-                    }
-                  : comment,
-              ),
-            },
-          };
-        },
+      updateCommentInAllCaches(
+        queryClient,
+        Number(variables.postId),
+        Number(variables.commentId),
+        { reported_by_the_user: true },
       );
     },
   });

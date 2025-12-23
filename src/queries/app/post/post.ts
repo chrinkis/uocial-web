@@ -16,7 +16,12 @@ import {
 } from "@/api/app/post/post";
 import type { Post } from "@/models/app/post/Post";
 import type { ReactionValue } from "@/models/app/post/Reaction";
-import type { PaginatedResponse } from "@/utils/response";
+import { addToInfiniteQuery, type InfiniteQueryData } from "@/utils/cache";
+import {
+  POST_QUERY_KEYS,
+  updatePostInAllCaches,
+  addPostToSavedCache,
+} from "./cache-utils";
 
 export function usePosts() {
   return useInfiniteQuery({
@@ -61,27 +66,12 @@ export function useCreatePost() {
   return useMutation({
     mutationFn: (formData: Record<string, unknown>) => createPost(formData),
     onSuccess: ({ post }) => {
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts"], (oldData) => {
-        if (!oldData) return oldData;
+      queryClient.setQueryData<InfiniteQueryData<Post>>(
+        POST_QUERY_KEYS.all,
+        (oldData) => addToInfiniteQuery(oldData, post),
+      );
 
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page, index) =>
-            index === 0
-              ? {
-                  ...page,
-                  data: [post, ...page.data],
-                }
-              : page,
-          ),
-        };
-      });
-
-      // Update individual post cache
-      queryClient.setQueryData<Post>(["posts", String(post.id)], post);
+      queryClient.setQueryData<Post>(POST_QUERY_KEYS.detail(post.id), post);
     },
   });
 }
@@ -98,65 +88,7 @@ export function useReactToPost() {
       postId: number;
     }) => reactToPost({ reaction, postId }),
     onSuccess: ({ reactions }, variables) => {
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === variables.postId) {
-                return {
-                  ...post,
-                  reactions,
-                };
-              }
-              return post;
-            }),
-          })),
-        };
-      });
-
-      // Update saved posts cache
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts", "saved"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === variables.postId) {
-                return {
-                  ...post,
-                  reactions,
-                };
-              }
-              return post;
-            }),
-          })),
-        };
-      });
-
-      // Update individual post cache
-      queryClient.setQueryData<Post>(
-        ["posts", String(variables.postId)],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            reactions,
-          };
-        },
-      );
+      updatePostInAllCaches(queryClient, variables.postId, { reactions });
     },
   });
 }
@@ -173,65 +105,9 @@ export function useReportPost() {
       postId: number | string;
     }) => reportPost({ comment, postId }),
     onSuccess: (_, variables) => {
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === Number(variables.postId)) {
-                return {
-                  ...post,
-                  reported_by_the_user: true,
-                };
-              }
-              return post;
-            }),
-          })),
-        };
+      updatePostInAllCaches(queryClient, Number(variables.postId), {
+        reported_by_the_user: true,
       });
-
-      // Update saved posts cache
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts", "saved"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === Number(variables.postId)) {
-                return {
-                  ...post,
-                  reported_by_the_user: true,
-                };
-              }
-              return post;
-            }),
-          })),
-        };
-      });
-
-      // Update individual post cache
-      queryClient.setQueryData<Post>(
-        ["posts", String(variables.postId)],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            reported_by_the_user: true,
-          };
-        },
-      );
     },
   });
 }
@@ -243,27 +119,21 @@ export function useSavePost() {
     mutationFn: ({ postId }: { postId: number | string }) =>
       savePost({ postId }),
     onSuccess: (_, variables) => {
-      // Get the post from cache to add to saved posts
-      let savedPost: Post | undefined;
+      const postId = Number(variables.postId);
 
-      // Try to get from individual post cache
-      savedPost = queryClient.getQueryData<Post>([
-        "posts",
-        String(variables.postId),
-      ]);
+      updatePostInAllCaches(queryClient, postId, { saved: true });
 
-      // If not in individual cache, try to find in posts list
+      let savedPost = queryClient.getQueryData<Post>(
+        POST_QUERY_KEYS.detail(postId),
+      );
+
       if (!savedPost) {
-        const postsData = queryClient.getQueryData<{
-          pages: PaginatedResponse<Post>[];
-          pageParams: unknown[];
-        }>(["posts"]);
-
+        const postsData = queryClient.getQueryData<InfiniteQueryData<Post>>(
+          POST_QUERY_KEYS.all,
+        );
         if (postsData) {
           for (const page of postsData.pages) {
-            const post = page.data.find(
-              (p) => p.id === Number(variables.postId),
-            );
+            const post = page.data.find((p) => p.id === postId);
             if (post) {
               savedPost = post;
               break;
@@ -272,86 +142,8 @@ export function useSavePost() {
         }
       }
 
-      // Update posts cache
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === Number(variables.postId)) {
-                return {
-                  ...post,
-                  saved: true,
-                };
-              }
-              return post;
-            }),
-          })),
-        };
-      });
-
-      // Update individual post cache
-      queryClient.setQueryData<Post>(
-        ["posts", String(variables.postId)],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            saved: true,
-          };
-        },
-      );
-
-      // Update saved posts cache - add the post to the beginning if not already present
       if (savedPost) {
-        queryClient.setQueryData<{
-          pages: PaginatedResponse<Post>[];
-          pageParams: unknown[];
-        }>(["posts", "saved"], (oldData) => {
-          if (!oldData) return oldData;
-
-          const postWithSavedFlag = {
-            ...savedPost,
-            saved: true,
-          };
-
-          // Check if post already exists in saved posts
-          const postExists = oldData.pages.some((page) =>
-            page.data.some((p) => p.id === Number(variables.postId)),
-          );
-
-          // If post already exists, just update it; otherwise add to beginning
-          if (postExists) {
-            return {
-              ...oldData,
-              pages: oldData.pages.map((page) => ({
-                ...page,
-                data: page.data.map((p) =>
-                  p.id === Number(variables.postId) ? postWithSavedFlag : p,
-                ),
-              })),
-            };
-          }
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page, index) =>
-              index === 0
-                ? {
-                    ...page,
-                    data: [postWithSavedFlag, ...page.data],
-                  }
-                : page,
-            ),
-          };
-        });
+        addPostToSavedCache(queryClient, savedPost);
       }
     },
   });
@@ -364,65 +156,8 @@ export function useUnsavePost() {
     mutationFn: ({ postId }: { postId: number | string }) =>
       unsavePost({ postId }),
     onSuccess: (_, variables) => {
-      // Update posts cache
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === Number(variables.postId)) {
-                return {
-                  ...post,
-                  saved: false,
-                };
-              }
-              return post;
-            }),
-          })),
-        };
-      });
-
-      // Update individual post cache
-      queryClient.setQueryData<Post>(
-        ["posts", String(variables.postId)],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            saved: false,
-          };
-        },
-      );
-
-      // Update saved posts cache - mark as unsaved but keep the post visible
-      queryClient.setQueryData<{
-        pages: PaginatedResponse<Post>[];
-        pageParams: unknown[];
-      }>(["posts", "saved"], (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            data: page.data.map((post) => {
-              if (post.id === Number(variables.postId)) {
-                return {
-                  ...post,
-                  saved: false,
-                };
-              }
-              return post;
-            }),
-          })),
-        };
+      updatePostInAllCaches(queryClient, Number(variables.postId), {
+        saved: false,
       });
     },
   });
