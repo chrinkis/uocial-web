@@ -1,7 +1,6 @@
 import { resetPassword } from "@/api/user/auth";
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
 import { validatePassword } from "@/utils/password";
-import { type ApiResponse } from "@/utils/response";
 import {
   Title,
   Paper,
