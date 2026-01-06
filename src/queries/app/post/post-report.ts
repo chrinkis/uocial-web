@@ -1,6 +1,28 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { updatePostInAllCaches } from "./cache-utils";
-import { reportPost } from "@/api/app/post/post-report";
+import { fetchPostReports, reportPost } from "@/api/app/post/post-report";
+
+export function usePostReports(
+  postId: number,
+  params?: { reviewed?: boolean },
+) {
+  return useInfiniteQuery({
+    queryKey: ["post-reports", postId, params],
+    queryFn: ({ pageParam }) => fetchPostReports(pageParam, { postId }, params),
+    initialPageParam: 1,
+    getNextPageParam: (lastResponse) => {
+      if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
+        return lastResponse.meta.current_page + 1;
+      }
+
+      return undefined;
+    },
+  });
+}
 
 export function useReportPost() {
   const queryClient = useQueryClient();

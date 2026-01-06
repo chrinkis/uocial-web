@@ -49,6 +49,7 @@ import { useModals } from "@/providers/modals/hook";
 import { isModerator } from "@/utils/user";
 import { useUser } from "@/providers/user/hook";
 import invariant from "tiny-invariant";
+import { Reports } from "./reports/Reports";
 
 export interface PostPropsType {
   post: post.Post;
@@ -448,8 +449,18 @@ export function PostPeakedComments(props: PostPropsType) {
 }
 
 function PostModerationReportsButton({ post }: PostPropsType) {
+  const modals = useModals();
+
+  function handleClick() {
+    modals.open({
+      centered: true,
+      title: `Reports of #${String(post.id)}`,
+      children: <Reports post={post} />,
+    });
+  }
+
   return (
-    <Button bg="orange" fullWidth>
+    <Button bg="orange" fullWidth onClick={handleClick}>
       Reports ({post.moderation?.reports.total})
     </Button>
   );
