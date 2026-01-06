@@ -109,25 +109,6 @@ export function useReactToPost() {
   });
 }
 
-export function useReportPost() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      comment,
-      postId,
-    }: {
-      comment?: string;
-      postId: number | string;
-    }) => reportPost({ comment, postId }),
-    onSuccess: (_, variables) => {
-      updatePostInAllCaches(queryClient, Number(variables.postId), {
-        reported_by_the_user: true,
-      });
-    },
-  });
-}
-
 export function useSavePost() {
   const queryClient = useQueryClient();
 

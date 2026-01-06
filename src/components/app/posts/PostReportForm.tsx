@@ -1,5 +1,5 @@
 import { Button, Group, Stack, Textarea } from "@mantine/core";
-import { useReportPost } from "@/queries/app/post/post";
+import { useReportPost } from "@/queries/app/post/post-report";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import { useForm } from "@mantine/form";
