@@ -10,7 +10,6 @@ import {
   fetchPosts,
   fetchSavedPosts,
   reactToPost,
-  reportPost,
   savePost,
   unsavePost,
 } from "@/api/app/post/post";
@@ -22,6 +21,7 @@ import {
   updatePostInAllCaches,
   addPostToSavedCache,
 } from "./cache-utils";
+import { reportPost } from "@/api/app/post/post-report";
 
 export function usePosts(params?: { hashtag?: string }) {
   return useInfiniteQuery({
