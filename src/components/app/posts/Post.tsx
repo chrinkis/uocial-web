@@ -44,7 +44,7 @@ import { Comments } from "./comments/Comments";
 import { Timestamp } from "@/components/Timestamp";
 import { ReactButton } from "@/components/app/posts/ReactButton";
 import { useSettings } from "@/providers/settings/hook";
-import { PostReportForm } from "./PostReportForm";
+import { ReportForm } from "./reports/ReportForm";
 import { useModals } from "@/providers/modals/hook";
 import { isModerator } from "@/utils/user";
 import { useUser } from "@/providers/user/hook";
@@ -273,7 +273,7 @@ export function PostOptions(props: PostPropsType) {
   function handleReportClick() {
     const modalName = modals.open({
       title: `Reporting post #${String(props.post.id)}`,
-      children: <PostReportForm postId={props.post.id} onSuccess={onSuccess} />,
+      children: <ReportForm postId={props.post.id} onSuccess={onSuccess} />,
       centered: true,
     });
 

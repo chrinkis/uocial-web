@@ -4,7 +4,7 @@ import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import { useForm } from "@mantine/form";
 
-export function PostReportForm({
+export function ReportForm({
   postId,
   onSuccess,
 }: {
