@@ -29,7 +29,7 @@ import { NavLink } from "react-router";
 import { Carousel } from "@mantine/carousel";
 import { useMeasure } from "react-use";
 import { memo, useCallback, useMemo, useRef, useState } from "react";
-import { CommentPreview } from "./CommentPreview";
+import { CommentPreview } from "./comments/CommentPreview";
 import { uniqBy } from "lodash";
 import type { EmblaCarouselType } from "embla-carousel";
 import {
@@ -40,7 +40,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
-import { Comments } from "./Comments";
+import { Comments } from "./comments/Comments";
 import { Timestamp } from "@/components/Timestamp";
 import { ReactButton } from "@/components/app/posts/ReactButton";
 import { useSettings } from "@/providers/settings/hook";

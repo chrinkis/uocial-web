@@ -16,7 +16,7 @@ import {
   Box,
   Tooltip,
 } from "@mantine/core";
-import { ReactButton } from "./ReactButton";
+import { ReactButton } from "../ReactButton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { useReplies, useReactToComment } from "@/queries/app/post/comment";
 import { IconBubblePlus } from "@tabler/icons-react";
