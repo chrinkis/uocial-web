@@ -12,6 +12,7 @@ import {
   reactToPost,
   savePost,
   unsavePost,
+  type fetchPostsParams,
 } from "@/api/app/post/post";
 import type { Post } from "@/models/app/post/Post";
 import type { ReactionValue } from "@/models/app/post/Reaction";
@@ -23,7 +24,7 @@ import {
 } from "./cache-utils";
 import { reportPost } from "@/api/app/post/post-report";
 
-export function usePosts(params?: { hashtag?: string }) {
+export function usePosts(params?: fetchPostsParams) {
   return useInfiniteQuery({
     queryKey: POST_QUERY_KEYS.list(params),
     queryFn: ({ pageParam }) => fetchPosts(pageParam, params),

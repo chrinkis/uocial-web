@@ -16,6 +16,7 @@ import SettingsPage from "@/pages/settings/page";
 import SavedPostsPage from "@/pages/app/posts/saved/page";
 import { ModeratorGuard } from "./guards/ModeratorGuard";
 import HashtagsPage from "@/pages/app/posts/hashtags/page";
+import ModerationDashboardPage from "@/pages/app/moderation/dashboard/page";
 
 function getOpenRoutes() {
   return (
@@ -54,7 +55,14 @@ function getVerifiedRoutes() {
 }
 
 function getModeratorRoutes() {
-  return <></>;
+  return (
+    <>
+      <Route
+        path="app/moderation/dashboard"
+        element={<ModerationDashboardPage />}
+      />
+    </>
+  );
 }
 
 function App() {
