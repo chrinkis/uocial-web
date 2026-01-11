@@ -55,6 +55,42 @@ export function updatePostInAllCaches(
   });
 }
 
+export function updatePostInAllCachesWith(
+  queryClient: QueryClient,
+  postId: number,
+  updater: (post: Post) => Post,
+): void {
+  // Update all post list caches (with and without filters)
+  const queries = queryClient.getQueryCache().getAll();
+  queries.forEach((query) => {
+    const [key] = query.queryKey;
+    if (key === "posts" && Array.isArray(query.queryKey)) {
+      // Skip saved posts and detail views
+      if (
+        query.queryKey.length === 1 ||
+        (query.queryKey.length === 2 && typeof query.queryKey[1] === "object")
+      ) {
+        queryClient.setQueryData<InfiniteQueryData<Post>>(
+          query.queryKey,
+          (oldData) => updateInfiniteQueryItemWith(oldData, postId, updater),
+        );
+      }
+    }
+  });
+
+  // Update saved posts cache
+  queryClient.setQueryData<InfiniteQueryData<Post>>(
+    POST_QUERY_KEYS.saved,
+    (oldData) => updateInfiniteQueryItemWith(oldData, postId, updater),
+  );
+
+  // Update detail cache
+  queryClient.setQueryData<Post>(POST_QUERY_KEYS.detail(postId), (oldData) => {
+    if (!oldData) return oldData;
+    return updater(oldData);
+  });
+}
+
 export function updateCommentInAllCaches(
   queryClient: QueryClient,
   postId: number,
@@ -97,10 +133,14 @@ export function updateCommentInAllCaches(
               comments: {
                 ...post.comments,
                 most_popular: post.comments.most_popular.map((comment) =>
-                  comment.id === commentId ? { ...comment, ...updates } : comment,
+                  comment.id === commentId
+                    ? { ...comment, ...updates }
+                    : comment,
                 ),
                 most_recent: post.comments.most_recent.map((comment) =>
-                  comment.id === commentId ? { ...comment, ...updates } : comment,
+                  comment.id === commentId
+                    ? { ...comment, ...updates }
+                    : comment,
                 ),
               },
             })),

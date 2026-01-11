@@ -14,6 +14,7 @@ import {
   Box,
   Typography,
   Popover,
+  Textarea,
 } from "@mantine/core";
 import {
   IconBookmark,
@@ -38,7 +39,7 @@ import {
   useUnsavePost,
 } from "@/queries/app/post/post";
 import { notifications } from "@mantine/notifications";
-import { getErrorMessage } from "@/utils/error";
+import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import { Comments } from "./comments/Comments";
 import { Timestamp } from "@/components/Timestamp";
@@ -50,6 +51,10 @@ import { isModerator } from "@/utils/user";
 import { useUser } from "@/providers/user/hook";
 import invariant from "tiny-invariant";
 import { Reports } from "./reports/Reports";
+import { useModeratePost } from "@/queries/app/post/post-moderation";
+import { useForm } from "@mantine/form";
+import axios from "axios";
+import type { ModerationAction } from "@/models/app/post/ModerationAction";
 
 export interface PostPropsType {
   post: post.Post;
@@ -466,22 +471,120 @@ function PostModerationReportsButton({ post }: PostPropsType) {
   );
 }
 
-function PostModerationUnhideButton({ post }: PostPropsType) {
+function PostModerationActionForm({
+  postId,
+  onSuccess,
+  action,
+}: {
+  postId: number | string;
+  onSuccess?: () => void;
+  action: ModerationAction;
+}) {
+  const moderatePost = useModeratePost();
+  const form = useForm({
+    mode: "controlled",
+    initialValues: {
+      comment: action === "hide" ? "" : "Post doesn't violate any term.",
+    },
+  });
+
+  const handleSubmit = form.onSubmit(async (values) => {
+    try {
+      const { message } = await moderatePost.mutateAsync({
+        postId,
+        comment: values.comment,
+        action,
+      });
+
+      notifications.show({
+        title: "Success",
+        message: message,
+      });
+
+      onSuccess?.();
+    } catch (error) {
+      notifications.show({
+        title: "Failed to create comment",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+
+      if (!axios.isAxiosError(error) || !error.response) {
+        return;
+      }
+
+      const data = error.response.data as LaravelValidationResponse | undefined;
+      form.setErrors(data?.errors ?? {});
+    }
+  });
+
   return (
-    <Button bg="green" flex={1} disabled={!post.moderation?.is_hidden}>
-      Unhide
-    </Button>
+    <form onSubmit={handleSubmit}>
+      <Stack>
+        <Textarea
+          minRows={5}
+          autosize
+          label="Comment"
+          description={
+            action === "hide"
+              ? "Describe what is wrong with this post."
+              : undefined
+          }
+          placeholder={
+            action === "hide"
+              ? "Author uses hatefull speech for a University Student."
+              : "Post doesn't violate any term."
+          }
+          {...form.getInputProps("comment")}
+          required
+        />
+
+        <Group justify="right">
+          <Button type="submit" loading={form.submitting}>
+            Hide post
+          </Button>
+        </Group>
+      </Stack>
+    </form>
   );
 }
 
-function PostModerationHideButton({ post }: PostPropsType) {
+function PostModerationActionButton({
+  post,
+  action,
+}: PostPropsType & { action: ModerationAction }) {
+  const modals = useModals();
+
+  function handleHideClick() {
+    const modalId = modals.open({
+      title: `Hide post #${String(post.id)}`,
+      children: (
+        <PostModerationActionForm
+          postId={post.id}
+          onSuccess={closeModal}
+          action={action}
+        />
+      ),
+      centered: true,
+    });
+
+    function closeModal() {
+      modals.close(modalId);
+    }
+  }
+
   return (
     <Button
-      bg="red"
+      bg={action === "hide" ? "red" : "green"}
       flex={1}
-      disabled={post.moderation?.is_hidden && !post.moderation.is_auto_hidden}
+      disabled={
+        action === "hide"
+          ? post.moderation?.is_hidden && !post.moderation.is_auto_hidden
+          : !post.moderation?.is_hidden
+      }
+      onClick={handleHideClick}
     >
-      Hide
+      {action === "hide" ? "Hide" : "Unhide"}
     </Button>
   );
 }
@@ -494,8 +597,8 @@ function PostModeration(props: PostPropsType) {
       ) : undefined}
 
       <Group gap="xs">
-        <PostModerationUnhideButton {...props} />
-        <PostModerationHideButton {...props} />
+        <PostModerationActionButton action="unhide" {...props} />
+        <PostModerationActionButton action="hide" {...props} />
       </Group>
     </Stack>
   );
