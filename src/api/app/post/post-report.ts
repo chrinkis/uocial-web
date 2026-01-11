@@ -1,4 +1,5 @@
 import type { PostReport } from "@/models/app/post/PostReport";
+import type { ReportReviewValue } from "@/models/app/post/ReportReview";
 import type { PaginatedResponse } from "@/utils/response";
 import axios from "axios";
 
@@ -37,6 +38,31 @@ export async function reportPost({
     message: string;
   }>(`/api/app/posts/${String(postId)}/reports`, {
     comment,
+  });
+
+  return {
+    message,
+  };
+}
+
+export async function reviewPostReport({
+  comment,
+  postId,
+  reportId,
+  status,
+}: {
+  comment?: string;
+  postId: number | string;
+  reportId: number | string;
+  status?: ReportReviewValue;
+}) {
+  const {
+    data: { message },
+  } = await axios.post<{
+    message: string;
+  }>(`/api/app/posts/${String(postId)}/reports/${String(reportId)}/reviews`, {
+    comment,
+    status,
   });
 
   return {
