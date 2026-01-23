@@ -166,6 +166,77 @@ export function updateCommentInAllCaches(
   });
 }
 
+export function updateCommentInAllCachesWith(
+  queryClient: QueryClient,
+  postId: number,
+  commentId: number,
+  updater: (comment: Commment) => Commment,
+): void {
+  queryClient.setQueryData<InfiniteQueryData<Commment>>(
+    POST_QUERY_KEYS.comments(postId),
+    (oldData) => updateInfiniteQueryItemWith(oldData, commentId, updater),
+  );
+
+  const queries = queryClient.getQueryCache().getAll();
+  queries.forEach((query) => {
+    const [key, queryPostId] = query.queryKey;
+    if (key === "replies" && queryPostId === postId) {
+      queryClient.setQueryData<InfiniteQueryData<Commment>>(
+        query.queryKey,
+        (oldData) => updateInfiniteQueryItemWith(oldData, commentId, updater),
+      );
+    }
+  });
+
+  // Update all post list caches with comment changes
+  const postQueries = queryClient.getQueryCache().getAll();
+  postQueries.forEach((query) => {
+    const [key] = query.queryKey;
+    if (key === "posts" && Array.isArray(query.queryKey)) {
+      // Match post lists (with or without filters) and saved posts
+      if (
+        query.queryKey.length === 1 ||
+        (query.queryKey.length === 2 &&
+          (typeof query.queryKey[1] === "object" ||
+            query.queryKey[1] === "saved"))
+      ) {
+        queryClient.setQueryData<InfiniteQueryData<Post>>(
+          query.queryKey,
+          (oldData) =>
+            updateInfiniteQueryItemWith(oldData, postId, (post) => ({
+              ...post,
+              comments: {
+                ...post.comments,
+                most_popular: post.comments.most_popular.map((comment) =>
+                  comment.id === commentId ? updater(comment) : comment,
+                ),
+                most_recent: post.comments.most_recent.map((comment) =>
+                  comment.id === commentId ? updater(comment) : comment,
+                ),
+              },
+            })),
+        );
+      }
+    }
+  });
+
+  queryClient.setQueryData<Post>(POST_QUERY_KEYS.detail(postId), (oldData) => {
+    if (!oldData) return oldData;
+    return {
+      ...oldData,
+      comments: {
+        ...oldData.comments,
+        most_popular: oldData.comments.most_popular.map((comment) =>
+          comment.id === commentId ? updater(comment) : comment,
+        ),
+        most_recent: oldData.comments.most_recent.map((comment) =>
+          comment.id === commentId ? updater(comment) : comment,
+        ),
+      },
+    };
+  });
+}
+
 export function incrementPostCommentCount(
   queryClient: QueryClient,
   postId: number,

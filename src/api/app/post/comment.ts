@@ -86,7 +86,7 @@ export async function reportComment({
     data: { message },
   } = await axios.post<{
     message: string;
-  }>(`/api/app/posts/${String(postId)}/comments/${String(commentId)}/report`, {
+  }>(`/api/app/posts/${String(postId)}/comments/${String(commentId)}/reports`, {
     comment,
   });
 

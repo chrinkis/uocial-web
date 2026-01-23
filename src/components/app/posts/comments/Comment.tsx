@@ -1,7 +1,7 @@
 import { useState, memo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "@/components/Timestamp";
-import type { Commment } from "@/models/app/post/Comment";
+import type { Commment as PostComment } from "@/models/app/post/Comment";
 import { readablePseudonym } from "@/utils/pseudonym";
 import {
   Text,
@@ -15,6 +15,8 @@ import {
   UnstyledButton,
   Box,
   Tooltip,
+  Button,
+  Textarea,
 } from "@mantine/core";
 import { ReactButton } from "../ReactButton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
@@ -22,13 +24,22 @@ import { useReplies, useReactToComment } from "@/queries/app/post/comment";
 import { IconBubblePlus } from "@tabler/icons-react";
 import { useSettings } from "@/providers/settings/hook";
 import { notifications } from "@mantine/notifications";
-import { getErrorMessage } from "@/utils/error";
+import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import { CommentSkeleton } from "./CommentSkeleton";
 import { useModals } from "@/providers/modals/hook";
 import { CommentOptions } from "./CommentOptions";
+import { isModerator } from "@/utils/user";
+import { useUser } from "@/providers/user/hook";
+import invariant from "tiny-invariant";
+import type { ModerationAction } from "@/models/app/post/ModerationAction";
+import { useForm } from "@mantine/form";
+import { useGetNumberOfReplies } from "@/utils/app/post/comment";
+import { useModerateComment } from "@/queries/app/post/comment-moderation";
+import axios from "axios";
+import { Reports } from "./reports/Reports";
 
-export function CommentHeader({ comment }: { comment: Commment }) {
+export function CommentHeader({ comment }: { comment: PostComment }) {
   const { settings } = useSettings();
 
   return (
@@ -96,7 +107,7 @@ export function CommentHeader({ comment }: { comment: Commment }) {
   );
 }
 
-export function CommentBody({ comment }: { comment: Commment }) {
+export function CommentBody({ comment }: { comment: PostComment }) {
   return (
     <Spoiler
       showLabel="Show more"
@@ -125,13 +136,15 @@ export function CommentFooter({
   onReaction,
   reactionLoading,
 }: {
-  comment: Commment;
+  comment: PostComment;
   onToggleReplies?: () => void;
   showReplies?: boolean;
   onReplyTo?: (id: number | string) => void;
   onReaction?: (reaction?: ReactionValue) => Promise<void>;
   reactionLoading?: boolean;
 }) {
+  const numberOfReplies = useGetNumberOfReplies(comment);
+
   function handleReplyTo() {
     onReplyTo?.(comment.id);
   }
@@ -165,7 +178,7 @@ export function CommentFooter({
       </Group>
 
       <Group gap="xs">
-        {comment.replies.count > 0 && (
+        {numberOfReplies > 0 && (
           <UnstyledButton onClick={onToggleReplies}>
             <Text size="sm" c="dimmed" component="span">
               <AnimatePresence mode="wait">
@@ -180,8 +193,7 @@ export function CommentFooter({
                   {showReplies ? "Hide" : "Show"}
                 </motion.span>
               </AnimatePresence>{" "}
-              {comment.replies.count}{" "}
-              {comment.replies.count === 1 ? "reply" : "replies"}
+              {numberOfReplies} {numberOfReplies === 1 ? "reply" : "replies"}
             </Text>
           </UnstyledButton>
         )}
@@ -205,13 +217,215 @@ export function CommentFooter({
   );
 }
 
+function PostCommentModerationTraceButton({
+  comment,
+}: {
+  comment: PostComment;
+}) {
+  function handleClick() {
+    // FIXME
+  }
+
+  return (
+    <Button bg="blue" onClick={handleClick} size="xs" flex={1}>
+      Trace
+    </Button>
+  );
+}
+
+function PostCommentModerationOpenPostButton({
+  comment,
+}: {
+  comment: PostComment;
+}) {
+  function handleClick() {
+    // FIXME
+  }
+
+  return (
+    <Button bg="blue" onClick={handleClick} size="xs" flex={1}>
+      Open Post
+    </Button>
+  );
+}
+
+function PostCommentModerationReportsButton({
+  comment,
+}: {
+  comment: PostComment;
+}) {
+  const modals = useModals();
+
+  function handleClick() {
+    modals.open({
+      centered: true,
+      title: `Reports of !${String(comment.id)}`,
+      children: <Reports comment={comment} />,
+    });
+  }
+
+  return (
+    <Button bg="orange" fullWidth onClick={handleClick} size="xs">
+      Reports ({comment.moderation?.reports.total})
+    </Button>
+  );
+}
+
+function PostCommentModerationActionForm({
+  postId,
+  commentId,
+  onSuccess,
+  action,
+}: {
+  postId: number | string;
+  commentId: number | string;
+  onSuccess?: () => void;
+  action: ModerationAction;
+}) {
+  const moderateComment = useModerateComment();
+  const form = useForm({
+    mode: "controlled",
+    initialValues: {
+      comment: action === "hide" ? "" : "Comment doesn't violate any term.",
+    },
+  });
+
+  const handleSubmit = form.onSubmit(async (values) => {
+    try {
+      const { message } = await moderateComment.mutateAsync({
+        postId,
+        commentId,
+        comment: values.comment,
+        action,
+      });
+
+      notifications.show({
+        title: "Success",
+        message: message,
+      });
+
+      onSuccess?.();
+    } catch (error) {
+      notifications.show({
+        title: `Failed to ${action} comment`,
+        message: getErrorMessage(error),
+        color: "red",
+      });
+
+      if (!axios.isAxiosError(error) || !error.response) {
+        return;
+      }
+
+      const data = error.response.data as LaravelValidationResponse | undefined;
+      form.setErrors(data?.errors ?? {});
+    }
+  });
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Stack>
+        <Textarea
+          minRows={5}
+          autosize
+          label="Comment"
+          description={
+            action === "hide"
+              ? "Describe what is wrong with this comment."
+              : undefined
+          }
+          placeholder={
+            action === "hide"
+              ? "Author uses hatefull speech for a University Student."
+              : "Comment doesn't violate any term."
+          }
+          {...form.getInputProps("comment")}
+          required
+        />
+
+        <Group justify="right">
+          <Button type="submit" loading={form.submitting}>
+            {action === "hide" ? "Hide" : "Unhide"} comment
+          </Button>
+        </Group>
+      </Stack>
+    </form>
+  );
+}
+
+function PostCommentModerationActionButton({
+  comment,
+  action,
+}: {
+  comment: PostComment;
+  action: ModerationAction;
+}) {
+  const modals = useModals();
+
+  function handleHideClick() {
+    const modalId = modals.open({
+      title: `Hide comment !${String(comment.id)}`,
+      children: (
+        <PostCommentModerationActionForm
+          postId={comment.post_id}
+          commentId={comment.id}
+          onSuccess={closeModal}
+          action={action}
+        />
+      ),
+      centered: true,
+    });
+
+    function closeModal() {
+      modals.close(modalId);
+    }
+  }
+
+  return (
+    <Button
+      bg={action === "hide" ? "red" : "green"}
+      flex={1}
+      disabled={
+        action === "hide"
+          ? comment.moderation?.is_hidden && !comment.moderation.is_auto_hidden
+          : !comment.moderation?.is_hidden
+      }
+      onClick={handleHideClick}
+      size="xs"
+    >
+      {action === "hide" ? "Hide" : "Unhide"}
+    </Button>
+  );
+}
+
+function PostCommentModeration({ comment }: { comment: PostComment }) {
+  return (
+    <Stack gap="xs">
+      <Group gap="xs">
+        <PostCommentModerationOpenPostButton comment={comment} />
+        <PostCommentModerationTraceButton comment={comment} />
+      </Group>
+
+      {comment.moderation?.reports.total ? (
+        <PostCommentModerationReportsButton comment={comment} />
+      ) : undefined}
+
+      <Group gap="xs">
+        <PostCommentModerationActionButton action="unhide" comment={comment} />
+        <PostCommentModerationActionButton action="hide" comment={comment} />
+      </Group>
+    </Stack>
+  );
+}
+
 export const Comment = memo(function Comment({
   comment,
   onReplyTo,
 }: {
-  comment: Commment;
+  comment: PostComment;
   onReplyTo?: (id: number | string) => void;
 }) {
+  const { user } = useUser();
+  const { settings } = useSettings();
   const [showReplies, setShowReplies] = useState(false);
   const reactToComment = useReactToComment();
   const modals = useModals();
@@ -255,11 +469,13 @@ export const Comment = memo(function Comment({
   }
 
   const renderReply = useCallback(
-    ({ data }: { data: Commment }) => (
+    ({ data }: { data: PostComment }) => (
       <Comment comment={data} onReplyTo={onReplyTo} />
     ),
     [onReplyTo],
   );
+
+  invariant(user);
 
   return (
     <Stack gap="xs" maw={512} w="98%">
@@ -277,6 +493,10 @@ export const Comment = memo(function Comment({
             onReaction={handleReaction}
             reactionLoading={reactToComment.isPending}
           />
+
+          {isModerator(user) && settings.moderatorMode && (
+            <PostCommentModeration comment={comment} />
+          )}
         </Stack>
       </Paper>
 
@@ -295,6 +515,11 @@ export const Comment = memo(function Comment({
                 name="replies"
                 Component={renderReply}
                 loader={<CommentSkeleton />}
+                filter={
+                  isModerator(user) && !settings.moderatorMode
+                    ? (comment) => !comment.moderation?.is_hidden
+                    : undefined
+                }
               />
             </Box>
           </motion.div>

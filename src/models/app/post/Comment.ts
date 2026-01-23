@@ -1,3 +1,4 @@
+import type { Moderation } from "./Moderation";
 import type { PostReactions } from "./PostReactions";
 
 export interface Commment {
@@ -13,6 +14,9 @@ export interface Commment {
   };
   replies: {
     count: number;
+    total?: number;
   };
   reported_by_the_user: boolean;
+  moderation?: Moderation;
+  chain: number[];
 }

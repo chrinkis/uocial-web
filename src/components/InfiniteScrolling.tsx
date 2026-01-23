@@ -19,6 +19,7 @@ export function InfiniteScrolling<
   Component,
   Fallback,
   loader = <Loader />,
+  filter,
 }: {
   useQuery: (
     ...args: TArgs
@@ -28,6 +29,7 @@ export function InfiniteScrolling<
   Component: React.ComponentType<{ data: T }>;
   Fallback?: ComponentType;
   loader?: ReactElement;
+  filter?: (element: T) => boolean;
 }) {
   const {
     data,
@@ -61,13 +63,17 @@ export function InfiniteScrolling<
     });
   }
 
-  if (!data?.pages.some((page) => page.data.length > 0) && Fallback) {
+  const displayPages = filter
+    ? data?.pages.map((page) => ({ ...page, data: page.data.filter(filter) }))
+    : data?.pages;
+
+  if (!displayPages?.some((page) => page.data.length > 0) && Fallback) {
     return <Fallback />;
   }
 
   return (
     <Stack align="safe center" w="100%">
-      {data?.pages.map((page: PaginatedResponse<T>) =>
+      {displayPages?.map((page: PaginatedResponse<T>) =>
         page.data.map((data: T) => <Component data={data} key={data.id} />),
       )}
       {hasNextPage && (

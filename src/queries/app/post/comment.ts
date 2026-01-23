@@ -8,7 +8,6 @@ import {
   fetchReplies,
   createComment,
   reactToComment,
-  reportComment,
 } from "@/api/app/post/comment";
 import type { Commment } from "@/models/app/post/Comment";
 import type { ReactionValue } from "@/models/app/post/Reaction";
@@ -19,6 +18,7 @@ import {
   incrementPostCommentCount,
   incrementCommentReplyCount,
 } from "./cache-utils";
+import { reportComment } from "@/api/app/post/comment-report";
 
 export function useComments(postId: number) {
   return useInfiniteQuery({
@@ -115,30 +115,6 @@ export function useReactToComment() {
         {
           reactions,
         },
-      );
-    },
-  });
-}
-
-export function useReportComment() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      comment,
-      postId,
-      commentId,
-    }: {
-      comment?: string;
-      postId: number | string;
-      commentId: number | string;
-    }) => reportComment({ comment, postId, commentId }),
-    onSuccess: (_, variables) => {
-      updateCommentInAllCaches(
-        queryClient,
-        Number(variables.postId),
-        Number(variables.commentId),
-        { reported_by_the_user: true },
       );
     },
   });
