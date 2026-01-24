@@ -26,9 +26,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <LoadingOverlayProvider>
           <UserProvider>
             <SettingsProvider>
-              <ModalsProvider>
-                <BrowserRouter>{children}</BrowserRouter>
-              </ModalsProvider>
+              <BrowserRouter>
+                <ModalsProvider>{children}</ModalsProvider>
+              </BrowserRouter>
             </SettingsProvider>
           </UserProvider>
         </LoadingOverlayProvider>

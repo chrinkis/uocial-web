@@ -38,6 +38,7 @@ import { useGetNumberOfReplies } from "@/utils/app/post/comment";
 import { useModerateComment } from "@/queries/app/post/comment-moderation";
 import axios from "axios";
 import { Reports } from "./reports/Reports";
+import { Post } from "../Post";
 
 export function CommentHeader({ comment }: { comment: PostComment }) {
   const { settings } = useSettings();
@@ -238,8 +239,13 @@ function PostCommentModerationOpenPostButton({
 }: {
   comment: PostComment;
 }) {
+  const modals = useModals();
+
   function handleClick() {
-    // FIXME
+    modals.open({
+      title: `Post of comment !${String(comment.id)}`,
+      children: <Post.type.WithFetcher id={comment.post_id} w="100%" />,
+    });
   }
 
   return (

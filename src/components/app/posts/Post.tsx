@@ -34,6 +34,7 @@ import { CommentPreview } from "./comments/CommentPreview";
 import { uniqBy } from "lodash";
 import type { EmblaCarouselType } from "embla-carousel";
 import {
+  usePost,
   useReactToPost,
   useSavePost,
   useUnsavePost,
@@ -55,11 +56,19 @@ import { useModeratePost } from "@/queries/app/post/post-moderation";
 import { useForm } from "@mantine/form";
 import axios from "axios";
 import type { ModerationAction } from "@/models/app/post/ModerationAction";
+import { PostSkeleton } from "./PostSkeleton";
+import { IconExclamationCircle } from "@tabler/icons-react";
 
 export interface PostPropsType {
   post: post.Post;
   highlight?: boolean;
+  w?: number | string;
 }
+
+export type PostWithFetcherPropsType = {
+  id: number | string;
+  errorMessage?: string;
+} & Omit<PostPropsType, "post">;
 
 const BUTTON_PROPS = {
   variant: "light",
@@ -605,7 +614,7 @@ function PostModeration(props: PostPropsType) {
   );
 }
 
-export const Post = memo((props: PostPropsType) => {
+function Post_(props: PostPropsType) {
   const { user } = useUser();
   const { settings } = useSettings();
   const theme = useMantineTheme();
@@ -659,7 +668,7 @@ export const Post = memo((props: PostPropsType) => {
   return (
     <Paper
       withBorder
-      w="90%"
+      w={props.w ?? "90%"}
       maw="50rem"
       style={{ borderColor: props.highlight ? theme.primaryColor : undefined }}
     >
@@ -719,4 +728,40 @@ export const Post = memo((props: PostPropsType) => {
       </Stack>
     </Paper>
   );
-});
+}
+
+function PostWithFetcher(props: PostWithFetcherPropsType) {
+  const theme = useMantineTheme();
+  const { data: post, isLoading, error } = usePost(props.id);
+
+  if (isLoading) {
+    return <PostSkeleton />;
+  }
+
+  if (error) {
+    notifications.show({
+      title: `Couldn't fetch post with id #${String(props.id)}`,
+      message: getErrorMessage(error),
+      color: "red",
+    });
+
+    return (
+      <Paper withBorder p="md" style={{ borderColor: theme.colors.red[8] }}>
+        <Stack align="center">
+          <IconExclamationCircle size={40} color={theme.colors.red[8]} />
+          <Text>
+            {props.errorMessage ?? `Failed to load post #${String(props.id)}.`}
+          </Text>
+        </Stack>
+      </Paper>
+    );
+  }
+
+  invariant(post);
+
+  return <Post_ post={post} {...props} />;
+}
+
+Post_.WithFetcher = PostWithFetcher;
+
+export const Post = memo(Post_);
