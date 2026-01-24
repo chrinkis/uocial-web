@@ -1,6 +1,6 @@
 export interface Moderation {
   is_hidden: boolean;
-  is_auto_hidden: boolean;
+  by_system: boolean;
   reports: {
     total: number;
   };

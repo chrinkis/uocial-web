@@ -578,9 +578,10 @@ function PostModerationActionButton({
       bg={action === "hide" ? "red" : "green"}
       flex={1}
       disabled={
-        action === "hide"
-          ? post.moderation?.is_hidden && !post.moderation.is_auto_hidden
-          : !post.moderation?.is_hidden
+        !post.moderation?.by_system &&
+        (action === "hide"
+          ? post.moderation?.is_hidden
+          : !post.moderation?.is_hidden)
       }
       onClick={handleHideClick}
     >

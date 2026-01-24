@@ -385,9 +385,10 @@ function PostCommentModerationActionButton({
       bg={action === "hide" ? "red" : "green"}
       flex={1}
       disabled={
-        action === "hide"
-          ? comment.moderation?.is_hidden && !comment.moderation.is_auto_hidden
-          : !comment.moderation?.is_hidden
+        !comment.moderation?.by_system &&
+        (action === "hide"
+          ? comment.moderation?.is_hidden
+          : !comment.moderation?.is_hidden)
       }
       onClick={handleHideClick}
       size="xs"
