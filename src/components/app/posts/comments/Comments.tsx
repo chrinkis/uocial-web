@@ -11,6 +11,7 @@ import { isModerator } from "@/utils/user";
 import { useUser } from "@/providers/user/hook";
 import { useSettings } from "@/providers/settings/hook";
 import invariant from "tiny-invariant";
+import type { Commment } from "@/models/app/post/Comment";
 
 interface CommentsProps {
   post: Post;
@@ -40,7 +41,7 @@ export function Comments({ post }: CommentsProps) {
 
   const CommentComponent = useMemo(
     () =>
-      ({ data }: { data: any }) => (
+      ({ data }: { data: Commment }) => (
         <Comment comment={data} onReplyTo={handleReplyTo} />
       ),
     [handleReplyTo],

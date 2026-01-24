@@ -20,7 +20,6 @@ import {
   incrementPostCommentCount,
   incrementCommentReplyCount,
 } from "./cache-utils";
-import { reportComment } from "@/api/app/post/comment-report";
 
 export function useComments(postId: number) {
   return useInfiniteQuery({

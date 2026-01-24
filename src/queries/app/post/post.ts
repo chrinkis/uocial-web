@@ -22,7 +22,6 @@ import {
   updatePostInAllCaches,
   addPostToSavedCache,
 } from "./cache-utils";
-import { reportPost } from "@/api/app/post/post-report";
 
 export function usePosts(params?: fetchPostsParams) {
   return useInfiniteQuery({

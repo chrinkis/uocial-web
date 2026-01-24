@@ -35,10 +35,7 @@ import invariant from "tiny-invariant";
 import type { ModerationAction } from "@/models/app/post/ModerationAction";
 import { useForm } from "@mantine/form";
 import { useGetNumberOfReplies } from "@/utils/app/post/comment";
-import {
-  useModerateComment,
-  useTraceComment,
-} from "@/queries/app/post/comment-moderation";
+import { useModerateComment } from "@/queries/app/post/comment-moderation";
 import axios from "axios";
 import { Reports } from "./reports/Reports";
 import { Post } from "../Post";

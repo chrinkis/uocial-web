@@ -3,7 +3,7 @@ import { SettingsContext } from "./Context";
 import { getSettings, saveSettings } from "@/utils/storage/settings";
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState(getSettings());
+  const [settings, setSettings] = useState(() => getSettings());
 
   const contextValue = useMemo(
     () => ({
