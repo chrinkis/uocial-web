@@ -26,7 +26,7 @@ export function ReportReviewForm({
       comment:
         value === "invalid"
           ? ""
-          : "The report includes at least one term that was violated in the related post.",
+          : "The report includes at least one term that was violated in the related comment.",
     },
   });
 
