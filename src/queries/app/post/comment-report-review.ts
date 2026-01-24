@@ -56,6 +56,16 @@ export function useReviewCommentReport() {
         queryKey: ["comment-reports"],
         refetchType: "none",
       });
+
+      // Invalidate trace for this specific comment
+      void queryClient.invalidateQueries({
+        queryKey: [
+          "comment",
+          "trace",
+          String(variables.postId),
+          String(variables.commentId),
+        ],
+      });
     },
   });
 }

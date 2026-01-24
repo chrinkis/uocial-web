@@ -1,5 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { moderateComment } from "@/api/app/post/comment-moderation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  moderateComment,
+  traceComment,
+} from "@/api/app/post/comment-moderation";
 import { updateCommentInAllCachesWith } from "./cache-utils";
 import type { ModerationAction } from "@/models/app/post/ModerationAction";
 import type { Commment } from "@/models/app/post/Comment";
@@ -46,6 +49,21 @@ export function useModerateComment() {
         queryKey: ["comments"],
         refetchType: "none",
       });
+
+      // Invalidate trace for this specific comment
+      void queryClient.invalidateQueries({
+        queryKey: ["comment", "trace", String(postId), String(commentId)],
+      });
     },
+  });
+}
+
+export function useTraceComment(
+  postId: number | string,
+  commentId: number | string,
+) {
+  return useQuery({
+    queryKey: ["comment", "trace", String(postId), String(commentId)],
+    queryFn: () => traceComment({ postId, commentId }),
   });
 }

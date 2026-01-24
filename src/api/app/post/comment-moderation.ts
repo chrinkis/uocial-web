@@ -1,4 +1,6 @@
+import type { Commment } from "@/models/app/post/Comment";
 import type { ModerationAction } from "@/models/app/post/ModerationAction";
+import type { ApiResponse } from "@/utils/response";
 import axios from "axios";
 
 export async function moderateComment({
@@ -27,4 +29,18 @@ export async function moderateComment({
   return {
     message,
   };
+}
+
+export async function traceComment({
+  postId,
+  commentId,
+}: {
+  postId: number | string;
+  commentId: number | string;
+}) {
+  const { data } = await axios.get<ApiResponse & { trace: Commment[] }>(
+    `/api/app/posts/${String(postId)}/comments/${String(commentId)}/trace`,
+  );
+
+  return data;
 }

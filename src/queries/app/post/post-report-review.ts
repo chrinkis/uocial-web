@@ -52,6 +52,18 @@ export function useReviewPostReport() {
         queryKey: ["post-reports"],
         refetchType: "none",
       });
+
+      // Invalidate trace queries for this post's comments
+      void queryClient.invalidateQueries({
+        queryKey: ["comment", "trace", String(variables.postId)],
+        predicate: (query) => {
+          return (
+            query.queryKey[0] === "comment" &&
+            query.queryKey[1] === "trace" &&
+            String(query.queryKey[2]) === String(variables.postId)
+          );
+        },
+      });
     },
   });
 }

@@ -90,6 +90,18 @@ export function useCreateComment() {
         queryKey: ["comments", "arbitrary"],
       });
 
+      // Invalidate trace queries for this post's comments
+      void queryClient.invalidateQueries({
+        queryKey: ["comment", "trace", String(postId)],
+        predicate: (query) => {
+          return (
+            query.queryKey[0] === "comment" &&
+            query.queryKey[1] === "trace" &&
+            String(query.queryKey[2]) === String(postId)
+          );
+        },
+      });
+
       if (variables.reply_to) {
         const replyToId =
           typeof variables.reply_to === "number"
@@ -131,6 +143,16 @@ export function useReactToComment() {
     onSuccess: ({ reactions }, variables) => {
       void queryClient.invalidateQueries({
         queryKey: ["comments", "arbitrary"],
+      });
+
+      // Invalidate trace for this specific comment
+      void queryClient.invalidateQueries({
+        queryKey: [
+          "comment",
+          "trace",
+          String(variables.postId),
+          String(variables.commentId),
+        ],
       });
 
       updateCommentInAllCaches(

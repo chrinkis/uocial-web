@@ -35,10 +35,14 @@ import invariant from "tiny-invariant";
 import type { ModerationAction } from "@/models/app/post/ModerationAction";
 import { useForm } from "@mantine/form";
 import { useGetNumberOfReplies } from "@/utils/app/post/comment";
-import { useModerateComment } from "@/queries/app/post/comment-moderation";
+import {
+  useModerateComment,
+  useTraceComment,
+} from "@/queries/app/post/comment-moderation";
 import axios from "axios";
 import { Reports } from "./reports/Reports";
 import { Post } from "../Post";
+import { CommentTrace } from "./CommentTrace";
 
 export function CommentHeader({ comment }: { comment: PostComment }) {
   const { settings } = useSettings();
@@ -223,8 +227,15 @@ function PostCommentModerationTraceButton({
 }: {
   comment: PostComment;
 }) {
+  const modals = useModals();
+
   function handleClick() {
-    // FIXME
+    modals.open({
+      title: `Trace for comment !${String(comment.id)}`,
+      children: (
+        <CommentTrace commentId={comment.id} postId={comment.post_id} />
+      ),
+    });
   }
 
   return (

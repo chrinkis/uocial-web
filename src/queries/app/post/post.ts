@@ -71,6 +71,18 @@ export function useCreatePost() {
         queryKey: ["comments", "arbitrary"],
       });
 
+      // Invalidate trace queries for this post's comments
+      void queryClient.invalidateQueries({
+        queryKey: ["comment", "trace", String(post.id)],
+        predicate: (query) => {
+          return (
+            query.queryKey[0] === "comment" &&
+            query.queryKey[1] === "trace" &&
+            String(query.queryKey[2]) === String(post.id)
+          );
+        },
+      });
+
       // Add to the base (unfiltered) list
       queryClient.setQueryData<InfiniteQueryData<Post>>(
         POST_QUERY_KEYS.list(),
@@ -113,6 +125,18 @@ export function useReactToPost() {
         queryKey: ["comments", "arbitrary"],
       });
 
+      // Invalidate trace queries for this post's comments
+      void queryClient.invalidateQueries({
+        queryKey: ["comment", "trace", String(variables.postId)],
+        predicate: (query) => {
+          return (
+            query.queryKey[0] === "comment" &&
+            query.queryKey[1] === "trace" &&
+            String(query.queryKey[2]) === String(variables.postId)
+          );
+        },
+      });
+
       updatePostInAllCaches(queryClient, variables.postId, { reactions });
     },
   });
@@ -127,6 +151,18 @@ export function useSavePost() {
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: ["comments", "arbitrary"],
+      });
+
+      // Invalidate trace queries for this post's comments
+      void queryClient.invalidateQueries({
+        queryKey: ["comment", "trace", String(variables.postId)],
+        predicate: (query) => {
+          return (
+            query.queryKey[0] === "comment" &&
+            query.queryKey[1] === "trace" &&
+            String(query.queryKey[2]) === String(variables.postId)
+          );
+        },
       });
 
       const postId = Number(variables.postId);
@@ -168,6 +204,18 @@ export function useUnsavePost() {
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: ["comments", "arbitrary"],
+      });
+
+      // Invalidate trace queries for this post's comments
+      void queryClient.invalidateQueries({
+        queryKey: ["comment", "trace", String(variables.postId)],
+        predicate: (query) => {
+          return (
+            query.queryKey[0] === "comment" &&
+            query.queryKey[1] === "trace" &&
+            String(query.queryKey[2]) === String(variables.postId)
+          );
+        },
       });
 
       updatePostInAllCaches(queryClient, Number(variables.postId), {

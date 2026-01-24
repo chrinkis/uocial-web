@@ -49,6 +49,16 @@ export function useReportComment() {
         Number(variables.commentId),
         { reported_by_the_user: true },
       );
+
+      // Invalidate trace for this specific comment
+      void queryClient.invalidateQueries({
+        queryKey: [
+          "comment",
+          "trace",
+          String(variables.postId),
+          String(variables.commentId),
+        ],
+      });
     },
   });
 }
