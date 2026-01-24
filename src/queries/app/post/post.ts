@@ -67,6 +67,10 @@ export function useCreatePost() {
   return useMutation({
     mutationFn: (formData: Record<string, unknown>) => createPost(formData),
     onSuccess: ({ post }) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["comments", "arbitrary"],
+      });
+
       // Add to the base (unfiltered) list
       queryClient.setQueryData<InfiniteQueryData<Post>>(
         POST_QUERY_KEYS.list(),
@@ -74,7 +78,7 @@ export function useCreatePost() {
       );
 
       // Invalidate all hashtag-filtered lists since we don't know which ones the new post belongs to
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ["posts"],
         predicate: (query) => {
           // Only invalidate post lists with filters (length > 1), not the base list or saved/detail
@@ -105,6 +109,10 @@ export function useReactToPost() {
       postId: number;
     }) => reactToPost({ reaction, postId }),
     onSuccess: ({ reactions }, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["comments", "arbitrary"],
+      });
+
       updatePostInAllCaches(queryClient, variables.postId, { reactions });
     },
   });
@@ -117,6 +125,10 @@ export function useSavePost() {
     mutationFn: ({ postId }: { postId: number | string }) =>
       savePost({ postId }),
     onSuccess: (_, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["comments", "arbitrary"],
+      });
+
       const postId = Number(variables.postId);
 
       updatePostInAllCaches(queryClient, postId, { saved: true });
@@ -154,6 +166,10 @@ export function useUnsavePost() {
     mutationFn: ({ postId }: { postId: number | string }) =>
       unsavePost({ postId }),
     onSuccess: (_, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["comments", "arbitrary"],
+      });
+
       updatePostInAllCaches(queryClient, Number(variables.postId), {
         saved: false,
       });

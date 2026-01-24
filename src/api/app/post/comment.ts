@@ -4,12 +4,36 @@ import type { Commment } from "@/models/app/post/Comment";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import type { PostReactions } from "@/models/app/post/PostReactions";
 
+export interface fetchCommentParams {
+  hashtag?: string;
+  reported?: boolean;
+  pending_review?: boolean;
+  pending_reports?: boolean;
+}
+
 export async function fetchComments(
   page: number | string,
   { postId }: { postId: number | string },
 ) {
   const { data } = await axios.get<PaginatedResponse<Commment>>(
     `/api/app/posts/${String(postId)}/comments?page=${String(page)}`,
+  );
+
+  return data;
+}
+
+export async function fetchArbitaryComments(
+  page: number | string,
+  params: fetchCommentParams = {},
+) {
+  const queryParams = new URLSearchParams();
+  queryParams.append("page", String(page));
+  for (const [key, value] of Object.entries(params)) {
+    queryParams.append(key, String(value));
+  }
+
+  const { data } = await axios.get<PaginatedResponse<Commment>>(
+    `/api/app/posts/comments?${queryParams.toString()}`,
   );
 
   return data;

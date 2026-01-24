@@ -1,6 +1,9 @@
+import { Comment } from "@/components/app/posts/comments/Comment";
+import { CommentSkeleton } from "@/components/app/posts/comments/CommentSkeleton";
 import { Post } from "@/components/app/posts/Post";
 import { PostSkeleton } from "@/components/app/posts/PostSkeleton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
+import { useArbitaryComments } from "@/queries/app/post/comment";
 import { usePosts } from "@/queries/app/post/post";
 import { Flex, Tabs } from "@mantine/core";
 
@@ -57,6 +60,59 @@ function PostTab() {
   );
 }
 
+function CommentTab() {
+  return (
+    <Tabs defaultValue="pending-review" maw="100%" keepMounted={false}>
+      <Tabs.List justify="center" mb="lg">
+        <Tabs.Tab value="pending-review">Pending Review</Tabs.Tab>
+        <Tabs.Tab value="pending-reports">Pending Reports</Tabs.Tab>
+        <Tabs.Tab value="reviewed">Reviewed</Tabs.Tab>
+        <Tabs.Tab value="reviewed-reports">Reviewed Reports</Tabs.Tab>
+      </Tabs.List>
+
+      <Tabs.Panel value="pending-review">
+        <InfiniteScrolling
+          useQuery={useArbitaryComments}
+          queryArgs={[{ pending_review: true }]}
+          name="comments"
+          Component={({ data }) => <Comment comment={data} />}
+          loader={<CommentSkeleton />}
+        />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="pending-reports">
+        <InfiniteScrolling
+          useQuery={useArbitaryComments}
+          queryArgs={[{ pending_reports: true }]}
+          name="comments"
+          Component={({ data }) => <Comment comment={data} />}
+          loader={<CommentSkeleton />}
+        />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="reviewed">
+        <InfiniteScrolling
+          useQuery={useArbitaryComments}
+          queryArgs={[{ pending_review: false }]}
+          name="comments"
+          Component={({ data }) => <Comment comment={data} />}
+          loader={<CommentSkeleton />}
+        />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="reviewed-reports">
+        <InfiniteScrolling
+          useQuery={useArbitaryComments}
+          queryArgs={[{ pending_reports: false }]}
+          name="comments"
+          Component={({ data }) => <Comment comment={data} />}
+          loader={<CommentSkeleton />}
+        />
+      </Tabs.Panel>
+    </Tabs>
+  );
+}
+
 export default function Page() {
   return (
     <Flex flex={1} w="100%" justify="center">
@@ -72,6 +128,10 @@ export default function Page() {
 
         <Tabs.Panel value="posts">
           <PostTab />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="comments">
+          <CommentTab />
         </Tabs.Panel>
       </Tabs>
     </Flex>

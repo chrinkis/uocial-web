@@ -4,11 +4,13 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
+  fetchArbitaryComments,
   fetchComments,
   fetchReplies,
   createComment,
   reactToComment,
 } from "@/api/app/post/comment";
+import type { fetchCommentParams } from "@/api/app/post/comment";
 import type { Commment } from "@/models/app/post/Comment";
 import type { ReactionValue } from "@/models/app/post/Reaction";
 import { addToInfiniteQuery, type InfiniteQueryData } from "@/utils/cache";
@@ -24,6 +26,21 @@ export function useComments(postId: number) {
   return useInfiniteQuery({
     queryKey: ["comments", postId],
     queryFn: ({ pageParam }) => fetchComments(pageParam, { postId }),
+    initialPageParam: 1,
+    getNextPageParam: (lastResponse) => {
+      if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
+        return lastResponse.meta.current_page + 1;
+      }
+
+      return undefined;
+    },
+  });
+}
+
+export function useArbitaryComments(params: fetchCommentParams = {}) {
+  return useInfiniteQuery({
+    queryKey: ["comments", "arbitrary", params],
+    queryFn: ({ pageParam }) => fetchArbitaryComments(pageParam, params),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
@@ -69,6 +86,10 @@ export function useCreateComment() {
           ? variables.postId
           : Number(variables.postId);
 
+      void queryClient.invalidateQueries({
+        queryKey: ["comments", "arbitrary"],
+      });
+
       if (variables.reply_to) {
         const replyToId =
           typeof variables.reply_to === "number"
@@ -108,6 +129,10 @@ export function useReactToComment() {
       commentId: number;
     }) => reactToComment({ reaction, postId, commentId }),
     onSuccess: ({ reactions }, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["comments", "arbitrary"],
+      });
+
       updateCommentInAllCaches(
         queryClient,
         variables.postId,
