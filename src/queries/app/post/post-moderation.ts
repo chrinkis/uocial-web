@@ -30,7 +30,7 @@ export function useModeratePost() {
             ? {
                 ...post.moderation,
                 is_hidden: variables.action === "hide",
-                is_auto_hidden: false,
+                by_system: false,
               }
             : undefined,
         }),
