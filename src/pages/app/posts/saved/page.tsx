@@ -18,7 +18,7 @@ function Loader() {
   return (
     <Box w="100%" h="100%">
       <Flex w="100%" justify="center">
-        <PostSkeleton />;
+        <PostSkeleton />
       </Flex>
     </Box>
   );
