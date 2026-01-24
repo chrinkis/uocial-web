@@ -1,17 +1,19 @@
 import { Button, Group, Stack, Textarea } from "@mantine/core";
-import { useReportPost } from "@/queries/app/post/post-report";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import { useForm } from "@mantine/form";
+import { useReportComment } from "@/queries/app/post/comment-report";
 
 export function ReportForm({
   postId,
+  commentId,
   onSuccess,
 }: {
   postId: number | string;
+  commentId: number | string;
   onSuccess?: () => void;
 }) {
-  const reportPost = useReportPost();
+  const reportComment = useReportComment();
   const form = useForm({
     initialValues: {
       comment: "",
@@ -20,8 +22,9 @@ export function ReportForm({
 
   const handleSubmit = form.onSubmit(async (values: { comment: string }) => {
     try {
-      const { message } = await reportPost.mutateAsync({
+      const { message } = await reportComment.mutateAsync({
         postId,
+        commentId,
         comment: values.comment,
       });
       notifications.show({
@@ -44,15 +47,15 @@ export function ReportForm({
         <Textarea
           required
           label="Comment"
-          description={`Write what is wrong with post #${String(postId)}.`}
+          description={`Write what is wrong with comment !${String(commentId)}.`}
           autosize
           minRows={3}
-          disabled={reportPost.isPending}
+          disabled={reportComment.isPending}
           {...form.getInputProps("comment")}
         />
 
         <Group justify="right">
-          <Button type="submit" loading={reportPost.isPending}>
+          <Button type="submit" loading={reportComment.isPending}>
             Submit
           </Button>
         </Group>

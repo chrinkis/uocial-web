@@ -1,7 +1,7 @@
 import type { Commment } from "@/models/app/post/Comment";
 import { Button, Group, Text } from "@mantine/core";
 import { IconFlag, IconFlagFilled } from "@tabler/icons-react";
-import { CommentReportForm } from "./CommentReportForm";
+import { ReportForm } from "./reports/ReportForm";
 import { useModals } from "@/providers/modals/hook";
 
 export function CommentOptions({
@@ -18,7 +18,7 @@ export function CommentOptions({
       title: `Reporting comment !${String(comment.id)}`,
       centered: true,
       children: (
-        <CommentReportForm
+        <ReportForm
           postId={comment.post_id}
           commentId={comment.id}
           onSuccess={closeReportModal}
