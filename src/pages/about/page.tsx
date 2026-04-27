@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Text } from "@mantine/core";
+import { Anchor, Stack, Text, Title } from "@mantine/core";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { useMantineTheme } from "@mantine/core";
@@ -153,7 +153,26 @@ export default function Page() {
   return (
     <Stack align="center">
       <Logo />
-      <h1>About Uocial</h1>
+
+      <Title order={2}>About Uocial</Title>
+
+      <Text size="lg" maw={512} ta="center">
+        Uocial (UoC + Social), is a social media platform, specifically designed
+        for the needs of UoC students.
+      </Text>
+
+      <Text size="lg" maw={512} ta="center">
+        At the moment, it offers anonymous posts and comments (aka
+        "ανομολόγητα").
+      </Text>
+
+      <Text size="lg" maw={512} ta="center">
+        It's an{" "}
+        <Anchor href="https://github.com/chrinkis/uocial-web">
+          open source
+        </Anchor>{" "}
+        project and it values your privacy!
+      </Text>
     </Stack>
   );
 }
