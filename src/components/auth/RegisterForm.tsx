@@ -2,7 +2,9 @@ import { register } from "@/api/user/auth";
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
 import { validatePassword } from "@/utils/password";
 import {
+  Anchor,
   Button,
+  Checkbox,
   Group,
   Paper,
   PasswordInput,
@@ -13,6 +15,7 @@ import {
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
+import { NavLink } from "react-router";
 
 export interface RegisterFormPropsType {
   redirect?: string;
@@ -26,6 +29,8 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
       email: "",
       password: "",
       password_confirmation: "",
+      accepted_terms_of_use: false,
+      accepted_privacy_policy: false,
     },
     validate: {
       password: (value, values) => {
@@ -99,6 +104,38 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
             {...form.getInputProps("password_confirmation")}
             required
           />
+
+          <Stack gap="xs">
+            <Checkbox
+              label={
+                <>
+                  I accept{" "}
+                  <Anchor component={NavLink} to="/legal/terms-of-use">
+                    Terms of Use
+                  </Anchor>
+                  .
+                </>
+              }
+              key={form.key("accepted_terms_of_use")}
+              {...form.getInputProps("accepted_terms_of_use", { type: "checkbox" })}
+              required
+            />
+
+            <Checkbox
+              label={
+                <>
+                  I accept{" "}
+                  <Anchor component={NavLink} to="/legal/privacy-policy">
+                    Privacy Policy
+                  </Anchor>{" "}
+                  terms.
+                </>
+              }
+              key={form.key("accepted_privacy_policy")}
+              {...form.getInputProps("accepted_privacy_policy", { type: "checkbox" })}
+              required
+            />
+          </Stack>
 
           <Group justify="flex-end">
             <Button type="submit" loading={form.submitting}>

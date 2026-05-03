@@ -17,6 +17,9 @@ import SavedPostsPage from "@/pages/app/posts/saved/page";
 import { ModeratorGuard } from "./guards/ModeratorGuard";
 import HashtagsPage from "@/pages/app/posts/hashtags/page";
 import ModerationDashboardPage from "@/pages/app/moderation/dashboard/page";
+import { LegalGuard } from "./guards/LegalGuard";
+import TermsOfUsePage from "@/pages/legal/terms-of-use/page";
+import PrivacyPolicyPage from "@/pages/legal/privacy-policy/page";
 
 function getOpenRoutes() {
   return (
@@ -29,6 +32,9 @@ function getOpenRoutes() {
         element={<ResetPasswordPage />}
       />
       <Route path="auth/password/forgot" element={<ForgotPasswordPage />} />
+
+      <Route path="legal/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route path="legal/terms-of-use" element={<TermsOfUsePage />} />
     </>
   );
 }
@@ -74,12 +80,14 @@ function App() {
         {getOpenRoutes()}
 
         <Route element={<LoggedInGuard />}>
-          {getLoggedInRoutes()}
+          <Route element={<LegalGuard />}>
+            {getLoggedInRoutes()}
 
-          <Route element={<VerifiedGuard />}>
-            {getVerifiedRoutes()}
+            <Route element={<VerifiedGuard />}>
+              {getVerifiedRoutes()}
 
-            <Route element={<ModeratorGuard />}>{getModeratorRoutes()}</Route>
+              <Route element={<ModeratorGuard />}>{getModeratorRoutes()}</Route>
+            </Route>
           </Route>
         </Route>
       </Route>

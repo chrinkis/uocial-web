@@ -6,4 +6,12 @@ export interface User {
   email: string;
   email_verified_at: Date | null;
   role: UserRole;
+  legal: {
+    privacy_policy: {
+      needs_acceptance: boolean;
+    };
+    terms_of_use: {
+      needs_acceptance: boolean;
+    };
+  };
 }

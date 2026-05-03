@@ -3,7 +3,7 @@ import type { ApiResponse } from "@/utils/response";
 import axios from "axios";
 
 export async function fetchUser() {
-  return await axios.get<User>("/api/user");
+  return await axios.get<{ data: User }>("/api/user");
 }
 
 export async function login(credentials: { email: string; password: string }) {

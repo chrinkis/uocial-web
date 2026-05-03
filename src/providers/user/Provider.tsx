@@ -13,8 +13,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const { loading, error, value } = useAsync(fetchUser);
 
   const user = useMemo(
-    () => (error ? null : (value?.data ?? null)),
-    [value?.data, error],
+    () => (error ? null : (value?.data.data ?? null)),
+    [value?.data.data, error],
   );
 
   const logout = useCallback(async () => {
