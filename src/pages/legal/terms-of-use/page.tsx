@@ -18,7 +18,7 @@ export default function Page() {
   return (
     <Stack>
       <Title order={1} ta="center">
-        Terms of Use {value.data.data.version}
+        Terms of Use v{value.data.data.version}
       </Title>
 
       <Text ta="right" fs="italic" td="underline">
