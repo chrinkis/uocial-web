@@ -90,9 +90,7 @@ function PostTitle({ post }: PostPropsType) {
         },
       }}
     >
-      <Title order={3} ta="justify">
-        {post.title}
-      </Title>
+      <Title order={3}>{post.title}</Title>
     </Spoiler>
   );
 }
