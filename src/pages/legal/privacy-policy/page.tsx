@@ -1,7 +1,8 @@
 import { fetchPrivacyPolicy } from "@/api/legal/privacy-policy";
-import { Loader, Stack, Text, Title } from "@mantine/core";
+import { Loader, Stack, Text, Title, Typography } from "@mantine/core";
 import { useAsync } from "react-use";
 import invariant from "tiny-invariant";
+import Markdown from "react-markdown";
 
 export default function Page() {
   const { loading, error, value } = useAsync(
@@ -16,19 +17,17 @@ export default function Page() {
 
   return (
     <Stack>
-      <Title order={2} ta="center">
+      <Title order={1} ta="center">
         Privacy Policy {value.data.data.version}
       </Title>
 
-      <Text ta="right">
+      <Text ta="right" fs="italic" td="underline">
         {new Date(value.data.data.created_at).toLocaleString()}
       </Text>
 
-      {value.data.data.content.split("\n\n").map((p, i) => (
-        <Text ta="justify" key={i}>
-          {p}
-        </Text>
-      ))}
+      <Typography>
+        <Markdown>{value.data.data.content}</Markdown>
+      </Typography>
     </Stack>
   );
 }
