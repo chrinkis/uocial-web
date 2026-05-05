@@ -16,12 +16,16 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
 import { NavLink } from "react-router";
+import { useRef } from "react";
+import Altcha from "./Altcha";
 
 export interface RegisterFormPropsType {
   redirect?: string;
 }
 
 export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
+  const altchaRef = useRef<{ value: string | null }>(null);
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -42,7 +46,7 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
 
   const handleSubmit = form.onSubmit(async (values) => {
     try {
-      await register(values);
+      await register({ ...values, altcha: altchaRef.current?.value });
       window.location.href = redirect;
     } catch (error) {
       notifications.show({
@@ -104,6 +108,8 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
             {...form.getInputProps("password_confirmation")}
             required
           />
+
+          <Altcha ref={altchaRef} />
 
           <Stack gap="xs">
             <Checkbox

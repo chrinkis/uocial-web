@@ -13,8 +13,9 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCircleCheck } from "@tabler/icons-react";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
+import Altcha from "./Altcha";
 
 function Success({ message }: { message: string }) {
   return (
@@ -36,6 +37,7 @@ function Success({ message }: { message: string }) {
 
 export function ForgotPasswordForm() {
   const navigate = useNavigate();
+  const altchaRef = useRef<{ value: string | null }>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const form = useForm({
     mode: "uncontrolled",
@@ -46,7 +48,10 @@ export function ForgotPasswordForm() {
 
   const handleSubmit = form.onSubmit(async (values) => {
     try {
-      const response = await forgotPassword(values);
+      const response = await forgotPassword({
+        ...values,
+        altcha: altchaRef.current?.value,
+      });
       setSuccessMessage(response.data.message);
     } catch (error) {
       notifications.show({
@@ -90,6 +95,8 @@ export function ForgotPasswordForm() {
               {...form.getInputProps("email")}
               required
             />
+
+            <Altcha ref={altchaRef} />
 
             <Group justify="space-between">
               <Button

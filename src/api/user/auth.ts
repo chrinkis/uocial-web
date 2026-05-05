@@ -6,7 +6,11 @@ export async function fetchUser() {
   return await axios.get<{ data: User }>("/api/user");
 }
 
-export async function login(credentials: { email: string; password: string }) {
+export async function login(credentials: {
+  email: string;
+  password: string;
+  altcha?: string | null;
+}) {
   await axios.post("/api/auth/login", credentials);
 }
 
@@ -15,6 +19,7 @@ export async function register(credentials: {
   email: string;
   password: string;
   password_confirmation: string;
+  altcha?: string | null;
 }) {
   await axios.post("/api/auth/register", credentials);
 }
@@ -23,7 +28,10 @@ export async function logout() {
   await axios.post("/api/auth/logout");
 }
 
-export async function forgotPassword(credentials: { email: string }) {
+export async function forgotPassword(credentials: {
+  email: string;
+  altcha?: string | null;
+}) {
   return await axios.post<ApiResponse>(
     "/api/auth/password/forgot",
     credentials,
