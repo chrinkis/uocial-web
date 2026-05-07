@@ -173,6 +173,12 @@ export default function Page() {
         </Anchor>{" "}
         project and it values your privacy!
       </Text>
+
+      <Text size="lg" maw={512} ta="center" c="dimmed">
+        Disclaimer: This project is made by individual University of Crete
+        students. There is no relation, connection, or endorsement from the
+        University of Crete.
+      </Text>
     </Stack>
   );
 }
