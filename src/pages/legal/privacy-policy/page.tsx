@@ -3,6 +3,7 @@ import { Loader, Stack, Text, Title, Typography } from "@mantine/core";
 import { useAsync } from "react-use";
 import invariant from "tiny-invariant";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function Page() {
   const { loading, error, value } = useAsync(
@@ -26,7 +27,9 @@ export default function Page() {
       </Text>
 
       <Typography>
-        <Markdown>{value.data.data.content}</Markdown>
+        <Markdown remarkPlugins={[remarkGfm]}>
+          {value.data.data.content}
+        </Markdown>
       </Typography>
     </Stack>
   );
