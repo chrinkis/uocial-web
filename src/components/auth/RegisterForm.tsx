@@ -95,7 +95,7 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
 
           <PasswordInput
             label="Password"
-            description="Use a unique, new  password"
+            description="Use a unique, new  password. Don't, in any circumstances, use the same password you use in your UoC account"
             key={form.key("password")}
             minLength={12}
             {...form.getInputProps("password")}
@@ -123,7 +123,9 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
                 </>
               }
               key={form.key("accepted_terms_of_use")}
-              {...form.getInputProps("accepted_terms_of_use", { type: "checkbox" })}
+              {...form.getInputProps("accepted_terms_of_use", {
+                type: "checkbox",
+              })}
               required
             />
 
@@ -138,7 +140,9 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
                 </>
               }
               key={form.key("accepted_privacy_policy")}
-              {...form.getInputProps("accepted_privacy_policy", { type: "checkbox" })}
+              {...form.getInputProps("accepted_privacy_policy", {
+                type: "checkbox",
+              })}
               required
             />
           </Stack>

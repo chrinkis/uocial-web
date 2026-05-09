@@ -71,6 +71,7 @@ export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
             <PasswordInput
               label="Password"
               key={form.key("password")}
+              description="Use the password you filled during Sign-Up. Don't use UoC's account password"
               {...form.getInputProps("password")}
               required
             />
