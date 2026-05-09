@@ -9,6 +9,7 @@ export async function fetchUser() {
 export async function login(credentials: {
   email: string;
   password: string;
+  remember: boolean;
   altcha?: string | null;
 }) {
   await axios.post("/api/auth/login", credentials);

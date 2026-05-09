@@ -2,6 +2,7 @@ import { login } from "@/api/user/auth";
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
 import {
   Button,
+  Checkbox,
   Group,
   Paper,
   PasswordInput,
@@ -26,7 +27,7 @@ export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
 
   const form = useForm({
     mode: "uncontrolled",
-    initialValues: { email: "", password: "" },
+    initialValues: { email: "", password: "", remember: false },
   });
 
   const handleSubmit = form.onSubmit(async (values) => {
@@ -77,6 +78,13 @@ export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
             />
 
             <Altcha ref={altchaRef} />
+
+            <Checkbox
+              label="Remember me"
+              description="Stay logged in for a longer period of time"
+              key={form.key("remember")}
+              {...form.getInputProps("remember", { type: "checkbox" })}
+            />
 
             <Group justify="flex-end">
               <Anchor
