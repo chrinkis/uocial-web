@@ -54,7 +54,7 @@ export function CommentPreview({
   return (
     <Paper withBorder p="xs" w="100%">
       <Stack gap={2}>
-        <Collapse in={expanded} transitionDuration={500}>
+        <Collapse expanded={expanded} transitionDuration={500}>
           <Group justify="space-between">
             <Group gap={3}>
               <Popover withArrow arrowSize={12}>
