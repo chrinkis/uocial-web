@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Loader, Stack } from "@mantine/core";
+import { Button, Loader, Stack, type MantineSpacing } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type {
@@ -20,6 +20,7 @@ export function InfiniteScrolling<
   Fallback,
   loader = <Loader />,
   filter,
+  gap,
 }: {
   useQuery: (
     ...args: TArgs
@@ -30,6 +31,7 @@ export function InfiniteScrolling<
   Fallback?: ComponentType;
   loader?: ReactElement;
   filter?: (element: T) => boolean;
+  gap?: MantineSpacing;
 }) {
   const {
     data,
@@ -72,7 +74,7 @@ export function InfiniteScrolling<
   }
 
   return (
-    <Stack align="safe center" w="100%">
+    <Stack align="safe center" w="100%" gap={gap}>
       {displayPages?.map((page: PaginatedResponse<T>) =>
         page.data.map((data: T) => <Component data={data} key={data.id} />),
       )}
