@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import { IconGavel } from "@tabler/icons-react";
 import axios from "axios";
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import { NavLink } from "react-router";
 
 export function Legal({
@@ -19,7 +19,7 @@ export function Legal({
   termsOfUseAccepted: boolean;
   privacyPolicyAccepted: boolean;
 }) {
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (!termsOfUseAccepted) {
