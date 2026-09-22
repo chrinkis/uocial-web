@@ -8,10 +8,13 @@ import {
   UnstyledButton,
   Menu,
   Switch,
+  ActionIcon,
+  Indicator,
 } from "@mantine/core";
 import { NavLink, useNavigate } from "react-router";
 import { Avatar } from "@mantine/core";
 import {
+  IconBell,
   IconBookmark,
   IconDeviceDesktopAnalytics,
   IconLogout,
@@ -19,6 +22,7 @@ import {
 } from "@tabler/icons-react";
 import invariant from "tiny-invariant";
 import { useSettings } from "@/providers/settings/hook";
+import { useUnreadNotificationsCount } from "@/queries/app/notification";
 import { isModerator } from "@/utils/user";
 
 function UserMenu() {
@@ -136,6 +140,24 @@ function AuthMenu() {
   );
 }
 
+function NotificationsBell() {
+  const { user } = useUser();
+  const { data: unreadCount = 0 } = useUnreadNotificationsCount(Boolean(user));
+
+  return (
+    <Indicator
+      disabled={unreadCount === 0}
+      label={unreadCount > 99 ? "99+" : unreadCount}
+      size={14}
+      color="pink"
+    >
+      <ActionIcon variant="transparent" aria-label="Notifications">
+        <IconBell color="var(--mantine-color-body)" />
+      </ActionIcon>
+    </Indicator>
+  );
+}
+
 function Logo() {
   return (
     <NavLink to="/">
@@ -160,7 +182,14 @@ export function Header() {
       align="center"
     >
       <Logo />
-      {user ? <UserMenu /> : <AuthMenu />}
+      {user ? (
+        <Group gap="sm">
+          <NotificationsBell />
+          <UserMenu />
+        </Group>
+      ) : (
+        <AuthMenu />
+      )}
     </Flex>
   );
 }
