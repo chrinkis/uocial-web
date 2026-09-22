@@ -13,9 +13,14 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import type { ReactNode } from "react";
+import { useNavigate } from "react-router";
 import type { Notification, NotificationType } from "@/models/Notification";
 import { Timestamp } from "@/components/Timestamp";
 import { useMarkNotificationRead } from "@/queries/app/notification";
+
+function isNavigable(type: NotificationType) {
+  return type !== "postHiddenUntilReview" && type !== "postHiddenByModerator";
+}
 
 function getMessage(notification: Notification): string {
   const postId = `#${String(notification.post_id)}`;
@@ -78,12 +83,17 @@ interface NotificationItemProps {
 export function NotificationItem({ data, onSelect }: NotificationItemProps) {
   const theme = useMantineTheme();
   const markRead = useMarkNotificationRead();
+  const navigate = useNavigate();
   const isUnread = !data.read;
   const { icon, color } = getIcon(data);
 
   async function handleClick() {
     if (isUnread) {
       await markRead.mutateAsync({ id: data.id });
+    }
+
+    if (isNavigable(data.type)) {
+      await navigate(`/app/posts?postId=${String(data.post_id)}`);
     }
 
     onSelect?.();
