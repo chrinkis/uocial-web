@@ -17,6 +17,8 @@ import {
   Textarea,
 } from "@mantine/core";
 import {
+  IconBellOff,
+  IconBellPlus,
   IconBookmark,
   IconBookmarkFilled,
   IconFlag,
@@ -37,7 +39,9 @@ import {
   usePost,
   useReactToPost,
   useSavePost,
+  useSubscribePost,
   useUnsavePost,
+  useUnsubscribePost,
 } from "@/queries/app/post/post";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage, type LaravelValidationResponse } from "@/utils/error";
@@ -268,6 +272,8 @@ export function PostOptions(props: PostPropsType) {
   const modals = useModals();
   const savePost = useSavePost();
   const unsavePost = useUnsavePost();
+  const subscribePost = useSubscribePost();
+  const unsubscribePost = useUnsubscribePost();
 
   async function handleShareClick() {
     const url = `${window.location.origin}/app/posts?postId=${String(props.post.id)}`;
@@ -329,6 +335,42 @@ export function PostOptions(props: PostPropsType) {
     }
   }
 
+  async function handleSubscribeClick() {
+    try {
+      const { message } = await subscribePost.mutateAsync({
+        postId: props.post.id,
+      });
+      notifications.show({
+        title: "Success",
+        message,
+      });
+    } catch (error) {
+      notifications.show({
+        title: "Failed to subscribe to post",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+    }
+  }
+
+  async function handleUnsubscribeClick() {
+    try {
+      const { message } = await unsubscribePost.mutateAsync({
+        postId: props.post.id,
+      });
+      notifications.show({
+        title: "Success",
+        message,
+      });
+    } catch (error) {
+      notifications.show({
+        title: "Failed to unsubscribe from post",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+    }
+  }
+
   return (
     <Stack align="center">
       {props.post.saved ? (
@@ -351,6 +393,29 @@ export function PostOptions(props: PostPropsType) {
           <Group gap="0.1rem">
             <IconBookmark size="1.1rem" />
             Save
+          </Group>
+        </Button>
+      )}
+      {props.post.is_subscribed ? (
+        <Button
+          {...BUTTON_PROPS}
+          loading={unsubscribePost.isPending}
+          onClick={() => void handleUnsubscribeClick()}
+        >
+          <Group gap="0.1rem">
+            <IconBellOff size="1.1rem" />
+            Unsubscribe
+          </Group>
+        </Button>
+      ) : (
+        <Button
+          {...BUTTON_PROPS}
+          loading={subscribePost.isPending}
+          onClick={() => void handleSubscribeClick()}
+        >
+          <Group gap="0.1rem">
+            <IconBellPlus size="1.1rem" />
+            Subscribe
           </Group>
         </Button>
       )}

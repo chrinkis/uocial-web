@@ -98,3 +98,27 @@ export async function unsavePost({ postId }: { postId: number | string }) {
     message,
   };
 }
+
+export async function subscribePost({ postId }: { postId: number | string }) {
+  const {
+    data: { message },
+  } = await axios.post<{
+    message: string;
+  }>(`/api/app/posts/${String(postId)}/subscribe`);
+
+  return {
+    message,
+  };
+}
+
+export async function unsubscribePost({ postId }: { postId: number | string }) {
+  const {
+    data: { message },
+  } = await axios.post<{
+    message: string;
+  }>(`/api/app/posts/${String(postId)}/unsubscribe`);
+
+  return {
+    message,
+  };
+}

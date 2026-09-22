@@ -11,7 +11,9 @@ import {
   fetchSavedPosts,
   reactToPost,
   savePost,
+  subscribePost,
   unsavePost,
+  unsubscribePost,
   type fetchPostsParams,
 } from "@/api/app/post/post";
 import type { Post } from "@/models/app/post/Post";
@@ -219,6 +221,34 @@ export function useUnsavePost() {
 
       updatePostInAllCaches(queryClient, Number(variables.postId), {
         saved: false,
+      });
+    },
+  });
+}
+
+export function useSubscribePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ postId }: { postId: number | string }) =>
+      subscribePost({ postId }),
+    onSuccess: (_, variables) => {
+      updatePostInAllCaches(queryClient, Number(variables.postId), {
+        is_subscribed: true,
+      });
+    },
+  });
+}
+
+export function useUnsubscribePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ postId }: { postId: number | string }) =>
+      unsubscribePost({ postId }),
+    onSuccess: (_, variables) => {
+      updatePostInAllCaches(queryClient, Number(variables.postId), {
+        is_subscribed: false,
       });
     },
   });
