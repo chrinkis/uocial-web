@@ -223,7 +223,10 @@ function PostHashtags({ post }: PostPropsType) {
   );
 }
 
-function PostReactions({ post }: PostPropsType) {
+function PostReactions({
+  post,
+  onCommentsClick,
+}: PostPropsType & { onCommentsClick?: () => void }) {
   const reactToPost = useReactToPost();
 
   async function handleReaction(reaction?: ReactionValue) {
@@ -257,13 +260,12 @@ function PostReactions({ post }: PostPropsType) {
         />
       </Group>
 
-      <Group gap={2} align="stretch">
-        <Text>{post.comments.total}</Text>
-
-        <UnstyledButton>
+      <UnstyledButton onClick={onCommentsClick}>
+        <Group gap={2} align="stretch">
+          <Text>{post.comments.total}</Text>
           <IconMessageCircle />
-        </UnstyledButton>
-      </Group>
+        </Group>
+      </UnstyledButton>
     </Group>
   );
 }
@@ -728,6 +730,10 @@ function Post_(props: PostPropsType) {
     });
   }
 
+  function handleCommentsClick() {
+    emblaRef.current?.scrollTo(1);
+  }
+
   return (
     <Paper
       withBorder
@@ -763,7 +769,10 @@ function Post_(props: PostPropsType) {
                 <PostMetaData {...props} />
                 <PostBody {...props} />
                 <PostHashtags {...props} />
-                <PostReactions {...props} />
+                <PostReactions
+                  {...props}
+                  onCommentsClick={handleCommentsClick}
+                />
               </Stack>
             </div>
           </Carousel.Slide>
