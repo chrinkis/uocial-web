@@ -9,7 +9,7 @@ export default function Page() {
   const { hashtag } = useParams();
 
   return (
-    <Stack align="safe center" w="100%">
+    <Stack align="safe center" w="100%" h="100%">
       <Breadcrumbs>
         <Anchor component={NavLink} to="/app/posts">
           posts
