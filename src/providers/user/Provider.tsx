@@ -4,7 +4,7 @@ import { UserContext } from "./Context";
 import { useLoadingOverlay } from "@/providers/loading-overlay/hook";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
-import { Loader } from "@mantine/core";
+import { Flex, Loader } from "@mantine/core";
 import { fetchUser, logout as logoutAction } from "@/api/user/auth";
 
 export function UserProvider({ children }: { children: ReactNode }) {
@@ -36,7 +36,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const contextValue = useMemo(() => ({ user, logout }), [user, logout]);
 
   if (loading) {
-    return <Loader />;
+    return (
+      <Flex h="100%" w="100%" align="center" justify="center">
+        <Loader />
+      </Flex>
+    );
   }
 
   return <UserContext value={contextValue}>{children}</UserContext>;
