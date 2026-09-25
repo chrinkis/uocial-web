@@ -21,7 +21,7 @@ export default function Page() {
   invariant(user);
 
   return (
-    <Stack align="safe center" w="100%">
+    <Stack align="safe center" w="100%" h="100%">
       <PostCreate />
 
       {sharedPostId && <Post.type.WithFetcher id={sharedPostId} highlight />}
