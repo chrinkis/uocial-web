@@ -65,7 +65,7 @@ export function RegisterForm({ redirect = "/" }: RegisterFormPropsType) {
   });
 
   return (
-    <Paper w={280} p="md" withBorder>
+    <Paper miw={280} maw={400} p="md" withBorder>
       <Stack>
         <Title order={2} ta="center">
           Sign-Up

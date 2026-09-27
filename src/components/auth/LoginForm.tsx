@@ -10,6 +10,7 @@ import {
   TextInput,
   Title,
   Anchor,
+  Flex,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -51,8 +52,8 @@ export function LoginForm({ redirect = "/" }: LoginFormPropsType) {
   });
 
   return (
-    <Paper w={280} p="md" withBorder>
-      <Stack>
+    <Paper miw={280} maw={400} w="100%" p="md" withBorder>
+      <Stack align="">
         <Title order={2} ta="center">
           Login
         </Title>
