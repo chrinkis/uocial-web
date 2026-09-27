@@ -9,7 +9,7 @@ import { Flex, Tabs } from "@mantine/core";
 
 function PostTab() {
   return (
-    <Tabs defaultValue="pending-review" maw="100%" keepMounted={false}>
+    <Tabs defaultValue="pending-review" w="100%" keepMounted={false}>
       <Tabs.List justify="center" mb="lg">
         <Tabs.Tab value="pending-review">Pending Review</Tabs.Tab>
         <Tabs.Tab value="pending-reports">Pending Reports</Tabs.Tab>
@@ -62,7 +62,7 @@ function PostTab() {
 
 function CommentTab() {
   return (
-    <Tabs defaultValue="pending-review" maw="100%" keepMounted={false}>
+    <Tabs defaultValue="pending-review" w="100%" keepMounted={false}>
       <Tabs.List justify="center" mb="lg">
         <Tabs.Tab value="pending-review">Pending Review</Tabs.Tab>
         <Tabs.Tab value="pending-reports">Pending Reports</Tabs.Tab>
@@ -116,7 +116,7 @@ function CommentTab() {
 export default function Page() {
   return (
     <Flex flex={1} w="100%" justify="center">
-      <Tabs defaultValue="posts" maw="100%" variant="pills" keepMounted={false}>
+      <Tabs defaultValue="posts" w="100%" variant="pills" keepMounted={false}>
         <Tabs.List
           justify="center"
           mb="lg"

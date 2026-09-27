@@ -54,7 +54,11 @@ export function InfiniteScrolling<
   }, []);
 
   if (isLoading || !shouldRender) {
-    return loader;
+    return (
+      <Stack align="safe center" w="100%" h="100%" gap={gap}>
+        {loader}
+      </Stack>
+    );
   }
 
   if (error) {
