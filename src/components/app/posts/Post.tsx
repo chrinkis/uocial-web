@@ -289,7 +289,7 @@ function PostReactions({
       await reactToPost.mutateAsync({ postId: post.id, reaction });
     } catch (error) {
       notifications.show({
-        title: "Login failed",
+        title: "Failed to react to post",
         message: getErrorMessage(error),
         color: "red",
       });
@@ -633,7 +633,7 @@ function PostModerationActionForm({
       onSuccess?.();
     } catch (error) {
       notifications.show({
-        title: "Failed to create comment",
+        title: "Failed to moderate post",
         message: getErrorMessage(error),
         color: "red",
       });
@@ -670,7 +670,7 @@ function PostModerationActionForm({
 
         <Group justify="right">
           <Button type="submit" loading={form.submitting}>
-            Hide post
+            {action === "hide" ? "Hide post" : "Unhide post"}
           </Button>
         </Group>
       </Stack>
@@ -686,7 +686,7 @@ function PostModerationActionButton({
 
   function handleHideClick() {
     const modalId = modals.open({
-      title: `Hide post #${String(post.id)}`,
+      title: `${action === "hide" ? "Hide" : "Unhide"} post #${String(post.id)}`,
       children: (
         <PostModerationActionForm
           postId={post.id}

@@ -66,7 +66,7 @@ export function PostCreate() {
       });
     } catch (error) {
       notifications.show({
-        title: "Login failed",
+        title: "Failed to create post",
         message: getErrorMessage(error),
         color: "red",
       });
