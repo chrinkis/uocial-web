@@ -9,6 +9,7 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import { LoadingOverlayProvider } from "./loading-overlay/Provider";
 import "@mantine/carousel/styles.css";
+import "@mantine/dates/styles.css";
 import { SettingsProvider } from "./settings/Provider";
 import { ModalsProvider } from "./modals/Provider";
 
