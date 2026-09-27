@@ -62,6 +62,9 @@ import axios from "axios";
 import type { ModerationAction } from "@/models/app/post/ModerationAction";
 import { PostSkeleton } from "./PostSkeleton";
 import { IconExclamationCircle } from "@tabler/icons-react";
+import { PostPoll as PostPollView } from "./PostPoll";
+import { useUnvotePoll, useVotePoll } from "@/queries/app/post/poll";
+import type { PostPollOption } from "@/models/app/post/PostPollOption";
 
 export interface PostPropsType {
   post: post.Post;
@@ -191,6 +194,58 @@ function PostBody({ post }: PostPropsType) {
         {post.body}
       </Text>
     </Spoiler>
+  );
+}
+
+function PostPoll({ post }: PostPropsType) {
+  const votePoll = useVotePoll();
+  const unvotePoll = useUnvotePoll();
+
+  if (!post.poll) {
+    return null;
+  }
+
+  const pollId = post.poll.id;
+
+  async function handleVote(option: PostPollOption) {
+    try {
+      await votePoll.mutateAsync({
+        postId: post.id,
+        pollId,
+        optionId: option.id,
+      });
+    } catch (error) {
+      notifications.show({
+        title: "Failed to vote",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+    }
+  }
+
+  async function handleUnvote(option: PostPollOption) {
+    try {
+      await unvotePoll.mutateAsync({
+        postId: post.id,
+        pollId,
+        optionId: option.id,
+      });
+    } catch (error) {
+      notifications.show({
+        title: "Failed to remove vote",
+        message: getErrorMessage(error),
+        color: "red",
+      });
+    }
+  }
+
+  return (
+    <PostPollView
+      poll={post.poll}
+      loading={votePoll.isPending || unvotePoll.isPending}
+      onVote={(option) => void handleVote(option)}
+      onUnvote={(option) => void handleUnvote(option)}
+    />
   );
 }
 
@@ -768,6 +823,7 @@ function Post_(props: PostPropsType) {
                 <PostTitle {...props} />
                 <PostMetaData {...props} />
                 <PostBody {...props} />
+                <PostPoll {...props} />
                 <PostHashtags {...props} />
                 <PostReactions
                   {...props}

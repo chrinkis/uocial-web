@@ -1,6 +1,7 @@
 import type { Hashtag } from "../Hashtag";
 import type { Commment } from "./Comment";
 import type { Moderation } from "./Moderation";
+import type { PostPoll } from "./PostPoll";
 import type { PostReactions } from "./PostReactions";
 
 export interface Post {
@@ -23,5 +24,6 @@ export interface Post {
     is_current_user: boolean;
   };
   reported_by_the_user: boolean;
+  poll?: PostPoll | null;
   moderation?: Moderation;
 }
