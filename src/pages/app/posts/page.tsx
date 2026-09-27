@@ -28,14 +28,12 @@ export default function Page() {
 
       <InfiniteScrolling
         useQuery={usePosts}
+        queryArgs={[
+          isModerator(user) ? { moderator_mode: moderatorMode } : undefined,
+        ]}
         name="posts"
         Component={({ data }) => <Post post={data} />}
         loader={<PostSkeleton />}
-        filter={
-          isModerator(user) && !moderatorMode
-            ? (post) => !post.moderation?.is_hidden
-            : undefined
-        }
       />
     </Stack>
   );

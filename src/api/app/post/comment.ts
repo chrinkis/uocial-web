@@ -9,14 +9,24 @@ export interface fetchCommentParams {
   reported?: boolean;
   pending_review?: boolean;
   pending_reports?: boolean;
+  moderator_mode?: boolean;
 }
 
 export async function fetchComments(
   page: number | string,
-  { postId }: { postId: number | string },
+  {
+    postId,
+    moderator_mode,
+  }: { postId: number | string; moderator_mode?: boolean },
 ) {
+  const queryParams = new URLSearchParams();
+  queryParams.append("page", String(page));
+  if (moderator_mode !== undefined) {
+    queryParams.append("moderator_mode", String(moderator_mode));
+  }
+
   const { data } = await axios.get<PaginatedResponse<Commment>>(
-    `/api/app/posts/${String(postId)}/comments?page=${String(page)}`,
+    `/api/app/posts/${String(postId)}/comments?${queryParams.toString()}`,
   );
 
   return data;
@@ -44,10 +54,21 @@ export async function fetchReplies(
   {
     postId,
     commentId,
-  }: { postId: number | string; commentId: number | string },
+    moderator_mode,
+  }: {
+    postId: number | string;
+    commentId: number | string;
+    moderator_mode?: boolean;
+  },
 ) {
+  const queryParams = new URLSearchParams();
+  queryParams.append("page", String(page));
+  if (moderator_mode !== undefined) {
+    queryParams.append("moderator_mode", String(moderator_mode));
+  }
+
   const { data } = await axios.get<PaginatedResponse<Commment>>(
-    `/api/app/posts/${String(postId)}/comments/${String(commentId)}/replies?page=${String(page)}`,
+    `/api/app/posts/${String(postId)}/comments/${String(commentId)}/replies?${queryParams.toString()}`,
   );
 
   return data;

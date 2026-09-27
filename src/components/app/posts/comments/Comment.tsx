@@ -526,15 +526,16 @@ export const Comment = memo(function Comment({
             <Box pl="md">
               <InfiniteScrolling
                 useQuery={useReplies}
-                queryArgs={[comment.post_id, comment.id]}
+                queryArgs={[
+                  comment.post_id,
+                  comment.id,
+                  isModerator(user)
+                    ? { moderator_mode: settings.moderatorMode }
+                    : undefined,
+                ]}
                 name="replies"
                 Component={renderReply}
                 loader={<CommentSkeleton />}
-                filter={
-                  isModerator(user) && !settings.moderatorMode
-                    ? (comment) => !comment.moderation?.is_hidden
-                    : undefined
-                }
               />
             </Box>
           </motion.div>

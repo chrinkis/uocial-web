@@ -21,10 +21,13 @@ import {
   incrementCommentReplyCount,
 } from "./cache-utils";
 
-export function useComments(postId: number) {
+export function useComments(
+  postId: number,
+  params?: Pick<fetchCommentParams, "moderator_mode">,
+) {
   return useInfiniteQuery({
-    queryKey: ["comments", postId],
-    queryFn: ({ pageParam }) => fetchComments(pageParam, { postId }),
+    queryKey: POST_QUERY_KEYS.comments(postId, params),
+    queryFn: ({ pageParam }) => fetchComments(pageParam, { postId, ...params }),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
@@ -51,10 +54,15 @@ export function useArbitaryComments(params: fetchCommentParams = {}) {
   });
 }
 
-export function useReplies(postId: number, commentId: number) {
+export function useReplies(
+  postId: number,
+  commentId: number,
+  params?: Pick<fetchCommentParams, "moderator_mode">,
+) {
   return useInfiniteQuery({
-    queryKey: ["replies", postId, commentId],
-    queryFn: ({ pageParam }) => fetchReplies(pageParam, { postId, commentId }),
+    queryKey: POST_QUERY_KEYS.replies(postId, commentId, params),
+    queryFn: ({ pageParam }) =>
+      fetchReplies(pageParam, { postId, commentId, ...params }),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
@@ -112,6 +120,16 @@ export function useCreateComment() {
           (oldData) => addToInfiniteQuery(oldData, comment),
         );
 
+        // Refetch any moderator-mode-filtered reply lists for this comment
+        void queryClient.invalidateQueries({
+          queryKey: ["replies", postId, replyToId],
+          predicate: (query) =>
+            query.queryKey.length > 3 &&
+            query.queryKey[0] === "replies" &&
+            query.queryKey[1] === postId &&
+            query.queryKey[2] === replyToId,
+        });
+
         incrementCommentReplyCount(queryClient, postId, replyToId, 1);
         incrementPostCommentCount(queryClient, postId, 1);
       } else {
@@ -119,6 +137,15 @@ export function useCreateComment() {
           POST_QUERY_KEYS.comments(postId),
           (oldData) => addToInfiniteQuery(oldData, comment),
         );
+
+        // Refetch any moderator-mode-filtered comment lists for this post
+        void queryClient.invalidateQueries({
+          queryKey: ["comments", postId],
+          predicate: (query) =>
+            query.queryKey.length > 2 &&
+            query.queryKey[0] === "comments" &&
+            query.queryKey[1] === postId,
+        });
 
         incrementPostCommentCount(queryClient, postId, 1, comment);
       }

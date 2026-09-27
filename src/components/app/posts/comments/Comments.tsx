@@ -55,15 +55,15 @@ export function Comments({ post }: CommentsProps) {
         <InfiniteScrolling
           name="comments"
           useQuery={useComments}
-          queryArgs={[post.id]}
+          queryArgs={[
+            post.id,
+            isModerator(user)
+              ? { moderator_mode: settings.moderatorMode }
+              : undefined,
+          ]}
           Component={CommentComponent}
           Fallback={EmptyCommentList}
           loader={<CommentSkeleton />}
-          filter={
-            isModerator(user) && !settings.moderatorMode
-              ? (comment) => !comment.moderation?.is_hidden
-              : undefined
-          }
         />
       </Box>
 

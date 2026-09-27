@@ -9,6 +9,7 @@ export interface fetchPostsParams {
   reported?: boolean;
   pending_review?: boolean;
   pending_reports?: boolean;
+  moderator_mode?: boolean;
 }
 
 export async function fetchPosts(

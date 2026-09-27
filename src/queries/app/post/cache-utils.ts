@@ -2,6 +2,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import type { Post } from "@/models/app/post/Post";
 import type { Commment } from "@/models/app/post/Comment";
 import type { fetchPostsParams } from "@/api/app/post/post";
+import type { fetchCommentParams } from "@/api/app/post/comment";
 import {
   updateInfiniteQueryItem,
   updateInfiniteQueryItemWith,
@@ -14,9 +15,14 @@ export const POST_QUERY_KEYS = {
     params ? (["posts", params] as const) : (["posts"] as const),
   saved: ["posts", "saved"] as const,
   detail: (id: number) => ["posts", String(id)] as const,
-  comments: (postId: number) => ["comments", postId] as const,
-  replies: (postId: number, commentId: number) =>
-    ["replies", postId, commentId] as const,
+  comments: (postId: number, params?: fetchCommentParams) =>
+    params
+      ? (["comments", postId, params] as const)
+      : (["comments", postId] as const),
+  replies: (postId: number, commentId: number, params?: fetchCommentParams) =>
+    params
+      ? (["replies", postId, commentId, params] as const)
+      : (["replies", postId, commentId] as const),
 };
 
 export function updatePostInAllCaches(
