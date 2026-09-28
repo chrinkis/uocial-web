@@ -493,7 +493,7 @@ export const Comment = memo(function Comment({
   invariant(user);
 
   return (
-    <Stack gap="xs" maw={512} w="98%">
+    <Stack gap="xs" maw={600} w="98%">
       <Paper withBorder p="xs" onContextMenu={handleContextMenu}>
         <Stack gap={5}>
           <CommentHeader comment={comment} />

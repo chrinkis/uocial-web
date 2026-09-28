@@ -2,7 +2,7 @@ import { Paper, Skeleton, Stack, Group } from "@mantine/core";
 
 export function CommentSkeleton() {
   return (
-    <Stack gap="xs" maw={512} w="98%">
+    <Stack gap="xs" maw={600} w="98%">
       <Paper withBorder p="xs">
         <Stack gap={5}>
           {/* Header - Avatar, username, and timestamp */}

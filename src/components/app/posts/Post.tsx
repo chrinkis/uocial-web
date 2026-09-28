@@ -15,6 +15,7 @@ import {
   Typography,
   Popover,
   Textarea,
+  useMatches,
 } from "@mantine/core";
 import {
   IconBellOff,
@@ -526,9 +527,12 @@ export function PostPeakedComments(props: PostPropsType) {
     [props.post.comments],
   );
 
+  const fullScreenModal = useMatches({ base: true, xs: false });
+
   function handleOpenCommentsClick() {
     modals.open({
-      fullScreen: true,
+      fullScreen: fullScreenModal,
+      size: "min(95%, 720px)",
       title: `Comments of #${String(props.post.id)}`,
       children: <Comments post={props.post} />,
       styles: {
