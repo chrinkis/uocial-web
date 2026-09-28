@@ -35,14 +35,8 @@ export default function Page() {
         <Anchor component={NavLink} to="/app/posts">
           posts
         </Anchor>
-        <Anchor component={NavLink} to="">
-          search
-        </Anchor>
-        {!!q && (
-          <Anchor component={NavLink} to="">
-            {q}
-          </Anchor>
-        )}
+        <Anchor>search</Anchor>
+        {!!q && <Anchor>{q}</Anchor>}
       </Breadcrumbs>
 
       {q ? (

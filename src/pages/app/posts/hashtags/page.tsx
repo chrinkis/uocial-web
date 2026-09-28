@@ -15,9 +15,7 @@ export default function Page() {
         <Anchor component={NavLink} to="/app/posts">
           posts
         </Anchor>
-        <Anchor component={NavLink} to="">
-          #{hashtag}
-        </Anchor>
+        <Anchor>#{hashtag}</Anchor>
       </Breadcrumbs>
 
       <InfiniteScrolling
