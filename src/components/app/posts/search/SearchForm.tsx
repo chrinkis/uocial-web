@@ -54,7 +54,9 @@ export function SearchForm({ onSuccess }: { onSuccess?: () => void }) {
     }
 
     const stripped = getStrippedQuery();
-    void navigate(`/app/posts/hashtags/${encodeURIComponent(stripped)}`);
+    void navigate(
+      `/app/posts/hashtags?hashtag=${encodeURIComponent(stripped)}`,
+    );
     onSuccess?.();
   }
 

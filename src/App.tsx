@@ -57,7 +57,7 @@ function getVerifiedRoutes() {
       <Route path="app/posts" element={<PostsPage />} />
       <Route path="app/posts/saved" element={<SavedPostsPage />} />
       <Route path="app/posts/search" element={<SearchPostsPage />} />
-      <Route path="app/posts/hashtags/:hashtag" element={<HashtagsPage />} />
+      <Route path="app/posts/hashtags" element={<HashtagsPage />} />
     </>
   );
 }

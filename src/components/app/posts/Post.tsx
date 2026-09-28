@@ -268,7 +268,7 @@ function PostHashtags({ post }: PostPropsType) {
           <Anchor
             component={NavLink}
             key={h.value}
-            to={`/app/posts/hashtags/${h.value}`}
+            to={`/app/posts/hashtags?hashtag=${encodeURIComponent(h.value)}`}
           >
             #{h.value}
           </Anchor>

@@ -3,10 +3,11 @@ import { Post } from "@/components/app/posts/Post";
 import { usePosts } from "@/queries/app/post/post";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { PostSkeleton } from "@/components/app/posts/PostSkeleton";
-import { NavLink, useParams } from "react-router";
+import { NavLink, useSearchParams } from "react-router";
 
 export default function Page() {
-  const { hashtag } = useParams();
+  const [searchParams] = useSearchParams();
+  const hashtag = searchParams.get("hashtag") ?? undefined;
 
   return (
     <Stack align="safe center" w="100%" h="100%">
