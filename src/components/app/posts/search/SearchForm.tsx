@@ -84,7 +84,7 @@ export function SearchForm({ onSuccess }: { onSuccess?: () => void }) {
       <Stack>
         <TextInput
           variant="filled"
-          autoFocus
+          data-autofocus
           maxLength={100}
           placeholder="Search posts, #hashtag, or post number"
           {...form.getInputProps("query")}
