@@ -32,6 +32,7 @@ export function Reports({ comment }: { comment: Commment }) {
           { reviewed: value === "all" ? undefined : false },
         ]}
         Component={ReportComponent}
+        Fallback="No reports found."
       />
     </Stack>
   );

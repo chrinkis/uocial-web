@@ -9,14 +9,6 @@ import { useSettings } from "@/providers/settings/hook";
 import { isModerator } from "@/utils/user";
 import invariant from "tiny-invariant";
 
-function NoSearchResults({ q }: { q: string }) {
-  return (
-    <Stack align="center" gap="xs" p="md">
-      <Text c="dimmed">No posts found for &quot;{q}&quot;.</Text>
-    </Stack>
-  );
-}
-
 export default function Page() {
   const [searchParams] = useSearchParams();
   const q = (searchParams.get("q") ?? "").trim();
@@ -49,7 +41,7 @@ export default function Page() {
           ]}
           name="posts"
           Component={({ data }) => <Post post={data} />}
-          Fallback={() => <NoSearchResults q={q} />}
+          Fallback={`No posts found for "${q}".`}
           loader={<PostSkeleton />}
         />
       ) : (

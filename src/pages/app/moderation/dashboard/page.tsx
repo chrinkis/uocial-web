@@ -23,6 +23,7 @@ function PostTab() {
           queryArgs={[{ pending_review: true }]}
           name="posts"
           Component={({ data }) => <Post post={data} />}
+          Fallback="No posts pending review."
           loader={<PostSkeleton />}
         />
       </Tabs.Panel>
@@ -33,6 +34,7 @@ function PostTab() {
           queryArgs={[{ pending_reports: true }]}
           name="posts"
           Component={({ data }) => <Post post={data} />}
+          Fallback="No posts with pending reports."
           loader={<PostSkeleton />}
         />
       </Tabs.Panel>
@@ -43,6 +45,7 @@ function PostTab() {
           queryArgs={[{ pending_review: false }]}
           name="posts"
           Component={({ data }) => <Post post={data} />}
+          Fallback="No reviewed posts."
           loader={<PostSkeleton />}
         />
       </Tabs.Panel>
@@ -53,6 +56,7 @@ function PostTab() {
           queryArgs={[{ pending_reports: false }]}
           name="posts"
           Component={({ data }) => <Post post={data} />}
+          Fallback="No reviewed reports."
           loader={<PostSkeleton />}
         />
       </Tabs.Panel>
@@ -76,6 +80,7 @@ function CommentTab() {
           queryArgs={[{ pending_review: true }]}
           name="comments"
           Component={({ data }) => <Comment comment={data} />}
+          Fallback="No comments pending review."
           loader={<CommentSkeleton />}
         />
       </Tabs.Panel>
@@ -86,6 +91,7 @@ function CommentTab() {
           queryArgs={[{ pending_reports: true }]}
           name="comments"
           Component={({ data }) => <Comment comment={data} />}
+          Fallback="No comments with pending reports."
           loader={<CommentSkeleton />}
         />
       </Tabs.Panel>
@@ -96,6 +102,7 @@ function CommentTab() {
           queryArgs={[{ pending_review: false }]}
           name="comments"
           Component={({ data }) => <Comment comment={data} />}
+          Fallback="No reviewed comments."
           loader={<CommentSkeleton />}
         />
       </Tabs.Panel>
@@ -106,6 +113,7 @@ function CommentTab() {
           queryArgs={[{ pending_reports: false }]}
           name="comments"
           Component={({ data }) => <Comment comment={data} />}
+          Fallback="No reviewed reports."
           loader={<CommentSkeleton />}
         />
       </Tabs.Panel>

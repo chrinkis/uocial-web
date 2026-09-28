@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button, Loader, Stack, type MantineSpacing } from "@mantine/core";
+import {
+  Button,
+  Loader,
+  Stack,
+  type MantineSpacing,
+  Text,
+  Group,
+} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/utils/error";
 import type {
@@ -8,6 +15,7 @@ import type {
 } from "@tanstack/react-query";
 import type { PaginatedResponse } from "@/utils/response";
 import type { ComponentType, ReactElement } from "react";
+import { IconMoodEmpty } from "@tabler/icons-react";
 
 export function InfiniteScrolling<
   T extends { id: number },
@@ -28,7 +36,7 @@ export function InfiniteScrolling<
   queryArgs?: TArgs;
   name: string;
   Component: React.ComponentType<{ data: T }>;
-  Fallback?: ComponentType;
+  Fallback: ComponentType | string;
   loader?: ReactElement;
   filter?: (element: T) => boolean;
   gap?: MantineSpacing;
@@ -73,13 +81,23 @@ export function InfiniteScrolling<
     ? data?.pages.map((page) => ({ ...page, data: page.data.filter(filter) }))
     : data?.pages;
 
-  if (!displayPages?.some((page) => page.data.length > 0) && Fallback) {
-    return <Fallback />;
+  if (!displayPages?.some((page) => page.data.length > 0)) {
+    switch (typeof Fallback) {
+      case "string":
+        return (
+          <Group align="center" gap="xs" p="md">
+            <IconMoodEmpty color="var(--mantine-color-dimmed)" />
+            <Text c="dimmed">{Fallback}</Text>
+          </Group>
+        );
+      default:
+        return <Fallback />;
+    }
   }
 
   return (
     <Stack align="safe center" w="100%" gap={gap}>
-      {displayPages?.map((page: PaginatedResponse<T>) =>
+      {displayPages.map((page: PaginatedResponse<T>) =>
         page.data.map((data: T) => <Component data={data} key={data.id} />),
       )}
       {hasNextPage && (

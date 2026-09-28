@@ -28,6 +28,7 @@ export function Reports({ post }: { post: Post }) {
         useQuery={usePostReports}
         queryArgs={[post.id, { reviewed: value === "all" ? undefined : false }]}
         Component={ReportComponent}
+        Fallback="No reports found."
       />
     </Stack>
   );

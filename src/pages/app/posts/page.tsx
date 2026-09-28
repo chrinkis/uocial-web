@@ -33,6 +33,7 @@ export default function Page() {
         ]}
         name="posts"
         Component={({ data }) => <Post post={data} />}
+        Fallback="No posts found."
         loader={<PostSkeleton />}
       />
     </Stack>

@@ -535,6 +535,7 @@ export const Comment = memo(function Comment({
                 ]}
                 name="replies"
                 Component={renderReply}
+                Fallback="No replies yet."
                 loader={<CommentSkeleton />}
               />
             </Box>
