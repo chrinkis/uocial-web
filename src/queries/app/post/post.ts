@@ -9,12 +9,14 @@ import {
   fetchPost,
   fetchPosts,
   fetchSavedPosts,
+  fetchSearchPosts,
   reactToPost,
   savePost,
   subscribePost,
   unsavePost,
   unsubscribePost,
   type fetchPostsParams,
+  type fetchSearchPostsParams,
 } from "@/api/app/post/post";
 import type { Post } from "@/models/app/post/Post";
 import type { ReactionValue } from "@/models/app/post/Reaction";
@@ -44,6 +46,21 @@ export function useSavedPosts() {
   return useInfiniteQuery({
     queryKey: ["posts", "saved"],
     queryFn: ({ pageParam }) => fetchSavedPosts(pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastResponse) => {
+      if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
+        return lastResponse.meta.current_page + 1;
+      }
+
+      return undefined;
+    },
+  });
+}
+
+export function useSearchPosts(params: fetchSearchPostsParams) {
+  return useInfiniteQuery({
+    queryKey: POST_QUERY_KEYS.search(params),
+    queryFn: ({ pageParam }) => fetchSearchPosts(pageParam, params),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {

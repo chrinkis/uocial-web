@@ -1,5 +1,6 @@
 import { useUser } from "@/providers/user/hook";
 import {
+  ActionIcon,
   Flex,
   Group,
   Title,
@@ -15,12 +16,15 @@ import {
   IconBookmark,
   IconDeviceDesktopAnalytics,
   IconLogout,
+  IconSearch,
   IconSettings,
 } from "@tabler/icons-react";
 import invariant from "tiny-invariant";
 import { useSettings } from "@/providers/settings/hook";
+import { useModals } from "@/providers/modals/hook";
 import { isModerator } from "@/utils/user";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
+import { SearchForm } from "@/components/app/posts/search/SearchForm";
 
 function UserMenu() {
   const { user, logout } = useUser();
@@ -114,6 +118,28 @@ function UserMenu() {
   );
 }
 
+function SearchButton() {
+  const modals = useModals();
+
+  function handleClick() {
+    const modalId = modals.open({
+      title: "Search",
+      children: <SearchForm onSuccess={closeModal} />,
+      centered: true,
+    });
+
+    function closeModal() {
+      modals.close(modalId);
+    }
+  }
+
+  return (
+    <ActionIcon variant="transparent" aria-label="Search" onClick={handleClick}>
+      <IconSearch color="var(--mantine-color-body)" />
+    </ActionIcon>
+  );
+}
+
 function AuthMenu() {
   const navigate = useNavigate();
 
@@ -163,6 +189,7 @@ export function Header() {
       <Logo />
       {user ? (
         <Group gap="sm">
+          <SearchButton />
           <NotificationDropdown />
           <UserMenu />
         </Group>

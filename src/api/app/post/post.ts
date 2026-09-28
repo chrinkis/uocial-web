@@ -35,6 +35,28 @@ export async function fetchPost(postId: number | string) {
   return data;
 }
 
+export interface fetchSearchPostsParams {
+  q: string;
+  moderator_mode?: boolean;
+}
+
+export async function fetchSearchPosts(
+  page: number | string,
+  params: fetchSearchPostsParams,
+) {
+  const queryParams = new URLSearchParams();
+  queryParams.append("page", String(page));
+  for (const [key, value] of Object.entries(params)) {
+    queryParams.append(key, String(value));
+  }
+
+  const { data } = await axios.get<PaginatedResponse<Post>>(
+    `/api/app/posts/search?${queryParams.toString()}`,
+  );
+
+  return data;
+}
+
 export async function fetchSavedPosts(page: number | string) {
   const { data } = await axios.get<PaginatedResponse<Post>>(
     `/api/app/posts/saved?page=${String(page)}`,
