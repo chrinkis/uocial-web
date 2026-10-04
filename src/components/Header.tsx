@@ -27,6 +27,7 @@ import { useModals } from "@/providers/modals/hook";
 import { isAdmin, isModerator } from "@/utils/user";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 import { SearchForm } from "@/components/app/posts/search/SearchForm";
+import { CategorySwitcher } from "@/components/categories/CategorySwitcher";
 import { useModerationCounts } from "@/queries/app/moderation-counts";
 
 function UserMenu() {
@@ -249,11 +250,12 @@ export function Header() {
     >
       <Logo />
       {user ? (
-        <Group gap="sm">
+        <Group gap="sm" align="stretch">
           {user.active_ban === null && (
             <>
               <SearchButton />
               <NotificationDropdown />
+              <CategorySwitcher />
             </>
           )}
           <UserMenu />
