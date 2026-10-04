@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { moderatePost } from "@/api/app/post/post-moderation";
+import { invalidateModerationCounts } from "@/queries/app/moderation-counts";
 import { updatePostInAllCachesWith } from "./cache-utils";
 import type { ModerationAction } from "@/models/app/post/ModerationAction";
 import type { Post } from "@/models/app/post/Post";
@@ -18,6 +19,7 @@ export function useModeratePost() {
       action: ModerationAction;
     }) => moderatePost({ comment, postId, action }),
     onSuccess: (_, variables) => {
+      invalidateModerationCounts(queryClient);
       const postId = Number(variables.postId);
 
       // Optimistically update all post caches (lists + detail) for instant UI feedback

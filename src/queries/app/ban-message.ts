@@ -7,6 +7,7 @@ import { fetchBanMessages, sendBanMessage } from "@/api/app/ban-message";
 import { addToInfiniteQuery, type InfiniteQueryData } from "@/utils/cache";
 import type { BanMessage } from "@/models/app/BanMessage";
 import { BAN_QUERY_KEYS } from "./ban";
+import { invalidateModerationCounts } from "./moderation-counts";
 
 export function banMessagesKey(banId: number | string) {
   return ["ban-messages", String(banId)] as const;
@@ -33,6 +34,8 @@ export function useSendBanMessage() {
   return useMutation({
     mutationFn: sendBanMessage,
     onSuccess: (message, variables) => {
+      invalidateModerationCounts(queryClient);
+
       // Messages are listed newest first, so the new one goes to the front.
       queryClient.setQueryData<InfiniteQueryData<BanMessage>>(
         banMessagesKey(variables.banId),

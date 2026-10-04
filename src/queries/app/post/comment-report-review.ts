@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { reviewCommentReport } from "@/api/app/post/comment-report";
+import { invalidateModerationCounts } from "@/queries/app/moderation-counts";
 import {
   updateInfiniteQueryItemWith,
   type InfiniteQueryData,
@@ -25,6 +26,7 @@ export function useReviewCommentReport() {
       status?: ReportReviewValue;
     }) => reviewCommentReport({ comment, postId, commentId, reportId, status }),
     onSuccess: (_, variables) => {
+      invalidateModerationCounts(queryClient);
       const postId = Number(variables.postId);
       const commentId = Number(variables.commentId);
       const reportId = Number(variables.reportId);

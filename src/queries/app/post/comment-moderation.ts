@@ -4,6 +4,7 @@ import {
   traceComment,
 } from "@/api/app/post/comment-moderation";
 import { updateCommentInAllCachesWith } from "./cache-utils";
+import { invalidateModerationCounts } from "@/queries/app/moderation-counts";
 import type { ModerationAction } from "@/models/app/post/ModerationAction";
 import type { Commment } from "@/models/app/post/Comment";
 
@@ -23,6 +24,7 @@ export function useModerateComment() {
       action: ModerationAction;
     }) => moderateComment({ comment, postId, commentId, action }),
     onSuccess: (_, variables) => {
+      invalidateModerationCounts(queryClient);
       const postId = Number(variables.postId);
       const commentId = Number(variables.commentId);
 

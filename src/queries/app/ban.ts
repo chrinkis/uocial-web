@@ -17,6 +17,7 @@ import {
   updateInfiniteQueryItemWith,
   type InfiniteQueryData,
 } from "@/utils/cache";
+import { invalidateModerationCounts } from "./moderation-counts";
 
 export const BAN_QUERY_KEYS = {
   all: ["bans"] as const,
@@ -60,6 +61,7 @@ export function useBanUser() {
   return useMutation({
     mutationFn: banUser,
     onSuccess: () => {
+      invalidateModerationCounts(queryClient);
       void queryClient.invalidateQueries({ queryKey: BAN_QUERY_KEYS.all });
     },
   });
@@ -71,6 +73,7 @@ export function useUnbanUser() {
   return useMutation({
     mutationFn: unbanUser,
     onSuccess: () => {
+      invalidateModerationCounts(queryClient);
       void queryClient.invalidateQueries({ queryKey: BAN_QUERY_KEYS.all });
     },
   });
@@ -88,6 +91,8 @@ export function useSetBanThreadClosed() {
       closed: boolean;
     }) => (closed ? closeBanThread({ banId }) : reopenBanThread({ banId })),
     onSuccess: (_, variables) => {
+      invalidateModerationCounts(queryClient);
+
       const banId = Number(variables.banId);
 
       queryClient

@@ -10,6 +10,7 @@ import {
   Menu,
   Switch,
   Avatar,
+  Indicator,
 } from "@mantine/core";
 import { NavLink, useNavigate } from "react-router";
 import {
@@ -26,6 +27,7 @@ import { useModals } from "@/providers/modals/hook";
 import { isAdmin, isModerator } from "@/utils/user";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 import { SearchForm } from "@/components/app/posts/search/SearchForm";
+import { useModerationCounts } from "@/queries/app/moderation-counts";
 
 function UserMenu() {
   const { user, logout } = useUser();
@@ -35,6 +37,17 @@ function UserMenu() {
   invariant(user);
 
   const banned = user.active_ban !== null;
+
+  const { data: counts } = useModerationCounts(isModerator(user) && !banned);
+
+  const moderationPending =
+    counts !== undefined &&
+    counts.posts_pending_review +
+      counts.post_comments_pending_review +
+      counts.posts_pending_reports +
+      counts.post_comments_pending_reports >
+      0;
+  const administrationPending = (counts?.ban_threads_pending_reply ?? 0) > 0;
 
   async function handleSavedPosts() {
     await navigate("app/posts/saved");
@@ -67,7 +80,13 @@ function UserMenu() {
     <Menu>
       <Menu.Target>
         <UnstyledButton>
-          <Avatar bg="var(--mantine-color-body)" size="sm" name={user.name} />
+          <Indicator
+            disabled={!moderationPending && !administrationPending}
+            size={8}
+            color="red"
+          >
+            <Avatar bg="var(--mantine-color-body)" size="sm" name={user.name} />
+          </Indicator>
         </UnstyledButton>
       </Menu.Target>
 
@@ -109,7 +128,15 @@ function UserMenu() {
                   leftSection={<IconDeviceDesktopAnalytics size={14} />}
                   onClick={() => void handleDashboard()}
                 >
-                  Dashboard
+                  <Indicator
+                    disabled={!moderationPending}
+                    size={8}
+                    color="red"
+                    inline
+                    offset={-4}
+                  >
+                    Dashboard
+                  </Indicator>
                 </Menu.Item>
               </>
             )}
@@ -124,7 +151,15 @@ function UserMenu() {
                   leftSection={<IconShieldLock size={14} />}
                   onClick={() => void handleAdministrationDashboard()}
                 >
-                  Dashboard
+                  <Indicator
+                    disabled={!administrationPending}
+                    size={8}
+                    color="red"
+                    inline
+                    offset={-4}
+                  >
+                    Dashboard
+                  </Indicator>
                 </Menu.Item>
               </>
             )}
