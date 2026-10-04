@@ -4,6 +4,7 @@ import {
   IconCheck,
   IconMessageCircle,
   IconMessageCirclePlus,
+  IconSpeakerphone,
 } from "@tabler/icons-react";
 import {
   Group,
@@ -29,6 +30,7 @@ function getMessage(notification: Notification): string {
   const messages: Record<NotificationType, string> = {
     newCommentToPost: `New comment on ${postId}`,
     newCommentToPostComment: `New reply on a comment in ${commentPostId}`,
+    newOfficialPost: `New official post ${postId}`,
     postHiddenUntilReview: `${postId} was hidden until review`,
     postHiddenByModerator: `${postId} was hidden by a moderator`,
     postUnhiddenByModerator: `${postId} was unhidden by a moderator`,
@@ -42,22 +44,27 @@ function getMessage(notification: Notification): string {
 
 function getIcon(notification: Notification) {
   const color =
-    notification.type === "postHiddenUntilReview" ||
-    notification.type === "postCommentHiddenUntilReview"
-      ? "orange"
-      : notification.type.includes("Unhidden")
-        ? "green"
-        : notification.type.endsWith("ByModerator")
-          ? "red"
-          : notification.type.startsWith("newComment")
-            ? "blue"
-            : "green";
+    notification.type === "newOfficialPost"
+      ? "violet"
+      : notification.type === "postHiddenUntilReview" ||
+          notification.type === "postCommentHiddenUntilReview"
+        ? "orange"
+        : notification.type.includes("Unhidden")
+          ? "green"
+          : notification.type.endsWith("ByModerator")
+            ? "red"
+            : notification.type.startsWith("newComment")
+              ? "blue"
+              : "green";
 
   let icon: ReactNode;
 
   switch (true) {
     case notification.type === "newCommentToPost":
       icon = <IconMessageCircle size={18} />;
+      break;
+    case notification.type === "newOfficialPost":
+      icon = <IconSpeakerphone size={18} />;
       break;
     case notification.type === "newCommentToPostComment":
       icon = <IconMessageCirclePlus size={18} />;

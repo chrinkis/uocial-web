@@ -1,6 +1,7 @@
 export type NotificationType =
   | "newCommentToPost"
   | "newCommentToPostComment"
+  | "newOfficialPost"
   | "postHiddenUntilReview"
   | "postHiddenByModerator"
   | "postUnhiddenByModerator"
@@ -8,7 +9,7 @@ export type NotificationType =
   | "postCommentHiddenByModerator"
   | "postCommentUnhiddenByModerator";
 
-export type NotificationReason = "owner" | "follower";
+export type NotificationReason = "owner" | "follower" | "everyone";
 
 export interface Notification {
   id: number;

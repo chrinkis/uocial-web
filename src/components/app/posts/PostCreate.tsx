@@ -32,7 +32,11 @@ const INITIAL_POLL = {
   allow_multiple_votes: false,
 };
 
-export function PostCreate() {
+export interface PostCreatePropsType {
+  official?: boolean;
+}
+
+export function PostCreate({ official = false }: PostCreatePropsType) {
   const form = useForm({
     mode: "controlled",
     initialValues: {
@@ -45,6 +49,7 @@ export function PostCreate() {
     },
     transformValues: ({ withPoll, poll, ...values }) => ({
       ...values,
+      ...(official && { is_official: true }),
       location: values.location === "Universal" ? null : values.location,
       poll: withPoll
         ? {
@@ -220,7 +225,7 @@ export function PostCreate() {
               </ActionIcon>
             </Tooltip>
             <Button type="submit" variant="outline" loading={form.submitting}>
-              Post
+              {official ? "Post officially" : "Post"}
             </Button>
           </Group>
         </Stack>

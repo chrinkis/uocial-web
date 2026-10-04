@@ -3,9 +3,18 @@ import { BanSkeleton } from "@/components/app/bans/BanSkeleton";
 import { BanUserForm } from "@/components/app/bans/BanUserForm";
 import { UnbanUserForm } from "@/components/app/bans/UnbanUserForm";
 import { Ban } from "@/components/app/bans/Ban";
+import { PostCreate } from "@/components/app/posts/PostCreate";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { useBans } from "@/queries/app/ban";
 import { Flex, Stack, Tabs } from "@mantine/core";
+
+function PostTab() {
+  return (
+    <Stack align="center">
+      <PostCreate official />
+    </Stack>
+  );
+}
 
 function BansTab() {
   return (
@@ -64,10 +73,15 @@ export default function Page() {
           style={{ overflowX: "auto", flexWrap: "nowrap" }}
         >
           <Tabs.Tab value="bans">Bans</Tabs.Tab>
+          <Tabs.Tab value="post">Post</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="bans">
           <BansTab />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="post">
+          <PostTab />
         </Tabs.Panel>
       </Tabs>
     </Flex>
