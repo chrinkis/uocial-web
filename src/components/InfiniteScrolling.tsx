@@ -91,7 +91,7 @@ export function InfiniteScrolling<
     switch (typeof Fallback) {
       case "string":
         return (
-          <Group align="center" gap="xs" p="md">
+          <Group justify="center" align="center" gap="xs" p="md">
             <IconMoodEmpty color="var(--mantine-color-dimmed)" />
             <Text c="dimmed">{Fallback}</Text>
           </Group>
