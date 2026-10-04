@@ -29,6 +29,7 @@ export function InfiniteScrolling<
   loader = <Loader />,
   filter,
   gap,
+  reversed = false,
 }: {
   useQuery: (
     ...args: TArgs
@@ -40,6 +41,11 @@ export function InfiniteScrolling<
   loader?: ReactElement;
   filter?: (element: T) => boolean;
   gap?: MantineSpacing;
+  /**
+   * Renders the newest elements at the bottom. Expects the query to return the
+   * newest elements first. "Load More" is shown at the top, for older ones.
+   */
+  reversed?: boolean;
 }) {
   const {
     data,
@@ -95,20 +101,28 @@ export function InfiniteScrolling<
     }
   }
 
+  const elements = displayPages.flatMap((page) => page.data);
+  if (reversed) {
+    elements.reverse();
+  }
+
+  const loadMore = hasNextPage && (
+    <Button
+      variant="light"
+      onClick={() => void fetchNextPage()}
+      loading={isFetchingNextPage}
+    >
+      Load More
+    </Button>
+  );
+
   return (
     <Stack align="safe center" w="100%" gap={gap}>
-      {displayPages.map((page: PaginatedResponse<T>) =>
-        page.data.map((data: T) => <Component data={data} key={data.id} />),
-      )}
-      {hasNextPage && (
-        <Button
-          variant="light"
-          onClick={() => void fetchNextPage()}
-          loading={isFetchingNextPage}
-        >
-          Load More
-        </Button>
-      )}
+      {reversed && loadMore}
+      {elements.map((data: T) => (
+        <Component data={data} key={data.id} />
+      ))}
+      {!reversed && loadMore}
     </Stack>
   );
 }

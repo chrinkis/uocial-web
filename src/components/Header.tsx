@@ -18,11 +18,12 @@ import {
   IconLogout,
   IconSearch,
   IconSettings,
+  IconShieldLock,
 } from "@tabler/icons-react";
 import invariant from "tiny-invariant";
 import { useSettings } from "@/providers/settings/hook";
 import { useModals } from "@/providers/modals/hook";
-import { isModerator } from "@/utils/user";
+import { isAdmin, isModerator } from "@/utils/user";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 import { SearchForm } from "@/components/app/posts/search/SearchForm";
 
@@ -32,6 +33,8 @@ function UserMenu() {
   const { settings, setSettings } = useSettings();
 
   invariant(user);
+
+  const banned = user.active_ban !== null;
 
   async function handleSavedPosts() {
     await navigate("app/posts/saved");
@@ -56,6 +59,10 @@ function UserMenu() {
     await navigate("/app/moderation/dashboard");
   }
 
+  async function handleAdministrationDashboard() {
+    await navigate("/app/administration/dashboard");
+  }
+
   return (
     <Menu>
       <Menu.Target>
@@ -65,47 +72,66 @@ function UserMenu() {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Label>Application</Menu.Label>
-
-        <Menu.Item
-          leftSection={<IconBookmark size={14} />}
-          onClick={() => void handleSavedPosts()}
-        >
-          Saved Posts
-        </Menu.Item>
-
-        <Menu.Item
-          leftSection={<IconSettings size={14} />}
-          onClick={() => void handleSettings()}
-        >
-          Settings
-        </Menu.Item>
-
-        {isModerator(user) && (
+        {!banned && (
           <>
-            <Menu.Divider />
+            <Menu.Label>Application</Menu.Label>
 
-            <Menu.Label>Moderation</Menu.Label>
-
-            <Menu.Item onClick={handleModerationToggle}>
-              <Switch
-                size="xs"
-                checked={settings.moderatorMode}
-                label="Enabled"
-                onClick={handleModerationToggle}
-              />
+            <Menu.Item
+              leftSection={<IconBookmark size={14} />}
+              onClick={() => void handleSavedPosts()}
+            >
+              Saved Posts
             </Menu.Item>
 
             <Menu.Item
-              leftSection={<IconDeviceDesktopAnalytics size={14} />}
-              onClick={() => void handleDashboard()}
+              leftSection={<IconSettings size={14} />}
+              onClick={() => void handleSettings()}
             >
-              Dashboard
+              Settings
             </Menu.Item>
+
+            {isModerator(user) && (
+              <>
+                <Menu.Divider />
+
+                <Menu.Label>Moderation</Menu.Label>
+
+                <Menu.Item onClick={handleModerationToggle}>
+                  <Switch
+                    size="xs"
+                    checked={settings.moderatorMode}
+                    label="Enabled"
+                    onClick={handleModerationToggle}
+                  />
+                </Menu.Item>
+
+                <Menu.Item
+                  leftSection={<IconDeviceDesktopAnalytics size={14} />}
+                  onClick={() => void handleDashboard()}
+                >
+                  Dashboard
+                </Menu.Item>
+              </>
+            )}
+
+            {isAdmin(user) && (
+              <>
+                <Menu.Divider />
+
+                <Menu.Label>Administration</Menu.Label>
+
+                <Menu.Item
+                  leftSection={<IconShieldLock size={14} />}
+                  onClick={() => void handleAdministrationDashboard()}
+                >
+                  Dashboard
+                </Menu.Item>
+              </>
+            )}
+
+            <Menu.Divider />
           </>
         )}
-
-        <Menu.Divider />
 
         <Menu.Item
           leftSection={<IconLogout size={14} />}
@@ -189,8 +215,12 @@ export function Header() {
       <Logo />
       {user ? (
         <Group gap="sm">
-          <SearchButton />
-          <NotificationDropdown />
+          {user.active_ban === null && (
+            <>
+              <SearchButton />
+              <NotificationDropdown />
+            </>
+          )}
           <UserMenu />
         </Group>
       ) : (

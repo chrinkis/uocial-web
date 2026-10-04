@@ -1,3 +1,5 @@
+import type { Ban } from "@/models/app/Ban";
+
 export type UserRole = "Regular" | "Moderator" | "Admin";
 
 export interface User {
@@ -6,6 +8,7 @@ export interface User {
   email: string;
   email_verified_at: Date | null;
   role: UserRole;
+  active_ban: Ban | null;
   legal: {
     privacy_policy: {
       needs_acceptance: boolean;

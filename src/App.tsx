@@ -18,6 +18,10 @@ import { ModeratorGuard } from "./guards/ModeratorGuard";
 import HashtagsPage from "@/pages/app/posts/hashtags/page";
 import SearchPostsPage from "@/pages/app/posts/search/page";
 import ModerationDashboardPage from "@/pages/app/moderation/dashboard/page";
+import { AdminGuard } from "./guards/AdminGuard";
+import { BannedGuard } from "./guards/BannedGuard";
+import BannedPage from "@/pages/app/banned/page";
+import AdministrationDashboardPage from "@/pages/app/administration/dashboard/page";
 import { LegalGuard } from "./guards/LegalGuard";
 import TermsOfUsePage from "@/pages/legal/terms-of-use/page";
 import PrivacyPolicyPage from "@/pages/legal/privacy-policy/page";
@@ -49,6 +53,14 @@ function getLoggedInRoutes() {
   );
 }
 
+function getBannedRoutes() {
+  return (
+    <>
+      <Route path="app/banned" element={<BannedPage />} />
+    </>
+  );
+}
+
 function getVerifiedRoutes() {
   return (
     <>
@@ -73,6 +85,17 @@ function getModeratorRoutes() {
   );
 }
 
+function getAdminRoutes() {
+  return (
+    <>
+      <Route
+        path="app/administration/dashboard"
+        element={<AdministrationDashboardPage />}
+      />
+    </>
+  );
+}
+
 function App() {
   return (
     <Routes>
@@ -82,13 +105,21 @@ function App() {
         {getOpenRoutes()}
 
         <Route element={<LoggedInGuard />}>
-          <Route element={<LegalGuard />}>
-            {getLoggedInRoutes()}
+          {getBannedRoutes()}
 
-            <Route element={<VerifiedGuard />}>
-              {getVerifiedRoutes()}
+          <Route element={<BannedGuard />}>
+            <Route element={<LegalGuard />}>
+              {getLoggedInRoutes()}
 
-              <Route element={<ModeratorGuard />}>{getModeratorRoutes()}</Route>
+              <Route element={<VerifiedGuard />}>
+                {getVerifiedRoutes()}
+
+                <Route element={<ModeratorGuard />}>
+                  {getModeratorRoutes()}
+                </Route>
+
+                <Route element={<AdminGuard />}>{getAdminRoutes()}</Route>
+              </Route>
             </Route>
           </Route>
         </Route>

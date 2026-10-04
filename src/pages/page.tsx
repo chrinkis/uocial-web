@@ -8,6 +8,10 @@ export default function Page() {
     return <Navigate to="/about" replace />;
   }
 
+  if (user.active_ban) {
+    return <Navigate to="/app/banned" replace />;
+  }
+
   if (!user.email_verified_at) {
     return <Navigate to="/auth/verify-email" replace />;
   }

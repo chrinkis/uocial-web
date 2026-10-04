@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 import { SendVerificationEmailButton } from "./auth/SendVerificationEmailButton";
 
 export interface LockedPropsType {
-  reason: "unauthorized" | "unverified" | "moderatorsOnly";
+  reason: "unauthorized" | "unverified" | "moderatorsOnly" | "adminsOnly";
 }
 
 function LockedAnauthorized() {
@@ -83,6 +83,22 @@ function LockedModeratorsOnly() {
   );
 }
 
+function LockedAdminsOnly() {
+  return (
+    <Paper w={300} p="xl" withBorder>
+      <Stack>
+        <Title order={2} ta="center">
+          You can't access this page.
+        </Title>
+        <Group justify="center">
+          <IconBadgeOff size={128} />
+        </Group>
+        <Text ta="justify">This page is only available for admins.</Text>
+      </Stack>
+    </Paper>
+  );
+}
+
 export function Locked({ reason }: LockedPropsType) {
   switch (reason) {
     case "unauthorized":
@@ -91,6 +107,8 @@ export function Locked({ reason }: LockedPropsType) {
       return <LockedUnverified />;
     case "moderatorsOnly":
       return <LockedModeratorsOnly />;
+    case "adminsOnly":
+      return <LockedAdminsOnly />;
     default:
       invariant(false);
   }
