@@ -2,6 +2,10 @@ export interface ApiResponse {
   message: string;
 }
 
+export interface ResourceResponse<T> {
+  data: T;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   meta: {

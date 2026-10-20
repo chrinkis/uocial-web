@@ -1,9 +1,9 @@
 import type { User } from "@/models/User";
-import type { ApiResponse } from "@/utils/response";
+import type { ApiResponse, ResourceResponse } from "@/utils/response";
 import axios from "axios";
 
 export async function fetchUser() {
-  return await axios.get<{ data: User }>("/api/user");
+  return await axios.get<ResourceResponse<User>>("/api/user");
 }
 
 export async function login(credentials: {
