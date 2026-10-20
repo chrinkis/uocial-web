@@ -74,3 +74,14 @@ export function getActiveCategory(pathname: string) {
     ({ path }) => pathname === path || pathname.startsWith(`${path}/`),
   );
 }
+
+const LAST_CATEGORY_STORAGE_KEY = "uocial-last-category";
+
+export function getLastCategory() {
+  const id = localStorage.getItem(LAST_CATEGORY_STORAGE_KEY);
+  return CATEGORIES.find((category) => category.enabled && category.id === id);
+}
+
+export function saveLastCategory(category: Category) {
+  localStorage.setItem(LAST_CATEGORY_STORAGE_KEY, category.id);
+}

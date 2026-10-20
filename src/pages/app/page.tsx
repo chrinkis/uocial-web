@@ -1,5 +1,7 @@
 import { Navigate } from "react-router";
+import { getLastCategory } from "@/utils/categories";
 
 export default function Page() {
-  return <Navigate to="/app/posts/" replace />;
+  const lastCategory = getLastCategory();
+  return <Navigate to={lastCategory?.path ?? "/app/posts"} replace />;
 }
