@@ -17,6 +17,9 @@ import SavedPostsPage from "@/pages/app/posts/saved/page";
 import { ModeratorGuard } from "./guards/ModeratorGuard";
 import HashtagsPage from "@/pages/app/posts/hashtags/page";
 import SearchPostsPage from "@/pages/app/posts/search/page";
+import ReviewsPage from "@/pages/app/reviews/page";
+import DepartmentsPage from "@/pages/app/reviews/departments/page";
+import DepartmentPage from "@/pages/app/reviews/departments/detail/page";
 import ModerationDashboardPage from "@/pages/app/moderation/dashboard/page";
 import { AdminGuard } from "./guards/AdminGuard";
 import { BannedGuard } from "./guards/BannedGuard";
@@ -70,6 +73,12 @@ function getVerifiedRoutes() {
       <Route path="app/posts/saved" element={<SavedPostsPage />} />
       <Route path="app/posts/search" element={<SearchPostsPage />} />
       <Route path="app/posts/hashtags" element={<HashtagsPage />} />
+      <Route path="app/reviews" element={<ReviewsPage />} />
+      <Route path="app/reviews/departments" element={<DepartmentsPage />} />
+      <Route
+        path="app/reviews/departments/:departmentId"
+        element={<DepartmentPage />}
+      />
     </>
   );
 }

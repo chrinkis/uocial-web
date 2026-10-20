@@ -29,8 +29,8 @@ export const CATEGORIES: Category[] = [
     id: "course-reviews",
     title: "Course Reviews",
     icon: IconStar,
-    path: "/app/course-reviews",
-    enabled: false,
+    path: "/app/reviews",
+    enabled: true,
   },
   {
     id: "live-chat",
