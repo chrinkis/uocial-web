@@ -1,17 +1,13 @@
-import {
-  Anchor,
-  Badge,
-  Breadcrumbs,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Anchor, Breadcrumbs, Stack, Text, Title } from "@mantine/core";
 import { NavLink, useParams } from "react-router";
 import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
+import { useCourses } from "@/queries/app/reviews/course";
+import { DepartmentHeader } from "@/components/app/reviews/DepartmentHeader";
 import { DepartmentSkeleton } from "@/components/app/reviews/DepartmentSkeleton";
+import { Course } from "@/components/app/reviews/Course";
+import { CourseSkeleton } from "@/components/app/reviews/CourseSkeleton";
+import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 
 export default function Page() {
   const { departmentId } = useParams<{ departmentId: string }>();
@@ -26,37 +22,37 @@ export default function Page() {
         <Anchor component={NavLink} to="/app/reviews/departments">
           departments
         </Anchor>
-        <Anchor>{department?.code.toUpperCase() ?? "department"}</Anchor>
+        <Anchor>
+          {department ? department.code.toUpperCase() : "department"}
+        </Anchor>
       </Breadcrumbs>
 
-      {isLoading || !department ? (
+      {isLoading ? (
         <DepartmentSkeleton />
+      ) : department ? (
+        <DepartmentHeader department={department} />
       ) : (
-        <Paper withBorder shadow="sm" radius="lg" p="lg" w="90%" maw="50rem">
-          <Stack gap="sm">
-            <Group gap="md" wrap="nowrap">
-              <Badge
-                variant="light"
-                size="lg"
-                radius="md"
-                ff="monospace"
-                tt="uppercase"
-                w={68}
-                h={44}
-              >
-                {department.code}
-              </Badge>
+        <Text c="dimmed">Department not found.</Text>
+      )}
 
-              <Title order={2} size="h3">
-                {department.name}
-              </Title>
-            </Group>
-
-            <Text c="dimmed">
-              Course reviews for this department are coming soon.
+      {department && (
+        <Stack align="safe center" w="100%" gap="sm">
+          <Stack gap={2} align="center">
+            <Title order={3}>Courses</Title>
+            <Text c="dimmed" size="sm" ta="center">
+              Choose a course to see its reviews.
             </Text>
           </Stack>
-        </Paper>
+
+          <InfiniteScrolling
+            useQuery={useCourses}
+            queryArgs={[departmentId]}
+            name="courses"
+            Component={({ data }) => <Course course={data} />}
+            Fallback="No courses found."
+            loader={<CourseSkeleton />}
+          />
+        </Stack>
       )}
     </Stack>
   );

@@ -8,7 +8,7 @@ export function DepartmentSkeleton() {
           <Skeleton height={44} width={68} radius="md" />
 
           <Stack gap={6}>
-            <Skeleton height={18} width={180} radius="sm" />
+            <Skeleton height={18} width={140} radius="sm" />
             <Skeleton height={12} width={80} radius="sm" />
           </Stack>
         </Group>
