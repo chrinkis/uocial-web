@@ -6,9 +6,10 @@ export function InstructorSkeleton() {
       <Group gap="sm" wrap="nowrap">
         <Skeleton height={40} width={40} radius="xl" />
 
-        <Stack gap={4}>
+        <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
           <Skeleton height={16} width={160} radius="sm" />
-          <Skeleton height={12} width={60} radius="sm" />
+          <Skeleton height={12} width={80} radius="sm" />
+          <Skeleton height={12} width={120} radius="sm" />
         </Stack>
       </Group>
     </Paper>
