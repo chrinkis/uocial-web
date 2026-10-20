@@ -21,6 +21,7 @@ import ReviewsPage from "@/pages/app/reviews/page";
 import DepartmentsPage from "@/pages/app/reviews/departments/page";
 import DepartmentPage from "@/pages/app/reviews/departments/detail/page";
 import CoursePage from "@/pages/app/reviews/departments/courses/detail/page";
+import InstructorsPage from "@/pages/app/reviews/departments/instructors/page";
 import ModerationDashboardPage from "@/pages/app/moderation/dashboard/page";
 import { AdminGuard } from "./guards/AdminGuard";
 import { BannedGuard } from "./guards/BannedGuard";
@@ -83,6 +84,10 @@ function getVerifiedRoutes() {
       <Route
         path="app/reviews/departments/:departmentId/courses/:courseId"
         element={<CoursePage />}
+      />
+      <Route
+        path="app/reviews/departments/:departmentId/instructors"
+        element={<InstructorsPage />}
       />
     </>
   );

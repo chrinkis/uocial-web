@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
 import { useCourses } from "@/queries/app/reviews/course";
 import { DepartmentHeader } from "@/components/app/reviews/DepartmentHeader";
-import { DepartmentSkeleton } from "@/components/app/reviews/DepartmentSkeleton";
+import { DepartmentHeaderSkeleton } from "@/components/app/reviews/DepartmentHeaderSkeleton";
 import { Course } from "@/components/app/reviews/Course";
 import { CourseSkeleton } from "@/components/app/reviews/CourseSkeleton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
@@ -28,7 +28,7 @@ export default function Page() {
       </Breadcrumbs>
 
       {isLoading ? (
-        <DepartmentSkeleton />
+        <DepartmentHeaderSkeleton />
       ) : department ? (
         <DepartmentHeader department={department} />
       ) : (
