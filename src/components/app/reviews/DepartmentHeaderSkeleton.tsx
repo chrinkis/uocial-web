@@ -16,7 +16,7 @@ export function DepartmentHeaderSkeleton() {
           </Group>
         </Stack>
 
-        <Skeleton height={36} width={120} radius="md" />
+        <Skeleton height={36} width={140} radius="md" />
       </Group>
     </Paper>
   );

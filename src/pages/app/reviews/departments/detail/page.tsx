@@ -1,4 +1,4 @@
-import { Anchor, Breadcrumbs, Stack, Text, Title } from "@mantine/core";
+import { Anchor, Breadcrumbs, Group, Stack, Text, Title } from "@mantine/core";
 import { NavLink, useParams } from "react-router";
 import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
@@ -38,7 +38,12 @@ export default function Page() {
       {department && (
         <Stack align="safe center" w="100%" gap="sm">
           <Stack gap={2} align="center">
-            <Title order={3}>Courses</Title>
+            <Group gap={6} align="center" justify="center">
+              <Title order={3}>Courses</Title>
+              <Text c="dimmed" size="sm">
+                ({String(department.courses_count)})
+              </Text>
+            </Group>
             <Text c="dimmed" size="sm" ta="center">
               Choose a course to see its reviews.
             </Text>

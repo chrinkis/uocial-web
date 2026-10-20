@@ -67,7 +67,7 @@ export function DepartmentHeader({ department }: DepartmentHeaderPropsType) {
           rightSection={<IconChevronRight size={16} />}
           w={{ base: "100%", xs: "auto" }}
         >
-          Instructors
+          Instructors ({String(department.instructors_count)})
         </Button>
       </Group>
     </Paper>
