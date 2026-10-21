@@ -1,4 +1,5 @@
 import {
+  Anchor,
   Badge,
   Button,
   Group,
@@ -44,13 +45,22 @@ export function CourseHeader({ course }: CourseHeaderPropsType) {
             </Title>
           </Group>
 
-          <Group gap="xs" wrap="wrap">
-            <Rating value={average} fractions={2} readOnly size="md" />
-            <Text fw={600}>{average.toFixed(1)}</Text>
-            <Text size="sm" c="dimmed">
-              ({count} reviews)
-            </Text>
-          </Group>
+          <Anchor
+            component={NavLink}
+            to={`/app/reviews/departments/${String(course.department_id)}/courses/${String(course.id)}/reviews`}
+            c="inherit"
+            underline="never"
+            w="fit-content"
+          >
+            <Group gap="xs" wrap="wrap">
+              <Rating value={average} fractions={2} readOnly size="md" />
+              <Text fw={600}>{average.toFixed(1)}</Text>
+              <Text size="sm" c="dimmed">
+                ({count} reviews)
+              </Text>
+              <IconChevronRight size={16} color="var(--mantine-color-dimmed)" />
+            </Group>
+          </Anchor>
         </Stack>
 
         <Button

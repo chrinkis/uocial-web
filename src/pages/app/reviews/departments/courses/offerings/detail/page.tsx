@@ -57,7 +57,10 @@ export default function Page() {
         </>
       ) : offering ? (
         <>
-          <CourseOfferingHeader offering={offering} />
+          <CourseOfferingHeader
+            offering={offering}
+            departmentId={departmentId}
+          />
           <CourseOfferingInstructors offering={offering} />
         </>
       ) : (

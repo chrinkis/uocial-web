@@ -1,4 +1,15 @@
-import { Badge, Group, Paper, Rating, Stack, Text, Title } from "@mantine/core";
+import {
+  Anchor,
+  Badge,
+  Group,
+  Paper,
+  Rating,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import { IconChevronRight } from "@tabler/icons-react";
+import { NavLink } from "react-router";
 import { useState } from "react";
 import type { CourseOffering } from "@/models/app/reviews/CourseOffering";
 import { generateMockRating } from "@/utils/app/reviews/rating";
@@ -6,10 +17,12 @@ import { getYearFor } from "@/utils/app/reviews/semester";
 
 export interface CourseOfferingHeaderPropsType {
   offering: CourseOffering;
+  departmentId: number | string;
 }
 
 export function CourseOfferingHeader({
   offering,
+  departmentId,
 }: CourseOfferingHeaderPropsType) {
   const [{ average, count }] = useState(generateMockRating);
 
@@ -34,13 +47,22 @@ export function CourseOfferingHeader({
           </Title>
         </Group>
 
-        <Group gap="xs" wrap="wrap">
-          <Rating value={average} fractions={2} readOnly size="md" />
-          <Text fw={600}>{average.toFixed(1)}</Text>
-          <Text size="sm" c="dimmed">
-            ({count} reviews)
-          </Text>
-        </Group>
+        <Anchor
+          component={NavLink}
+          to={`/app/reviews/departments/${String(departmentId)}/courses/${String(offering.course_id)}/offerings/${String(offering.id)}/reviews`}
+          c="inherit"
+          underline="never"
+          w="fit-content"
+        >
+          <Group gap="xs" wrap="wrap">
+            <Rating value={average} fractions={2} readOnly size="md" />
+            <Text fw={600}>{average.toFixed(1)}</Text>
+            <Text size="sm" c="dimmed">
+              ({count} reviews)
+            </Text>
+            <IconChevronRight size={16} color="var(--mantine-color-dimmed)" />
+          </Group>
+        </Anchor>
       </Stack>
     </Paper>
   );
