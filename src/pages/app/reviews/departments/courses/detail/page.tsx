@@ -5,21 +5,20 @@ import {
   Paper,
   Stack,
   Text,
-  ThemeIcon,
   Title,
 } from "@mantine/core";
-import { IconChevronRight } from "@tabler/icons-react";
 import { NavLink, useParams } from "react-router";
 import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
 import { useCourse } from "@/queries/app/reviews/course";
+import { useCourseOfferings } from "@/queries/app/reviews/offering";
 import { CourseHeader } from "@/components/app/reviews/CourseHeader";
 import { CourseHeaderSkeleton } from "@/components/app/reviews/CourseHeaderSkeleton";
 import { CourseOfferingsBar } from "@/components/app/reviews/CourseOfferingsBar";
 import { CourseSemesterSkeleton } from "@/components/app/reviews/CourseSemesterSkeleton";
-import { CourseLastOfferingSkeleton } from "@/components/app/reviews/CourseLastOfferingSkeleton";
-import { getInstructorFullName } from "@/utils/app/reviews/instructor";
-import { formatTerm } from "@/utils/app/reviews/semester";
+import { CourseOffering } from "@/components/app/reviews/CourseOffering";
+import { CourseOfferingSkeleton } from "@/components/app/reviews/CourseOfferingSkeleton";
+import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 
 export default function Page() {
   const { departmentId, courseId } = useParams<{
@@ -51,46 +50,12 @@ export default function Page() {
       {isLoading ? (
         <>
           <CourseHeaderSkeleton />
-          <CourseLastOfferingSkeleton />
           <CourseSemesterSkeleton />
         </>
       ) : course ? (
         <>
           <CourseHeader course={course} />
-          {course.last_offering && (
-            <NavLink
-              to={`/app/reviews/departments/${departmentId}/courses/${courseId}/offerings/${String(course.last_offering.id)}`}
-              style={{
-                display: "block",
-                width: "90%",
-                maxWidth: "50rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              <Paper withBorder shadow="sm" radius="lg" p="lg" w="100%">
-                <Stack gap="sm">
-                  <Group justify="center" gap="xs">
-                    <Title order={4}>Last Offered</Title>
-                    <ThemeIcon
-                      variant="light"
-                      color="gray"
-                      radius="xl"
-                      size="sm"
-                    >
-                      <IconChevronRight size={16} />
-                    </ThemeIcon>
-                  </Group>
 
-                  <Text size="sm" c="dimmed" ta="center">
-                    on {formatTerm(course.last_offering)}
-                    {course.last_offering.instructors.length > 0 &&
-                      ` by ${course.last_offering.instructors.map(getInstructorFullName).join(", ")}`}
-                  </Text>
-                </Stack>
-              </Paper>
-            </NavLink>
-          )}
           <Paper withBorder shadow="sm" radius="lg" p="lg" w="90%" maw="50rem">
             <Stack gap="sm">
               <Group justify="center">
@@ -103,6 +68,31 @@ export default function Page() {
               />
             </Stack>
           </Paper>
+
+          <Stack align="safe center" w="100%" gap="sm">
+            <Stack gap={2} align="center">
+              <Group gap={6} align="center" justify="center">
+                <Title order={3}>Offerings</Title>
+                <Text c="dimmed" size="sm">
+                  ({String(course.offerings_count)})
+                </Text>
+              </Group>
+              <Text c="dimmed" size="sm" ta="center">
+                Pick a term to see its reviews.
+              </Text>
+            </Stack>
+
+            <InfiniteScrolling
+              useQuery={useCourseOfferings}
+              queryArgs={[departmentId, courseId]}
+              name="offerings"
+              Component={({ data }) => (
+                <CourseOffering offering={data} departmentId={departmentId} />
+              )}
+              Fallback="No offerings found."
+              loader={<CourseOfferingSkeleton />}
+            />
+          </Stack>
         </>
       ) : (
         <Text c="dimmed">Course not found.</Text>
