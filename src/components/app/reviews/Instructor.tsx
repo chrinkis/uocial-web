@@ -24,7 +24,7 @@ export function Instructor({ instructor }: InstructorPropsType) {
           {stats ? (
             <>
               <Text size="xs" c="dimmed">
-                {stats.courses}
+                {stats.summary}
               </Text>
               {stats.lastTaught && (
                 <Text size="xs" c="dimmed">

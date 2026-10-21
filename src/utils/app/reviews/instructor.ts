@@ -1,4 +1,5 @@
 import type { Instructor } from "@/models/app/reviews/Instructor";
+import type { Term } from "@/models/app/reviews/Term";
 import { formatTerm } from "@/utils/app/reviews/semester";
 
 export function getInstructorFullName(instructor: Instructor) {
@@ -11,17 +12,28 @@ function pluralize(count: number, singular: string) {
   return `${String(count)} ${singular}${count === 1 ? "" : "s"}`;
 }
 
-export function getInstructorStats(instructor: Instructor) {
-  const meta = instructor.in_department;
+function formatLastTaught(term: Term | null) {
+  return term ? `Last taught ${formatTerm(term)}` : null;
+}
 
-  if (!meta) {
-    return null;
+export function getInstructorStats(instructor: Instructor) {
+  const inCourse = instructor.in_course;
+
+  if (inCourse) {
+    return {
+      summary: pluralize(inCourse.offerings_count, "offering"),
+      lastTaught: formatLastTaught(inCourse.last_taught),
+    };
   }
 
-  return {
-    courses: pluralize(meta.courses_count, "course"),
-    lastTaught: meta.last_taught
-      ? `Last taught ${formatTerm(meta.last_taught)}`
-      : null,
-  };
+  const inDepartment = instructor.in_department;
+
+  if (inDepartment) {
+    return {
+      summary: pluralize(inDepartment.courses_count, "course"),
+      lastTaught: formatLastTaught(inDepartment.last_taught),
+    };
+  }
+
+  return null;
 }

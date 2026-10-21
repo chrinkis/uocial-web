@@ -12,17 +12,10 @@ import { IconChevronRight, IconUsers } from "@tabler/icons-react";
 import { NavLink } from "react-router";
 import { useState } from "react";
 import type { Department } from "@/models/app/reviews/Department";
+import { generateMockRating } from "@/utils/app/reviews/rating";
 
 export interface DepartmentHeaderPropsType {
   department: Department;
-}
-
-// FIXME: Replace with the real department rating once the API exposes it.
-function generateMockRating() {
-  return {
-    average: Math.round((3.8 + Math.random() * 1.2) * 10) / 10,
-    count: Math.floor(Math.random() * 190) + 10,
-  };
 }
 
 export function DepartmentHeader({ department }: DepartmentHeaderPropsType) {
