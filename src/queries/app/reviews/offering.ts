@@ -1,5 +1,8 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchCourseOfferings } from "@/api/app/reviews/offering";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  fetchCourseOffering,
+  fetchCourseOfferings,
+} from "@/api/app/reviews/offering";
 
 export const OFFERING_QUERY_KEYS = {
   list: (departmentId: number | string, courseId: number | string) =>
@@ -9,6 +12,19 @@ export const OFFERING_QUERY_KEYS = {
       "courses",
       String(courseId),
       "offerings",
+    ] as const,
+  detail: (
+    departmentId: number | string,
+    courseId: number | string,
+    offeringId: number | string,
+  ) =>
+    [
+      "departments",
+      String(departmentId),
+      "courses",
+      String(courseId),
+      "offerings",
+      String(offeringId),
     ] as const,
 };
 
@@ -28,5 +44,16 @@ export function useCourseOfferings(
 
       return undefined;
     },
+  });
+}
+
+export function useCourseOffering(
+  departmentId: number | string,
+  courseId: number | string,
+  offeringId: number | string,
+) {
+  return useQuery({
+    queryKey: OFFERING_QUERY_KEYS.detail(departmentId, courseId, offeringId),
+    queryFn: () => fetchCourseOffering(departmentId, courseId, offeringId),
   });
 }
