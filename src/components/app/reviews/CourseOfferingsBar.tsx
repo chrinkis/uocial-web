@@ -69,7 +69,7 @@ export function CourseOfferingsBar({
 
       <Group gap="lg" justify="center" wrap="wrap">
         <SemesterLegend
-          color="var(--mantine-color-orange-6)"
+          color="var(--mantine-color-yellow-6)"
           semester="Fall"
           count={fall}
         />
