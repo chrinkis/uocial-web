@@ -2,6 +2,15 @@ import axios from "axios";
 import type { PaginatedResponse, ResourceResponse } from "@/utils/response";
 import type { Instructor } from "@/models/app/reviews/Instructor";
 
+export async function fetchInstructors(page: number | string, search?: string) {
+  const { data } = await axios.get<PaginatedResponse<Instructor>>(
+    "/api/app/instructors",
+    { params: { page, search } },
+  );
+
+  return data;
+}
+
 export async function fetchDepartmentInstructors(
   departmentId: number | string,
   page: number | string,

@@ -2,9 +2,18 @@ import axios from "axios";
 import type { PaginatedResponse, ResourceResponse } from "@/utils/response";
 import type { Department } from "@/models/app/reviews/Department";
 
-export async function fetchDepartments(page: number | string) {
+export async function fetchDepartments(
+  page: number | string,
+  instructorIds: number[] = [],
+) {
   const { data } = await axios.get<PaginatedResponse<Department>>(
-    `/api/app/departments?page=${String(page)}`,
+    "/api/app/departments",
+    {
+      params: {
+        page,
+        instructors: instructorIds.length > 0 ? instructorIds : undefined,
+      },
+    },
   );
 
   return data;

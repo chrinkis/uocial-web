@@ -1,11 +1,13 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueries, useQuery } from "@tanstack/react-query";
 import {
   fetchCourseInstructors,
   fetchDepartmentInstructors,
   fetchInstructor,
+  fetchInstructors,
 } from "@/api/app/reviews/instructor";
 
 export const INSTRUCTOR_QUERY_KEYS = {
+  all: (search = "") => ["instructors", "list", search] as const,
   detail: (instructorId: number | string) =>
     ["instructors", String(instructorId)] as const,
   list: (departmentId: number | string) =>
@@ -59,5 +61,29 @@ export function useInstructor(instructorId: number | string) {
   return useQuery({
     queryKey: INSTRUCTOR_QUERY_KEYS.detail(instructorId),
     queryFn: () => fetchInstructor(instructorId),
+  });
+}
+
+export function useInstructors(search = "") {
+  return useInfiniteQuery({
+    queryKey: INSTRUCTOR_QUERY_KEYS.all(search),
+    queryFn: ({ pageParam }) => fetchInstructors(pageParam, search),
+    initialPageParam: 1,
+    getNextPageParam: (lastResponse) => {
+      if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
+        return lastResponse.meta.current_page + 1;
+      }
+
+      return undefined;
+    },
+  });
+}
+
+export function useInstructorsByIds(instructorIds: number[]) {
+  return useQueries({
+    queries: instructorIds.map((instructorId) => ({
+      queryKey: INSTRUCTOR_QUERY_KEYS.detail(instructorId),
+      queryFn: () => fetchInstructor(instructorId),
+    })),
   });
 }

@@ -5,15 +5,16 @@ import {
 } from "@/api/app/reviews/department";
 
 export const DEPARTMENT_QUERY_KEYS = {
-  list: ["departments"] as const,
+  list: (instructorIds: number[] = []) =>
+    ["departments", { instructors: instructorIds }] as const,
   detail: (departmentId: number | string) =>
     ["departments", String(departmentId)] as const,
 };
 
-export function useDepartments() {
+export function useDepartments(instructorIds: number[] = []) {
   return useInfiniteQuery({
-    queryKey: DEPARTMENT_QUERY_KEYS.list,
-    queryFn: ({ pageParam }) => fetchDepartments(pageParam),
+    queryKey: DEPARTMENT_QUERY_KEYS.list(instructorIds),
+    queryFn: ({ pageParam }) => fetchDepartments(pageParam, instructorIds),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {

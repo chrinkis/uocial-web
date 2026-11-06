@@ -1,10 +1,24 @@
+import { useMemo } from "react";
 import { Stack, Text, Title } from "@mantine/core";
+import { useSearchParams } from "react-router";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { Department } from "@/components/app/reviews/Department";
 import { DepartmentSkeleton } from "@/components/app/reviews/DepartmentSkeleton";
+import { DepartmentsFilter } from "@/components/app/reviews/DepartmentsFilter";
 import { useDepartments } from "@/queries/app/reviews/department";
+import {
+  getInstructorFilter,
+  setInstructorFilter,
+} from "@/utils/app/reviews/filters";
 
 export default function Page() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const instructorIds = useMemo(
+    () => getInstructorFilter(searchParams),
+    [searchParams],
+  );
+
   return (
     <Stack align="safe center" w="100%" h="100%" gap="md">
       <Stack gap={4} align="center">
@@ -14,11 +28,25 @@ export default function Page() {
         </Text>
       </Stack>
 
+      <DepartmentsFilter
+        instructorIds={instructorIds}
+        onApply={(ids) => {
+          setSearchParams(setInstructorFilter(searchParams, ids), {
+            replace: true,
+          });
+        }}
+      />
+
       <InfiniteScrolling
         useQuery={useDepartments}
+        queryArgs={[instructorIds]}
         name="departments"
         Component={({ data }) => <Department department={data} />}
-        Fallback="No departments found."
+        Fallback={
+          instructorIds.length > 0
+            ? "No departments found for the selected instructors."
+            : "No departments found."
+        }
         loader={<DepartmentSkeleton />}
       />
     </Stack>
