@@ -5,13 +5,18 @@ import {
 } from "@/api/app/reviews/offering";
 
 export const OFFERING_QUERY_KEYS = {
-  list: (departmentId: number | string, courseId: number | string) =>
+  list: (
+    departmentId: number | string,
+    courseId: number | string,
+    instructorIds: number[] = [],
+  ) =>
     [
       "departments",
       String(departmentId),
       "courses",
       String(courseId),
       "offerings",
+      { instructors: instructorIds },
     ] as const,
   detail: (
     departmentId: number | string,
@@ -31,11 +36,12 @@ export const OFFERING_QUERY_KEYS = {
 export function useCourseOfferings(
   departmentId: number | string,
   courseId: number | string,
+  instructorIds: number[] = [],
 ) {
   return useInfiniteQuery({
-    queryKey: OFFERING_QUERY_KEYS.list(departmentId, courseId),
+    queryKey: OFFERING_QUERY_KEYS.list(departmentId, courseId, instructorIds),
     queryFn: ({ pageParam }) =>
-      fetchCourseOfferings(departmentId, courseId, pageParam),
+      fetchCourseOfferings(departmentId, courseId, pageParam, instructorIds),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {

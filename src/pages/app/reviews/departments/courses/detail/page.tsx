@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Anchor,
   Breadcrumbs,
@@ -7,7 +8,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { NavLink, useParams } from "react-router";
+import { NavLink, useParams, useSearchParams } from "react-router";
 import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
 import { useCourse } from "@/queries/app/reviews/course";
@@ -19,6 +20,11 @@ import { CourseSemesterSkeleton } from "@/components/app/reviews/CourseSemesterS
 import { CourseOffering } from "@/components/app/reviews/CourseOffering";
 import { CourseOfferingSkeleton } from "@/components/app/reviews/CourseOfferingSkeleton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
+import { OfferingsFilter } from "@/components/app/reviews/OfferingsFilter";
+import {
+  getInstructorFilter,
+  setInstructorFilter,
+} from "@/utils/app/reviews/filters";
 
 export default function Page() {
   const { departmentId, courseId } = useParams<{
@@ -31,6 +37,12 @@ export default function Page() {
 
   const { data: department } = useDepartment(departmentId);
   const { data: course, isLoading } = useCourse(departmentId, courseId);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const instructorIds = useMemo(
+    () => getInstructorFilter(searchParams),
+    [searchParams],
+  );
 
   return (
     <Stack align="safe center" w="100%" h="100%" gap="md">
@@ -82,14 +94,28 @@ export default function Page() {
               </Text>
             </Stack>
 
+            <OfferingsFilter
+              value={{ instructorIds }}
+              onApply={(filter) => {
+                setSearchParams(
+                  setInstructorFilter(searchParams, filter.instructorIds),
+                  { replace: true },
+                );
+              }}
+            />
+
             <InfiniteScrolling
               useQuery={useCourseOfferings}
-              queryArgs={[departmentId, courseId]}
+              queryArgs={[departmentId, courseId, instructorIds]}
               name="offerings"
               Component={({ data }) => (
                 <CourseOffering offering={data} departmentId={departmentId} />
               )}
-              Fallback="No offerings found."
+              Fallback={
+                instructorIds.length > 0
+                  ? "No offerings found for the selected instructors."
+                  : "No offerings found."
+              }
               loader={<CourseOfferingSkeleton />}
             />
           </Stack>

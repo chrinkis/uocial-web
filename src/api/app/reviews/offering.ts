@@ -6,9 +6,16 @@ export async function fetchCourseOfferings(
   departmentId: number | string,
   courseId: number | string,
   page: number | string,
+  instructorIds: number[] = [],
 ) {
   const { data } = await axios.get<PaginatedResponse<CourseOffering>>(
-    `/api/app/departments/${String(departmentId)}/courses/${String(courseId)}/offerings?page=${String(page)}`,
+    `/api/app/departments/${String(departmentId)}/courses/${String(courseId)}/offerings`,
+    {
+      params: {
+        page,
+        instructors: instructorIds.length > 0 ? instructorIds : undefined,
+      },
+    },
   );
 
   return data;
