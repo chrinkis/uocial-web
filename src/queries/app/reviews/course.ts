@@ -2,16 +2,25 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { fetchCourse, fetchCourses } from "@/api/app/reviews/course";
 
 export const COURSE_QUERY_KEYS = {
-  list: (departmentId: number | string) =>
-    ["departments", String(departmentId), "courses"] as const,
+  list: (departmentId: number | string, instructorIds: number[] = []) =>
+    [
+      "departments",
+      String(departmentId),
+      "courses",
+      { instructors: instructorIds },
+    ] as const,
   detail: (departmentId: number | string, courseId: number | string) =>
     ["departments", String(departmentId), "courses", String(courseId)] as const,
 };
 
-export function useCourses(departmentId: number | string) {
+export function useCourses(
+  departmentId: number | string,
+  instructorIds: number[] = [],
+) {
   return useInfiniteQuery({
-    queryKey: COURSE_QUERY_KEYS.list(departmentId),
-    queryFn: ({ pageParam }) => fetchCourses(departmentId, pageParam),
+    queryKey: COURSE_QUERY_KEYS.list(departmentId, instructorIds),
+    queryFn: ({ pageParam }) =>
+      fetchCourses(departmentId, pageParam, instructorIds),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {

@@ -29,11 +29,14 @@ export default function Page() {
       </Stack>
 
       <DepartmentsFilter
-        instructorIds={instructorIds}
-        onApply={(ids) => {
-          setSearchParams(setInstructorFilter(searchParams, ids), {
-            replace: true,
-          });
+        value={{ instructorIds }}
+        onApply={(filter) => {
+          setSearchParams(
+            setInstructorFilter(searchParams, filter.instructorIds),
+            {
+              replace: true,
+            },
+          );
         }}
       />
 

@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import { Anchor, Breadcrumbs, Group, Stack, Text, Title } from "@mantine/core";
-import { NavLink, useParams } from "react-router";
+import { NavLink, useParams, useSearchParams } from "react-router";
 import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
 import { useCourses } from "@/queries/app/reviews/course";
@@ -8,6 +9,11 @@ import { DepartmentHeaderSkeleton } from "@/components/app/reviews/DepartmentHea
 import { Course } from "@/components/app/reviews/Course";
 import { CourseSkeleton } from "@/components/app/reviews/CourseSkeleton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
+import { CoursesFilter } from "@/components/app/reviews/CoursesFilter";
+import {
+  getInstructorFilter,
+  setInstructorFilter,
+} from "@/utils/app/reviews/filters";
 
 export default function Page() {
   const { departmentId } = useParams<{ departmentId: string }>();
@@ -15,6 +21,12 @@ export default function Page() {
   invariant(departmentId);
 
   const { data: department, isLoading } = useDepartment(departmentId);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const instructorIds = useMemo(
+    () => getInstructorFilter(searchParams),
+    [searchParams],
+  );
 
   return (
     <Stack align="safe center" w="100%" h="100%" gap="md">
@@ -49,12 +61,28 @@ export default function Page() {
             </Text>
           </Stack>
 
+          <CoursesFilter
+            value={{ instructorIds }}
+            onApply={(filter) => {
+              setSearchParams(
+                setInstructorFilter(searchParams, filter.instructorIds),
+                {
+                  replace: true,
+                },
+              );
+            }}
+          />
+
           <InfiniteScrolling
             useQuery={useCourses}
-            queryArgs={[departmentId]}
+            queryArgs={[departmentId, instructorIds]}
             name="courses"
             Component={({ data }) => <Course course={data} />}
-            Fallback="No courses found."
+            Fallback={
+              instructorIds.length > 0
+                ? "No courses found for the selected instructors."
+                : "No courses found."
+            }
             loader={<CourseSkeleton />}
           />
         </Stack>
