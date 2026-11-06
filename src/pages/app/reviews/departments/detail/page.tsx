@@ -65,6 +65,7 @@ export default function Page() {
           </Stack>
 
           <CoursesFilter
+            departmentId={departmentId}
             value={{ instructorIds }}
             onApply={(filter) => {
               setSearchParams(

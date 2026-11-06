@@ -6,8 +6,18 @@ import {
   fetchInstructors,
 } from "@/api/app/reviews/instructor";
 
+/**
+ * Limits which instructors are offered: the ones teaching in the course, in
+ * the department, or (when empty) anywhere.
+ */
+export interface InstructorScope {
+  departmentId?: number | string;
+  courseId?: number | string;
+}
+
 export const INSTRUCTOR_QUERY_KEYS = {
-  all: (search = "") => ["instructors", "list", search] as const,
+  search: (scope: InstructorScope, search: string) =>
+    ["instructors", "search", scope, search] as const,
   detail: (instructorId: number | string) =>
     ["instructors", String(instructorId)] as const,
   list: (departmentId: number | string) =>
@@ -64,10 +74,27 @@ export function useInstructor(instructorId: number | string) {
   });
 }
 
-export function useInstructors(search = "") {
+export function useInstructors(search = "", scope: InstructorScope = {}) {
+  const { departmentId, courseId } = scope;
+
   return useInfiniteQuery({
-    queryKey: INSTRUCTOR_QUERY_KEYS.all(search),
-    queryFn: ({ pageParam }) => fetchInstructors(pageParam, search),
+    queryKey: INSTRUCTOR_QUERY_KEYS.search({ departmentId, courseId }, search),
+    queryFn: ({ pageParam }) => {
+      if (departmentId !== undefined && courseId !== undefined) {
+        return fetchCourseInstructors(
+          departmentId,
+          courseId,
+          pageParam,
+          search,
+        );
+      }
+
+      if (departmentId !== undefined) {
+        return fetchDepartmentInstructors(departmentId, pageParam, search);
+      }
+
+      return fetchInstructors(pageParam, search);
+    },
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {

@@ -10,11 +10,18 @@ const EMPTY_OFFERINGS_FILTER: OfferingsFilterValue = {
 };
 
 export interface OfferingsFilterPropsType {
+  departmentId: number | string;
+  courseId: number | string;
   value: OfferingsFilterValue;
   onApply: (value: OfferingsFilterValue) => void;
 }
 
-export function OfferingsFilter({ value, onApply }: OfferingsFilterPropsType) {
+export function OfferingsFilter({
+  departmentId,
+  courseId,
+  value,
+  onApply,
+}: OfferingsFilterPropsType) {
   return (
     <FilterDrawer
       value={value}
@@ -24,6 +31,7 @@ export function OfferingsFilter({ value, onApply }: OfferingsFilterPropsType) {
     >
       {(draft, setDraft) => (
         <InstructorMultiSelect
+          scope={{ departmentId, courseId }}
           value={draft.instructorIds}
           onChange={(instructorIds) => {
             setDraft({ ...draft, instructorIds });

@@ -14,9 +14,11 @@ export async function fetchInstructors(page: number | string, search?: string) {
 export async function fetchDepartmentInstructors(
   departmentId: number | string,
   page: number | string,
+  search?: string,
 ) {
   const { data } = await axios.get<PaginatedResponse<Instructor>>(
-    `/api/app/departments/${String(departmentId)}/instructors?page=${String(page)}`,
+    `/api/app/departments/${String(departmentId)}/instructors`,
+    { params: { page, search } },
   );
 
   return data;
@@ -26,9 +28,11 @@ export async function fetchCourseInstructors(
   departmentId: number | string,
   courseId: number | string,
   page: number | string,
+  search?: string,
 ) {
   const { data } = await axios.get<PaginatedResponse<Instructor>>(
-    `/api/app/departments/${String(departmentId)}/courses/${String(courseId)}/instructors?page=${String(page)}`,
+    `/api/app/departments/${String(departmentId)}/courses/${String(courseId)}/instructors`,
+    { params: { page, search } },
   );
 
   return data;

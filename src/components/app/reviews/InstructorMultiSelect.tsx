@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Loader, MultiSelect } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import {
+  type InstructorScope,
   useInstructors,
   useInstructorsByIds,
 } from "@/queries/app/reviews/instructor";
@@ -10,17 +11,20 @@ import { getInstructorFullName } from "@/utils/app/reviews/instructor";
 export interface InstructorMultiSelectPropsType {
   value: number[];
   onChange: (value: number[]) => void;
+  /** Only offer the instructors teaching in this department / course. */
+  scope?: InstructorScope;
 }
 
 export function InstructorMultiSelect({
   value,
   onChange,
+  scope,
 }: InstructorMultiSelectPropsType) {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebouncedValue(search.trim(), 300);
 
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
-    useInstructors(debouncedSearch);
+    useInstructors(debouncedSearch, scope);
   const selected = useInstructorsByIds(value);
 
   // Selected instructors must stay in `data` even when the current search
