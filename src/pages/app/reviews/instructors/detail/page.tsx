@@ -1,5 +1,5 @@
 import { Anchor, Breadcrumbs, Stack, Text } from "@mantine/core";
-import { useParams } from "react-router";
+import { NavLink, useParams } from "react-router";
 import invariant from "tiny-invariant";
 import { useInstructor } from "@/queries/app/reviews/instructor";
 import { InstructorHeader } from "@/components/app/reviews/InstructorHeader";
@@ -16,7 +16,9 @@ export default function Page() {
   return (
     <Stack align="safe center" w="100%" h="100%" gap="md">
       <Breadcrumbs>
-        <Anchor>instructors</Anchor>
+        <Anchor component={NavLink} to="/app/reviews/instructors">
+          instructors
+        </Anchor>
         <Anchor>
           {instructor ? getInstructorFullName(instructor) : "instructor"}
         </Anchor>
