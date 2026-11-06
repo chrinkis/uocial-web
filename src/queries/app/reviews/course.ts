@@ -1,4 +1,8 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import { fetchCourse, fetchCourses } from "@/api/app/reviews/course";
 
 export const COURSE_QUERY_KEYS = {
@@ -9,8 +13,18 @@ export const COURSE_QUERY_KEYS = {
       "courses",
       { instructors: instructorIds },
     ] as const,
-  detail: (departmentId: number | string, courseId: number | string) =>
-    ["departments", String(departmentId), "courses", String(courseId)] as const,
+  detail: (
+    departmentId: number | string,
+    courseId: number | string,
+    instructorIds: number[] = [],
+  ) =>
+    [
+      "departments",
+      String(departmentId),
+      "courses",
+      String(courseId),
+      { instructors: instructorIds },
+    ] as const,
 };
 
 export function useCourses(
@@ -35,9 +49,11 @@ export function useCourses(
 export function useCourse(
   departmentId: number | string,
   courseId: number | string,
+  instructorIds: number[] = [],
 ) {
   return useQuery({
-    queryKey: COURSE_QUERY_KEYS.detail(departmentId, courseId),
-    queryFn: () => fetchCourse(departmentId, courseId),
+    queryKey: COURSE_QUERY_KEYS.detail(departmentId, courseId, instructorIds),
+    queryFn: () => fetchCourse(departmentId, courseId, instructorIds),
+    placeholderData: keepPreviousData,
   });
 }

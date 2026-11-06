@@ -1,4 +1,8 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   fetchDepartment,
   fetchDepartments,
@@ -7,8 +11,12 @@ import {
 export const DEPARTMENT_QUERY_KEYS = {
   list: (instructorIds: number[] = []) =>
     ["departments", { instructors: instructorIds }] as const,
-  detail: (departmentId: number | string) =>
-    ["departments", String(departmentId)] as const,
+  detail: (departmentId: number | string, instructorIds: number[] = []) =>
+    [
+      "departments",
+      String(departmentId),
+      { instructors: instructorIds },
+    ] as const,
 };
 
 export function useDepartments(instructorIds: number[] = []) {
@@ -26,9 +34,13 @@ export function useDepartments(instructorIds: number[] = []) {
   });
 }
 
-export function useDepartment(departmentId: number | string) {
+export function useDepartment(
+  departmentId: number | string,
+  instructorIds: number[] = [],
+) {
   return useQuery({
-    queryKey: DEPARTMENT_QUERY_KEYS.detail(departmentId),
-    queryFn: () => fetchDepartment(departmentId),
+    queryKey: DEPARTMENT_QUERY_KEYS.detail(departmentId, instructorIds),
+    queryFn: () => fetchDepartment(departmentId, instructorIds),
+    placeholderData: keepPreviousData,
   });
 }

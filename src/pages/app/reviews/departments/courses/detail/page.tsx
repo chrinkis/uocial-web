@@ -36,12 +36,16 @@ export default function Page() {
   invariant(courseId);
 
   const { data: department } = useDepartment(departmentId);
-  const { data: course, isLoading } = useCourse(departmentId, courseId);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const instructorIds = useMemo(
     () => getInstructorFilter(searchParams),
     [searchParams],
+  );
+
+  const { data: course, isLoading } = useCourse(
+    departmentId,
+    courseId,
+    instructorIds,
   );
 
   return (

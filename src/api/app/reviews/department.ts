@@ -19,9 +19,17 @@ export async function fetchDepartments(
   return data;
 }
 
-export async function fetchDepartment(departmentId: number | string) {
+export async function fetchDepartment(
+  departmentId: number | string,
+  instructorIds: number[] = [],
+) {
   const { data } = await axios.get<ResourceResponse<Department>>(
     `/api/app/departments/${String(departmentId)}`,
+    {
+      params: {
+        instructors: instructorIds.length > 0 ? instructorIds : undefined,
+      },
+    },
   );
 
   return data.data;

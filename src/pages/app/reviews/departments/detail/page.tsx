@@ -20,12 +20,15 @@ export default function Page() {
 
   invariant(departmentId);
 
-  const { data: department, isLoading } = useDepartment(departmentId);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const instructorIds = useMemo(
     () => getInstructorFilter(searchParams),
     [searchParams],
+  );
+
+  const { data: department, isLoading } = useDepartment(
+    departmentId,
+    instructorIds,
   );
 
   return (
