@@ -6,12 +6,14 @@ export async function fetchCourses(
   departmentId: number | string,
   page: number | string,
   instructorIds: number[] = [],
+  search?: string,
 ) {
   const { data } = await axios.get<PaginatedResponse<Course>>(
     `/api/app/departments/${String(departmentId)}/courses`,
     {
       params: {
         page,
+        search: search === "" ? undefined : search,
         instructors: instructorIds.length > 0 ? instructorIds : undefined,
       },
     },

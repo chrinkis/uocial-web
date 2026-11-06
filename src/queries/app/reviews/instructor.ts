@@ -20,23 +20,31 @@ export const INSTRUCTOR_QUERY_KEYS = {
     ["instructors", "search", scope, search] as const,
   detail: (instructorId: number | string) =>
     ["instructors", String(instructorId)] as const,
-  list: (departmentId: number | string) =>
-    ["departments", String(departmentId), "instructors"] as const,
-  courseList: (departmentId: number | string, courseId: number | string) =>
+  list: (departmentId: number | string, search = "") =>
+    ["departments", String(departmentId), "instructors", { search }] as const,
+  courseList: (
+    departmentId: number | string,
+    courseId: number | string,
+    search = "",
+  ) =>
     [
       "departments",
       String(departmentId),
       "courses",
       String(courseId),
       "instructors",
+      { search },
     ] as const,
 };
 
-export function useDepartmentInstructors(departmentId: number | string) {
+export function useDepartmentInstructors(
+  departmentId: number | string,
+  search = "",
+) {
   return useInfiniteQuery({
-    queryKey: INSTRUCTOR_QUERY_KEYS.list(departmentId),
+    queryKey: INSTRUCTOR_QUERY_KEYS.list(departmentId, search),
     queryFn: ({ pageParam }) =>
-      fetchDepartmentInstructors(departmentId, pageParam),
+      fetchDepartmentInstructors(departmentId, pageParam, search),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
@@ -51,11 +59,12 @@ export function useDepartmentInstructors(departmentId: number | string) {
 export function useCourseInstructors(
   departmentId: number | string,
   courseId: number | string,
+  search = "",
 ) {
   return useInfiniteQuery({
-    queryKey: INSTRUCTOR_QUERY_KEYS.courseList(departmentId, courseId),
+    queryKey: INSTRUCTOR_QUERY_KEYS.courseList(departmentId, courseId, search),
     queryFn: ({ pageParam }) =>
-      fetchCourseInstructors(departmentId, courseId, pageParam),
+      fetchCourseInstructors(departmentId, courseId, pageParam, search),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {

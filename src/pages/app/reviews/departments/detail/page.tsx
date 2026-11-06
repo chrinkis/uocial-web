@@ -13,8 +13,11 @@ import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { CoursesFilter } from "@/components/app/reviews/CoursesFilter";
 import {
   getInstructorFilter,
+  getSearch,
   setInstructorFilter,
+  setSearch,
 } from "@/utils/app/reviews/filters";
+import { LiveSearchInput } from "@/components/LiveSearchInput";
 
 export default function Page() {
   const carry = useCarriedFilters();
@@ -27,6 +30,8 @@ export default function Page() {
     () => getInstructorFilter(searchParams),
     [searchParams],
   );
+
+  const search = getSearch(searchParams);
 
   const { data: department, isLoading } = useDepartment(
     departmentId,
@@ -66,27 +71,36 @@ export default function Page() {
             </Text>
           </Stack>
 
-          <CoursesFilter
-            departmentId={departmentId}
-            value={{ instructorIds }}
-            onApply={(filter) => {
-              setSearchParams(
-                setInstructorFilter(searchParams, filter.instructorIds),
-                {
+          <Group w="90%" maw="50rem" wrap="nowrap" gap="xs">
+            <LiveSearchInput
+              value={search}
+              placeholder="Search courses"
+              onSearch={(next) => {
+                setSearchParams((prev) => setSearch(prev, next), {
                   replace: true,
-                },
-              );
-            }}
-          />
+                });
+              }}
+            />
+            <CoursesFilter
+              departmentId={departmentId}
+              value={{ instructorIds }}
+              onApply={(filter) => {
+                setSearchParams(
+                  (prev) => setInstructorFilter(prev, filter.instructorIds),
+                  { replace: true },
+                );
+              }}
+            />
+          </Group>
 
           <InfiniteScrolling
             useQuery={useCourses}
-            queryArgs={[departmentId, instructorIds]}
+            queryArgs={[departmentId, instructorIds, search]}
             name="courses"
             Component={({ data }) => <Course course={data} />}
             Fallback={
-              instructorIds.length > 0
-                ? "No courses found for the selected instructors."
+              instructorIds.length > 0 || search !== ""
+                ? "No courses found for the current search and filters."
                 : "No courses found."
             }
             loader={<CourseSkeleton />}

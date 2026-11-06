@@ -1,9 +1,11 @@
-import { Anchor, Breadcrumbs, Stack, Text, Title } from "@mantine/core";
-import { NavLink, useParams } from "react-router";
+import { Anchor, Breadcrumbs, Group, Stack, Text, Title } from "@mantine/core";
+import { NavLink, useParams, useSearchParams } from "react-router";
 import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
 import { useDepartmentInstructors } from "@/queries/app/reviews/instructor";
+import { LiveSearchInput } from "@/components/LiveSearchInput";
+import { getSearch, setSearch } from "@/utils/app/reviews/filters";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { Instructor } from "@/components/app/reviews/Instructor";
 import { InstructorSkeleton } from "@/components/app/reviews/InstructorSkeleton";
@@ -11,6 +13,8 @@ import { InstructorSkeleton } from "@/components/app/reviews/InstructorSkeleton"
 export default function Page() {
   const carry = useCarriedFilters();
   const { departmentId } = useParams<{ departmentId: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const search = getSearch(searchParams);
 
   invariant(departmentId);
 
@@ -38,12 +42,26 @@ export default function Page() {
         </Text>
       </Stack>
 
+      <Group w="90%" maw="50rem" wrap="nowrap">
+        <LiveSearchInput
+          value={search}
+          placeholder="Search instructors"
+          onSearch={(next) => {
+            setSearchParams((prev) => setSearch(prev, next), { replace: true });
+          }}
+        />
+      </Group>
+
       <InfiniteScrolling
         useQuery={useDepartmentInstructors}
-        queryArgs={[departmentId]}
+        queryArgs={[departmentId, search]}
         name="instructors"
         Component={({ data }) => <Instructor instructor={data} />}
-        Fallback="No instructors found."
+        Fallback={
+          search === ""
+            ? "No instructors found."
+            : "No instructors found for the current search."
+        }
         loader={<InstructorSkeleton />}
       />
     </Stack>

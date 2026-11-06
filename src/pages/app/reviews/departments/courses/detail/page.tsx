@@ -24,8 +24,11 @@ import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { OfferingsFilter } from "@/components/app/reviews/OfferingsFilter";
 import {
   getInstructorFilter,
+  getSearch,
   setInstructorFilter,
+  setSearch,
 } from "@/utils/app/reviews/filters";
+import { LiveSearchInput } from "@/components/LiveSearchInput";
 
 export default function Page() {
   const carry = useCarriedFilters();
@@ -43,6 +46,8 @@ export default function Page() {
     () => getInstructorFilter(searchParams),
     [searchParams],
   );
+
+  const search = getSearch(searchParams);
 
   const { data: course, isLoading } = useCourse(
     departmentId,
@@ -100,28 +105,39 @@ export default function Page() {
               </Text>
             </Stack>
 
-            <OfferingsFilter
-              departmentId={departmentId}
-              courseId={courseId}
-              value={{ instructorIds }}
-              onApply={(filter) => {
-                setSearchParams(
-                  setInstructorFilter(searchParams, filter.instructorIds),
-                  { replace: true },
-                );
-              }}
-            />
+            <Group w="90%" maw="50rem" wrap="nowrap" gap="xs">
+              <LiveSearchInput
+                value={search}
+                placeholder="Search by year or semester"
+                onSearch={(next) => {
+                  setSearchParams((prev) => setSearch(prev, next), {
+                    replace: true,
+                  });
+                }}
+              />
+              <OfferingsFilter
+                departmentId={departmentId}
+                courseId={courseId}
+                value={{ instructorIds }}
+                onApply={(filter) => {
+                  setSearchParams(
+                    (prev) => setInstructorFilter(prev, filter.instructorIds),
+                    { replace: true },
+                  );
+                }}
+              />
+            </Group>
 
             <InfiniteScrolling
               useQuery={useCourseOfferings}
-              queryArgs={[departmentId, courseId, instructorIds]}
+              queryArgs={[departmentId, courseId, instructorIds, search]}
               name="offerings"
               Component={({ data }) => (
                 <CourseOffering offering={data} departmentId={departmentId} />
               )}
               Fallback={
-                instructorIds.length > 0
-                  ? "No offerings found for the selected instructors."
+                instructorIds.length > 0 || search !== ""
+                  ? "No offerings found for the current search and filters."
                   : "No offerings found."
               }
               loader={<CourseOfferingSkeleton />}

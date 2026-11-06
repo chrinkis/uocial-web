@@ -1,4 +1,5 @@
 export const INSTRUCTORS_FILTER_KEY = "instructors";
+export const SEARCH_KEY = "search";
 
 /**
  * Reads a repeated query param (`?key=1&key=2`) as a list of unique integers.
@@ -70,4 +71,21 @@ export function withCarriedFilters(
   const query = carried.toString();
 
   return query === "" ? path : `${path}?${query}`;
+}
+
+export function getSearch(searchParams: URLSearchParams) {
+  return searchParams.get(SEARCH_KEY)?.trim() ?? "";
+}
+
+export function setSearch(searchParams: URLSearchParams, search: string) {
+  const next = new URLSearchParams(searchParams);
+  const trimmed = search.trim();
+
+  if (trimmed === "") {
+    next.delete(SEARCH_KEY);
+  } else {
+    next.set(SEARCH_KEY, trimmed);
+  }
+
+  return next;
 }

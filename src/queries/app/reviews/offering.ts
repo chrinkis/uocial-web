@@ -9,6 +9,7 @@ export const OFFERING_QUERY_KEYS = {
     departmentId: number | string,
     courseId: number | string,
     instructorIds: number[] = [],
+    search = "",
   ) =>
     [
       "departments",
@@ -16,7 +17,7 @@ export const OFFERING_QUERY_KEYS = {
       "courses",
       String(courseId),
       "offerings",
-      { instructors: instructorIds },
+      { instructors: instructorIds, search },
     ] as const,
   detail: (
     departmentId: number | string,
@@ -37,11 +38,23 @@ export function useCourseOfferings(
   departmentId: number | string,
   courseId: number | string,
   instructorIds: number[] = [],
+  search = "",
 ) {
   return useInfiniteQuery({
-    queryKey: OFFERING_QUERY_KEYS.list(departmentId, courseId, instructorIds),
+    queryKey: OFFERING_QUERY_KEYS.list(
+      departmentId,
+      courseId,
+      instructorIds,
+      search,
+    ),
     queryFn: ({ pageParam }) =>
-      fetchCourseOfferings(departmentId, courseId, pageParam, instructorIds),
+      fetchCourseOfferings(
+        departmentId,
+        courseId,
+        pageParam,
+        instructorIds,
+        search,
+      ),
     initialPageParam: 1,
     getNextPageParam: (lastResponse) => {
       if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
