@@ -10,8 +10,9 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconLayoutGrid } from "@tabler/icons-react";
-import { useLocation, useNavigate } from "react-router";
-import { CATEGORIES, getActiveCategory } from "@/utils/categories";
+import { useNavigate } from "react-router";
+import { CATEGORIES } from "@/utils/categories";
+import { useActiveCategory } from "@/hooks/useActiveCategory";
 import type { Category } from "@/utils/categories";
 
 interface CategoryTileProps {
@@ -70,9 +71,8 @@ function CategoryTile({
 }
 
 function CategoryGrid({ onSelect }: { onSelect: () => void }) {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
-  const activeId = getActiveCategory(pathname)?.id;
+  const activeId = useActiveCategory()?.id;
 
   function handleSelect(category: Category) {
     onSelect();

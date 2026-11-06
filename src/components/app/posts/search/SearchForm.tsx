@@ -91,7 +91,7 @@ export function SearchForm({ onSuccess }: { onSuccess?: () => void }) {
         />
 
         <Stack gap="xs">
-          <Button type="submit">Search</Button>
+          <Button type="submit">Search Post Contents</Button>
           <Group grow gap="xs">
             <Button
               type="button"

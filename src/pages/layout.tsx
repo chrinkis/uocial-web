@@ -1,18 +1,18 @@
 import { Header } from "@/components/Header";
 import { Flex } from "@mantine/core";
 import { useEffect } from "react";
-import { Outlet, useLocation } from "react-router";
-import { getActiveCategory, saveLastCategory } from "@/utils/categories";
+import { Outlet } from "react-router";
+import { saveLastCategory } from "@/utils/categories";
+import { useActiveCategory } from "@/hooks/useActiveCategory";
 
 export default function Layout() {
-  const { pathname } = useLocation();
+  const category = useActiveCategory();
 
   useEffect(() => {
-    const category = getActiveCategory(pathname);
     if (category) {
       saveLastCategory(category);
     }
-  }, [pathname]);
+  }, [category]);
 
   return (
     <Flex direction="column" justify="safe center" align="center" h="100%">

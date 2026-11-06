@@ -29,6 +29,7 @@ import { NotificationDropdown } from "@/components/notifications/NotificationDro
 import { SearchForm } from "@/components/app/posts/search/SearchForm";
 import { CategorySwitcher } from "@/components/categories/CategorySwitcher";
 import { useModerationCounts } from "@/queries/app/moderation-counts";
+import { useActiveCategory } from "@/hooks/useActiveCategory";
 
 function UserMenu() {
   const { user, logout } = useUser();
@@ -238,6 +239,7 @@ function Logo() {
 export function Header() {
   const theme = useMantineTheme();
   const { user } = useUser();
+  const activeCategory = useActiveCategory();
 
   return (
     <Flex
@@ -253,7 +255,7 @@ export function Header() {
         <Group gap="sm" align="stretch">
           {user.active_ban === null && (
             <>
-              <SearchButton />
+              {activeCategory?.id === "posts" && <SearchButton />}
               <NotificationDropdown />
               <CategorySwitcher />
             </>
