@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { IconChevronRight, IconUsers } from "@tabler/icons-react";
 import { NavLink } from "react-router";
+import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import { useState } from "react";
 import type { Department } from "@/models/app/reviews/Department";
 import { generateMockRating } from "@/utils/app/reviews/rating";
@@ -19,6 +20,7 @@ export interface DepartmentHeaderPropsType {
 }
 
 export function DepartmentHeader({ department }: DepartmentHeaderPropsType) {
+  const carry = useCarriedFilters();
   const [{ average, count }] = useState(generateMockRating);
 
   return (
@@ -54,7 +56,9 @@ export function DepartmentHeader({ department }: DepartmentHeaderPropsType) {
 
         <Button
           component={NavLink}
-          to={`/app/reviews/departments/${String(department.id)}/instructors`}
+          to={carry(
+            `/app/reviews/departments/${String(department.id)}/instructors`,
+          )}
           variant="light"
           leftSection={<IconUsers size={16} />}
           rightSection={<IconChevronRight size={16} />}

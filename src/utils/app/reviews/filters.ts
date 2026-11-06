@@ -47,3 +47,27 @@ export function setInstructorFilter(
 ) {
   return setIdsParam(searchParams, INSTRUCTORS_FILTER_KEY, instructorIds);
 }
+
+/** Filters that follow the user while navigating between reviews pages. */
+export const CARRIED_FILTER_KEYS = [INSTRUCTORS_FILTER_KEY];
+
+/**
+ * Appends the carried filters of `searchParams` to `path`, so a link keeps the
+ * filters the user already applied.
+ */
+export function withCarriedFilters(
+  path: string,
+  searchParams: URLSearchParams,
+) {
+  const carried = new URLSearchParams();
+
+  for (const key of CARRIED_FILTER_KEYS) {
+    for (const value of searchParams.getAll(key)) {
+      carried.append(key, value);
+    }
+  }
+
+  const query = carried.toString();
+
+  return query === "" ? path : `${path}?${query}`;
+}

@@ -1,5 +1,6 @@
 import { Anchor, Breadcrumbs, Stack, Text, Title } from "@mantine/core";
 import { NavLink, useParams } from "react-router";
+import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
 import { useCourse } from "@/queries/app/reviews/course";
@@ -9,6 +10,7 @@ import { Instructor } from "@/components/app/reviews/Instructor";
 import { InstructorSkeleton } from "@/components/app/reviews/InstructorSkeleton";
 
 export default function Page() {
+  const carry = useCarriedFilters();
   const { departmentId, courseId } = useParams<{
     departmentId: string;
     courseId: string;
@@ -23,18 +25,20 @@ export default function Page() {
   return (
     <Stack align="safe center" w="100%" h="100%" gap="md">
       <Breadcrumbs>
-        <Anchor component={NavLink} to="/app/reviews/departments">
+        <Anchor component={NavLink} to={carry("/app/reviews/departments")}>
           departments
         </Anchor>
         <Anchor
           component={NavLink}
-          to={`/app/reviews/departments/${departmentId}`}
+          to={carry(`/app/reviews/departments/${departmentId}`)}
         >
           {department ? department.code.toUpperCase() : "department"}
         </Anchor>
         <Anchor
           component={NavLink}
-          to={`/app/reviews/departments/${departmentId}/courses/${courseId}`}
+          to={carry(
+            `/app/reviews/departments/${departmentId}/courses/${courseId}`,
+          )}
         >
           {course ? course.code.toUpperCase() : "course"}
         </Anchor>

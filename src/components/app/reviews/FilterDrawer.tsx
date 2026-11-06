@@ -35,7 +35,12 @@ export function FilterDrawer<T>({
 
   return (
     <>
-      <Indicator disabled={!activeCount} label={activeCount} size={14}>
+      <Indicator
+        disabled={!activeCount}
+        label={activeCount}
+        size={14}
+        color="red"
+      >
         <ActionIcon
           variant="light"
           onClick={() => {

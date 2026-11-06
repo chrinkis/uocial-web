@@ -1,6 +1,7 @@
 import { Badge, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 import { NavLink } from "react-router";
+import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import type { Department as DepartmentModel } from "@/models/app/reviews/Department";
 
 export interface DepartmentPropsType {
@@ -8,9 +9,10 @@ export interface DepartmentPropsType {
 }
 
 export function Department({ department }: DepartmentPropsType) {
+  const carry = useCarriedFilters();
   return (
     <NavLink
-      to={`/app/reviews/departments/${String(department.id)}`}
+      to={carry(`/app/reviews/departments/${String(department.id)}`)}
       style={{
         display: "block",
         width: "90%",

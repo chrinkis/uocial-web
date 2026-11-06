@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { IconChevronRight, IconUsers } from "@tabler/icons-react";
 import { NavLink } from "react-router";
+import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import { useState } from "react";
 import type { Course } from "@/models/app/reviews/Course";
 import { generateMockRating } from "@/utils/app/reviews/rating";
@@ -20,6 +21,7 @@ export interface CourseHeaderPropsType {
 }
 
 export function CourseHeader({ course }: CourseHeaderPropsType) {
+  const carry = useCarriedFilters();
   const [{ average, count }] = useState(generateMockRating);
 
   return (
@@ -47,7 +49,9 @@ export function CourseHeader({ course }: CourseHeaderPropsType) {
 
           <Anchor
             component={NavLink}
-            to={`/app/reviews/departments/${String(course.department_id)}/courses/${String(course.id)}/reviews`}
+            to={carry(
+              `/app/reviews/departments/${String(course.department_id)}/courses/${String(course.id)}/reviews`,
+            )}
             c="inherit"
             underline="never"
             w="fit-content"
@@ -65,7 +69,9 @@ export function CourseHeader({ course }: CourseHeaderPropsType) {
 
         <Button
           component={NavLink}
-          to={`/app/reviews/departments/${String(course.department_id)}/courses/${String(course.id)}/instructors`}
+          to={carry(
+            `/app/reviews/departments/${String(course.department_id)}/courses/${String(course.id)}/instructors`,
+          )}
           variant="light"
           leftSection={<IconUsers size={16} />}
           rightSection={<IconChevronRight size={16} />}

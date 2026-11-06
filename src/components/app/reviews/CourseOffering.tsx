@@ -1,6 +1,7 @@
 import { Badge, Group, Paper, Text, ThemeIcon } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 import { NavLink } from "react-router";
+import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import type { CourseOffering as CourseOfferingModel } from "@/models/app/reviews/CourseOffering";
 import { getInstructorFullName } from "@/utils/app/reviews/instructor";
 import { formatTerm } from "@/utils/app/reviews/semester";
@@ -14,11 +15,14 @@ export function CourseOffering({
   offering,
   departmentId,
 }: CourseOfferingPropsType) {
+  const carry = useCarriedFilters();
   const instructors = offering.instructors.map(getInstructorFullName);
 
   return (
     <NavLink
-      to={`/app/reviews/departments/${String(departmentId)}/courses/${String(offering.course_id)}/offerings/${String(offering.id)}`}
+      to={carry(
+        `/app/reviews/departments/${String(departmentId)}/courses/${String(offering.course_id)}/offerings/${String(offering.id)}`,
+      )}
       style={{
         display: "block",
         width: "90%",

@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 import { NavLink } from "react-router";
+import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import { useState } from "react";
 import type { CourseOffering } from "@/models/app/reviews/CourseOffering";
 import { generateMockRating } from "@/utils/app/reviews/rating";
@@ -24,6 +25,7 @@ export function CourseOfferingHeader({
   offering,
   departmentId,
 }: CourseOfferingHeaderPropsType) {
+  const carry = useCarriedFilters();
   const [{ average, count }] = useState(generateMockRating);
 
   return (
@@ -49,7 +51,9 @@ export function CourseOfferingHeader({
 
         <Anchor
           component={NavLink}
-          to={`/app/reviews/departments/${String(departmentId)}/courses/${String(offering.course_id)}/offerings/${String(offering.id)}/reviews`}
+          to={carry(
+            `/app/reviews/departments/${String(departmentId)}/courses/${String(offering.course_id)}/offerings/${String(offering.id)}/reviews`,
+          )}
           c="inherit"
           underline="never"
           w="fit-content"
