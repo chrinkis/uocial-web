@@ -1,10 +1,13 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   fetchCourseInstructors,
   fetchDepartmentInstructors,
+  fetchInstructor,
 } from "@/api/app/reviews/instructor";
 
 export const INSTRUCTOR_QUERY_KEYS = {
+  detail: (instructorId: number | string) =>
+    ["instructors", String(instructorId)] as const,
   list: (departmentId: number | string) =>
     ["departments", String(departmentId), "instructors"] as const,
   courseList: (departmentId: number | string, courseId: number | string) =>
@@ -49,5 +52,12 @@ export function useCourseInstructors(
 
       return undefined;
     },
+  });
+}
+
+export function useInstructor(instructorId: number | string) {
+  return useQuery({
+    queryKey: INSTRUCTOR_QUERY_KEYS.detail(instructorId),
+    queryFn: () => fetchInstructor(instructorId),
   });
 }

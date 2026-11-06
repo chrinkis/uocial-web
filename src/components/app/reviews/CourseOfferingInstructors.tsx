@@ -1,4 +1,14 @@
-import { Avatar, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import {
+  Avatar,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
+} from "@mantine/core";
+import { IconChevronRight } from "@tabler/icons-react";
+import { NavLink } from "react-router";
 import type { CourseOffering } from "@/models/app/reviews/CourseOffering";
 import { getInstructorFullName } from "@/utils/app/reviews/instructor";
 
@@ -28,18 +38,30 @@ export function CourseOfferingInstructors({
             const fullName = getInstructorFullName(instructor);
 
             return (
-              <Group key={instructor.id} gap="sm" wrap="nowrap">
-                <Avatar
-                  name={fullName}
-                  color="initials"
-                  radius="xl"
-                  size="md"
-                />
+              <NavLink
+                key={instructor.id}
+                to={`/app/reviews/instructors/${String(instructor.id)}`}
+                style={{ color: "inherit", textDecoration: "none" }}
+              >
+                <Group justify="space-between" gap="sm" wrap="nowrap">
+                  <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+                    <Avatar
+                      name={fullName}
+                      color="initials"
+                      radius="xl"
+                      size="md"
+                    />
 
-                <Text fw={600} truncate>
-                  {fullName}
-                </Text>
-              </Group>
+                    <Text fw={600} truncate>
+                      {fullName}
+                    </Text>
+                  </Group>
+
+                  <ThemeIcon variant="light" color="gray" radius="xl" size="md">
+                    <IconChevronRight size={18} />
+                  </ThemeIcon>
+                </Group>
+              </NavLink>
             );
           })
         )}

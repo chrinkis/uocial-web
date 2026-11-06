@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { PaginatedResponse } from "@/utils/response";
+import type { PaginatedResponse, ResourceResponse } from "@/utils/response";
 import type { Instructor } from "@/models/app/reviews/Instructor";
 
 export async function fetchDepartmentInstructors(
@@ -23,4 +23,12 @@ export async function fetchCourseInstructors(
   );
 
   return data;
+}
+
+export async function fetchInstructor(instructorId: number | string) {
+  const { data } = await axios.get<ResourceResponse<Instructor>>(
+    `/api/app/instructors/${String(instructorId)}`,
+  );
+
+  return data.data;
 }
