@@ -20,7 +20,7 @@ export default function Page() {
         </Text>
       </Stack>
 
-      <Group w="90%" maw="50rem" wrap="nowrap" gap="xs">
+      <Group w="90%" maw="32rem" wrap="nowrap" gap="xs">
         <LiveSearchInput
           value={search}
           placeholder="Search instructors"
