@@ -8,12 +8,14 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { IconChevronRight, IconUsers } from "@tabler/icons-react";
+import { IconChevronRight, IconFlag, IconUsers } from "@tabler/icons-react";
 import { NavLink } from "react-router";
 import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import { useState } from "react";
 import type { Department } from "@/models/app/reviews/Department";
+import { useModals } from "@/providers/modals/hook";
 import { generateMockRating } from "@/utils/app/reviews/rating";
+import { DepartmentReportModal } from "./DepartmentReportModal";
 
 export interface DepartmentHeaderPropsType {
   department: Department;
@@ -22,6 +24,15 @@ export interface DepartmentHeaderPropsType {
 export function DepartmentHeader({ department }: DepartmentHeaderPropsType) {
   const carry = useCarriedFilters();
   const [{ average, count }] = useState(generateMockRating);
+  const modals = useModals();
+
+  function handleReportClick() {
+    modals.open({
+      title: `Report ${department.name}`,
+      children: <DepartmentReportModal department={department} />,
+      centered: true,
+    });
+  }
 
   return (
     <Paper withBorder shadow="sm" radius="lg" p="lg" w="90%" maw="50rem">
@@ -54,18 +65,29 @@ export function DepartmentHeader({ department }: DepartmentHeaderPropsType) {
           </Group>
         </Stack>
 
-        <Button
-          component={NavLink}
-          to={carry(
-            `/app/reviews/departments/${String(department.id)}/instructors`,
-          )}
-          variant="light"
-          leftSection={<IconUsers size={16} />}
-          rightSection={<IconChevronRight size={16} />}
-          w={{ base: "100%", xs: "auto" }}
-        >
-          Instructors ({String(department.instructors_count)})
-        </Button>
+        <Group gap="xs" w={{ base: "100%", xs: "auto" }}>
+          <Button
+            variant="default"
+            leftSection={<IconFlag size={16} />}
+            w={{ base: "100%", xs: "auto" }}
+            onClick={handleReportClick}
+          >
+            Report
+          </Button>
+
+          <Button
+            component={NavLink}
+            to={carry(
+              `/app/reviews/departments/${String(department.id)}/instructors`,
+            )}
+            variant="light"
+            leftSection={<IconUsers size={16} />}
+            rightSection={<IconChevronRight size={16} />}
+            w={{ base: "100%", xs: "auto" }}
+          >
+            Instructors ({String(department.instructors_count)})
+          </Button>
+        </Group>
       </Group>
     </Paper>
   );

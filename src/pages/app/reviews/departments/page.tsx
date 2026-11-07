@@ -1,6 +1,9 @@
 import { useMemo } from "react";
-import { Group, Stack, Text, Title } from "@mantine/core";
+import { Button, Group, Stack, Text, Title } from "@mantine/core";
+import { IconFlag } from "@tabler/icons-react";
 import { useSearchParams } from "react-router";
+import { DepartmentReportModal } from "@/components/app/reviews/DepartmentReportModal";
+import { useModals } from "@/providers/modals/hook";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { Department } from "@/components/app/reviews/Department";
 import { DepartmentSkeleton } from "@/components/app/reviews/DepartmentSkeleton";
@@ -22,6 +25,15 @@ export default function Page() {
     [searchParams],
   );
   const search = getSearch(searchParams);
+  const modals = useModals();
+
+  function handleReportClick() {
+    modals.open({
+      title: "Report a missing department",
+      children: <DepartmentReportModal />,
+      centered: true,
+    });
+  }
 
   return (
     <Stack align="safe center" w="100%" h="100%" gap="md">
@@ -50,6 +62,15 @@ export default function Page() {
           }}
         />
       </Group>
+
+      <Button
+        variant="subtle"
+        size="compact-sm"
+        leftSection={<IconFlag size={14} />}
+        onClick={handleReportClick}
+      >
+        Can't find your department?
+      </Button>
 
       <InfiniteScrolling
         useQuery={useDepartments}
