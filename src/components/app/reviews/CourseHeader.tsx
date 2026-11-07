@@ -9,12 +9,14 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { IconChevronRight, IconUsers } from "@tabler/icons-react";
+import { IconChevronRight, IconFlag, IconUsers } from "@tabler/icons-react";
 import { NavLink } from "react-router";
 import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import { useState } from "react";
 import type { Course } from "@/models/app/reviews/Course";
+import { useModals } from "@/providers/modals/hook";
 import { generateMockRating } from "@/utils/app/reviews/rating";
+import { CourseReportModal } from "./CourseReportModal";
 
 export interface CourseHeaderPropsType {
   course: Course;
@@ -23,6 +25,20 @@ export interface CourseHeaderPropsType {
 export function CourseHeader({ course }: CourseHeaderPropsType) {
   const carry = useCarriedFilters();
   const [{ average, count }] = useState(generateMockRating);
+  const modals = useModals();
+
+  function handleReportClick() {
+    modals.open({
+      title: `Report ${course.name}`,
+      children: (
+        <CourseReportModal
+          departmentId={course.department_id}
+          course={course}
+        />
+      ),
+      centered: true,
+    });
+  }
 
   return (
     <Paper withBorder shadow="sm" radius="lg" p="lg" w="90%" maw="50rem">
@@ -67,18 +83,29 @@ export function CourseHeader({ course }: CourseHeaderPropsType) {
           </Anchor>
         </Stack>
 
-        <Button
-          component={NavLink}
-          to={carry(
-            `/app/reviews/departments/${String(course.department_id)}/courses/${String(course.id)}/instructors`,
-          )}
-          variant="light"
-          leftSection={<IconUsers size={16} />}
-          rightSection={<IconChevronRight size={16} />}
-          w={{ base: "100%", xs: "auto" }}
-        >
-          Instructors ({String(course.instructors_count)})
-        </Button>
+        <Group gap="xs" w={{ base: "100%", xs: "auto" }}>
+          <Button
+            variant="default"
+            leftSection={<IconFlag size={16} />}
+            w={{ base: "100%", xs: "auto" }}
+            onClick={handleReportClick}
+          >
+            Report
+          </Button>
+
+          <Button
+            component={NavLink}
+            to={carry(
+              `/app/reviews/departments/${String(course.department_id)}/courses/${String(course.id)}/instructors`,
+            )}
+            variant="light"
+            leftSection={<IconUsers size={16} />}
+            rightSection={<IconChevronRight size={16} />}
+            w={{ base: "100%", xs: "auto" }}
+          >
+            Instructors ({String(course.instructors_count)})
+          </Button>
+        </Group>
       </Group>
     </Paper>
   );

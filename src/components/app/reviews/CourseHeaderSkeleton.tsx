@@ -16,7 +16,10 @@ export function CourseHeaderSkeleton() {
           </Group>
         </Stack>
 
-        <Skeleton height={36} width={140} radius="md" />
+        <Group gap="xs">
+          <Skeleton height={36} width={90} radius="md" />
+          <Skeleton height={36} width={140} radius="md" />
+        </Group>
       </Group>
     </Paper>
   );

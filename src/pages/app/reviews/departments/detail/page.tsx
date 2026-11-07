@@ -1,6 +1,17 @@
 import { useMemo } from "react";
-import { Anchor, Breadcrumbs, Group, Stack, Text, Title } from "@mantine/core";
+import {
+  Anchor,
+  Breadcrumbs,
+  Button,
+  Group,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import { IconFlag } from "@tabler/icons-react";
 import { NavLink, useParams, useSearchParams } from "react-router";
+import { CourseReportModal } from "@/components/app/reviews/CourseReportModal";
+import { useModals } from "@/providers/modals/hook";
 import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
@@ -25,6 +36,7 @@ export default function Page() {
 
   invariant(departmentId);
 
+  const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams();
   const instructorIds = useMemo(
     () => getInstructorFilter(searchParams),
@@ -92,6 +104,21 @@ export default function Page() {
               }}
             />
           </Group>
+
+          <Button
+            variant="subtle"
+            size="compact-sm"
+            leftSection={<IconFlag size={14} />}
+            onClick={() => {
+              modals.open({
+                title: "Report a missing course",
+                children: <CourseReportModal departmentId={department.id} />,
+                centered: true,
+              });
+            }}
+          >
+            Can't find your course?
+          </Button>
 
           <InfiniteScrolling
             useQuery={useCourses}
