@@ -1,9 +1,10 @@
 import type { DataReportReason } from "@/models/app/reviews/DepartmentReport";
 import type { Term } from "@/models/app/reviews/Term";
 
-export interface CourseOfferingReportOffering extends Term {
+export interface CourseOfferingReportDepartment {
   readonly id: number;
-  course_id: number;
+  code: string;
+  name: string;
 }
 
 export interface CourseOfferingReportCourse {
@@ -11,6 +12,13 @@ export interface CourseOfferingReportCourse {
   department_id: number;
   code: string;
   name: string;
+  department?: CourseOfferingReportDepartment | null;
+}
+
+export interface CourseOfferingReportOffering extends Term {
+  readonly id: number;
+  course_id: number;
+  course?: CourseOfferingReportCourse | null;
 }
 
 export interface CourseOfferingReport {

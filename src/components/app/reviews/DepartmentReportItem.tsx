@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Badge, Group, Paper, Stack, Text } from "@mantine/core";
 import { Timestamp } from "@/components/Timestamp";
 import type {
@@ -14,9 +15,14 @@ const REASON_LABELS: Record<DataReportReason, string> = {
 
 export interface DepartmentReportItemPropsType {
   data: DepartmentReport;
+  /** Extra content under the report, e.g. moderation actions. */
+  footer?: ReactNode;
 }
 
-export function DepartmentReportItem({ data }: DepartmentReportItemPropsType) {
+export function DepartmentReportItem({
+  data,
+  footer,
+}: DepartmentReportItemPropsType) {
   const resolved = data.resolved_at !== null;
 
   return (
@@ -51,6 +57,8 @@ export function DepartmentReportItem({ data }: DepartmentReportItemPropsType) {
             Resolution: {data.resolved_comment}
           </Text>
         )}
+
+        {footer}
       </Stack>
     </Paper>
   );

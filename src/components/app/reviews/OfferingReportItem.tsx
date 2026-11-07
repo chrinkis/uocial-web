@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Badge, Group, Paper, Stack, Text } from "@mantine/core";
 import { Timestamp } from "@/components/Timestamp";
 import type { CourseOfferingReport } from "@/models/app/reviews/CourseOfferingReport";
@@ -13,10 +14,17 @@ const REASON_LABELS: Record<DataReportReason, string> = {
 
 export interface OfferingReportItemPropsType {
   data: CourseOfferingReport;
+  /** Extra content under the report, e.g. moderation actions. */
+  footer?: ReactNode;
 }
 
-export function OfferingReportItem({ data }: OfferingReportItemPropsType) {
+export function OfferingReportItem({
+  data,
+  footer,
+}: OfferingReportItemPropsType) {
   const resolved = data.resolved_at !== null;
+  // An existing offering tells its course, a suggestion has the course itself.
+  const course = data.offering?.course ?? data.course;
 
   return (
     <Paper withBorder radius="md" p="md" w="100%">
@@ -32,12 +40,16 @@ export function OfferingReportItem({ data }: OfferingReportItemPropsType) {
         </Group>
 
         <Text fw={600}>
-          {data.offering
-            ? formatTerm(data.offering)
-            : data.course
-              ? `New offering of ${data.course.code} - ${data.course.name}`
-              : "New offering"}
+          {data.offering ? formatTerm(data.offering) : "New offering"}
         </Text>
+
+        {course && (
+          <Text size="sm" c="dimmed">
+            Course: {course.code} - {course.name}
+            {course.department &&
+              ` (${course.department.code} - ${course.department.name})`}
+          </Text>
+        )}
 
         {data.duplicate_of && (
           <Text size="sm" c="dimmed">
@@ -52,6 +64,8 @@ export function OfferingReportItem({ data }: OfferingReportItemPropsType) {
             Resolution: {data.resolved_comment}
           </Text>
         )}
+
+        {footer}
       </Stack>
     </Paper>
   );

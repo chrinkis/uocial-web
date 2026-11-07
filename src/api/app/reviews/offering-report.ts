@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { ReportFilter } from "@/models/app/reviews/ReportFilter";
 import type { PaginatedResponse, ResourceResponse } from "@/utils/response";
 import type { CourseOfferingReport } from "@/models/app/reviews/CourseOfferingReport";
 import type { DepartmentReportPayload } from "@/api/app/reviews/department-report";
@@ -43,6 +44,38 @@ export async function suggestOffering(
   const { data } = await axios.post<ResourceResponse<CourseOfferingReport>>(
     `${offeringsUrl(departmentId, courseId)}/reports`,
     payload,
+  );
+
+  return data.data;
+}
+
+/** Moderation: the reports of all the users. */
+export async function fetchOfferingReports(
+  page: number | string,
+  filter: ReportFilter,
+) {
+  const { data } = await axios.get<PaginatedResponse<CourseOfferingReport>>(
+    "/api/app/admin/reports/offerings",
+    {
+      params: {
+        page,
+        resolved: filter.resolved ? 1 : 0,
+        reason: filter.reason,
+      },
+    },
+  );
+
+  return data;
+}
+
+/** Moderation: mark a report as resolved. */
+export async function resolveOfferingReport(
+  reportId: number | string,
+  comment?: string,
+) {
+  const { data } = await axios.post<ResourceResponse<CourseOfferingReport>>(
+    `/api/app/admin/reports/offerings/${String(reportId)}/resolve`,
+    { comment },
   );
 
   return data.data;

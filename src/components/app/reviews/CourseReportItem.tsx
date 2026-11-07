@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Badge, Group, Paper, Stack, Text } from "@mantine/core";
 import { Timestamp } from "@/components/Timestamp";
 import type { CourseReport } from "@/models/app/reviews/CourseReport";
@@ -12,9 +13,11 @@ const REASON_LABELS: Record<DataReportReason, string> = {
 
 export interface CourseReportItemPropsType {
   data: CourseReport;
+  /** Extra content under the report, e.g. moderation actions. */
+  footer?: ReactNode;
 }
 
-export function CourseReportItem({ data }: CourseReportItemPropsType) {
+export function CourseReportItem({ data, footer }: CourseReportItemPropsType) {
   const resolved = data.resolved_at !== null;
 
   return (
@@ -38,9 +41,18 @@ export function CourseReportItem({ data }: CourseReportItemPropsType) {
               : "New course"}
         </Text>
 
+        {data.course?.department && (
+          <Text size="sm" c="dimmed">
+            Department: {data.course.department.code} -{" "}
+            {data.course.department.name}
+          </Text>
+        )}
+
         {data.duplicate_of && (
           <Text size="sm" c="dimmed">
             Duplicate of {data.duplicate_of.code} - {data.duplicate_of.name}
+            {data.duplicate_of.department &&
+              ` (${data.duplicate_of.department.code})`}
           </Text>
         )}
 
@@ -51,6 +63,8 @@ export function CourseReportItem({ data }: CourseReportItemPropsType) {
             Resolution: {data.resolved_comment}
           </Text>
         )}
+
+        {footer}
       </Stack>
     </Paper>
   );

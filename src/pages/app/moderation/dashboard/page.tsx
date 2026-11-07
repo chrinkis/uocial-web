@@ -5,6 +5,11 @@ import { PostSkeleton } from "@/components/app/posts/PostSkeleton";
 import { InfiniteScrolling } from "@/components/InfiniteScrolling";
 import { useArbitaryComments } from "@/queries/app/post/comment";
 import { usePosts } from "@/queries/app/post/post";
+import {
+  CourseReportsModeration,
+  DepartmentReportsModeration,
+  OfferingReportsModeration,
+} from "@/components/app/reviews/ModerationReports";
 import { Flex, Tabs } from "@mantine/core";
 
 function PostTab() {
@@ -126,12 +131,15 @@ export default function Page() {
     <Flex flex={1} w="100%" justify="center">
       <Tabs defaultValue="posts" w="100%" variant="pills" keepMounted={false}>
         <Tabs.List
-          justify="center"
+          justify="safe center"
           mb="lg"
           style={{ overflowX: "auto", flexWrap: "nowrap" }}
         >
           <Tabs.Tab value="posts">Posts</Tabs.Tab>
           <Tabs.Tab value="comments">Comments</Tabs.Tab>
+          <Tabs.Tab value="departments">Departments</Tabs.Tab>
+          <Tabs.Tab value="courses">Courses</Tabs.Tab>
+          <Tabs.Tab value="offerings">Offerings</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="posts">
@@ -140,6 +148,18 @@ export default function Page() {
 
         <Tabs.Panel value="comments">
           <CommentTab />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="departments">
+          <DepartmentReportsModeration />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="courses">
+          <CourseReportsModeration />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="offerings">
+          <OfferingReportsModeration />
         </Tabs.Panel>
       </Tabs>
     </Flex>

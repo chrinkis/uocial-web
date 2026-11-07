@@ -1,16 +1,17 @@
 import type { DataReportReason } from "@/models/app/reviews/DepartmentReport";
 
+export interface CourseReportDepartment {
+  readonly id: number;
+  code: string;
+  name: string;
+}
+
 export interface CourseReportCourse {
   readonly id: number;
   department_id: number;
   code: string;
   name: string;
-}
-
-export interface CourseReportDepartment {
-  readonly id: number;
-  code: string;
-  name: string;
+  department?: CourseReportDepartment | null;
 }
 
 export interface CourseReport {

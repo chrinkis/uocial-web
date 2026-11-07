@@ -4,13 +4,19 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
+  fetchOfferingReports,
   fetchMyOfferingReports,
   reportOffering,
+  resolveOfferingReport,
   suggestOffering,
 } from "@/api/app/reviews/offering-report";
+import type { ReportFilter } from "@/models/app/reviews/ReportFilter";
 import type { DepartmentReportPayload } from "@/api/app/reviews/department-report";
 
 export const OFFERING_REPORT_QUERY_KEYS = {
+  all: () => ["offering-reports"] as const,
+  list: (filter: ReportFilter) =>
+    ["offering-reports", "moderation", filter] as const,
   mine: () => ["offering-reports", "mine"] as const,
 };
 
@@ -53,6 +59,41 @@ export function useCreateOfferingReport() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: OFFERING_REPORT_QUERY_KEYS.mine(),
+      });
+    },
+  });
+}
+
+export function useOfferingReports(filter: ReportFilter) {
+  return useInfiniteQuery({
+    queryKey: OFFERING_REPORT_QUERY_KEYS.list(filter),
+    queryFn: ({ pageParam }) => fetchOfferingReports(pageParam, filter),
+    initialPageParam: 1,
+    getNextPageParam: (lastResponse) => {
+      if (lastResponse.meta.current_page < lastResponse.meta.last_page) {
+        return lastResponse.meta.current_page + 1;
+      }
+
+      return undefined;
+    },
+  });
+}
+
+export function useResolveOfferingReport() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      reportId,
+      comment,
+    }: {
+      reportId: number | string;
+      comment?: string;
+    }) => resolveOfferingReport(reportId, comment),
+    onSuccess: async () => {
+      // Both the moderation lists and the "My Reports" ones show the status.
+      await queryClient.invalidateQueries({
+        queryKey: OFFERING_REPORT_QUERY_KEYS.all(),
       });
     },
   });
