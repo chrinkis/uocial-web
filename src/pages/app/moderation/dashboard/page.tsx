@@ -10,7 +10,31 @@ import {
   DepartmentReportsModeration,
   OfferingReportsModeration,
 } from "@/components/app/reviews/ModerationReports";
-import { Flex, Tabs } from "@mantine/core";
+import { useUser } from "@/providers/user/hook";
+import { useModerationCounts } from "@/queries/app/moderation-counts";
+import { Flex, Indicator, Tabs } from "@mantine/core";
+import type { ReactNode } from "react";
+import invariant from "tiny-invariant";
+
+function PendingIndicator({
+  pending,
+  children,
+}: {
+  pending: number | undefined;
+  children: ReactNode;
+}) {
+  return (
+    <Indicator
+      disabled={(pending ?? 0) === 0}
+      size={8}
+      color="red"
+      inline
+      offset={-4}
+    >
+      {children}
+    </Indicator>
+  );
+}
 
 function PostTab() {
   return (
@@ -127,6 +151,13 @@ function CommentTab() {
 }
 
 export default function Page() {
+  const { user } = useUser();
+
+  invariant(user);
+
+  // Shares its cache with the header, so this doesn't add requests.
+  const { data: counts } = useModerationCounts(user.active_ban === null);
+
   return (
     <Flex flex={1} w="100%" justify="center">
       <Tabs defaultValue="posts" w="100%" variant="pills" keepMounted={false}>
@@ -135,11 +166,44 @@ export default function Page() {
           mb="lg"
           style={{ overflowX: "auto", flexWrap: "nowrap" }}
         >
-          <Tabs.Tab value="posts">Posts</Tabs.Tab>
-          <Tabs.Tab value="comments">Comments</Tabs.Tab>
-          <Tabs.Tab value="departments">Departments</Tabs.Tab>
-          <Tabs.Tab value="courses">Courses</Tabs.Tab>
-          <Tabs.Tab value="offerings">Offerings</Tabs.Tab>
+          <Tabs.Tab value="posts">
+            <PendingIndicator
+              pending={
+                counts &&
+                counts.posts_pending_review + counts.posts_pending_reports
+              }
+            >
+              Posts
+            </PendingIndicator>
+          </Tabs.Tab>
+          <Tabs.Tab value="comments">
+            <PendingIndicator
+              pending={
+                counts &&
+                counts.post_comments_pending_review +
+                  counts.post_comments_pending_reports
+              }
+            >
+              Comments
+            </PendingIndicator>
+          </Tabs.Tab>
+          <Tabs.Tab value="departments">
+            <PendingIndicator pending={counts?.departments_pending_reports}>
+              Departments
+            </PendingIndicator>
+          </Tabs.Tab>
+          <Tabs.Tab value="courses">
+            <PendingIndicator pending={counts?.courses_pending_reports}>
+              Courses
+            </PendingIndicator>
+          </Tabs.Tab>
+          <Tabs.Tab value="offerings">
+            <PendingIndicator
+              pending={counts?.course_offerings_pending_reports}
+            >
+              Offerings
+            </PendingIndicator>
+          </Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="posts">
