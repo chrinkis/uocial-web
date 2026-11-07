@@ -3,6 +3,9 @@ export interface ModerationCounts {
   post_comments_pending_review: number;
   posts_pending_reports: number;
   post_comments_pending_reports: number;
+  departments_pending_reports: number;
+  courses_pending_reports: number;
+  course_offerings_pending_reports: number;
   /** Only present for admins. */
   ban_threads_pending_reply?: number;
 }

@@ -10,6 +10,7 @@ import {
   resolveOfferingReport,
   suggestOffering,
 } from "@/api/app/reviews/offering-report";
+import { invalidateModerationCounts } from "@/queries/app/moderation-counts";
 import type { ReportFilter } from "@/models/app/reviews/ReportFilter";
 import type { DepartmentReportPayload } from "@/api/app/reviews/department-report";
 
@@ -95,6 +96,7 @@ export function useResolveOfferingReport() {
       await queryClient.invalidateQueries({
         queryKey: OFFERING_REPORT_QUERY_KEYS.all(),
       });
+      invalidateModerationCounts(queryClient);
     },
   });
 }

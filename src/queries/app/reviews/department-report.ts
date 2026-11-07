@@ -1,3 +1,4 @@
+import { invalidateModerationCounts } from "@/queries/app/moderation-counts";
 import type { ReportFilter } from "@/models/app/reviews/ReportFilter";
 import {
   useInfiniteQuery,
@@ -88,6 +89,7 @@ export function useResolveDepartmentReport() {
       await queryClient.invalidateQueries({
         queryKey: DEPARTMENT_REPORT_QUERY_KEYS.all(),
       });
+      invalidateModerationCounts(queryClient);
     },
   });
 }

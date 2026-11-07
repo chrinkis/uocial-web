@@ -47,7 +47,10 @@ function UserMenu() {
     counts.posts_pending_review +
       counts.post_comments_pending_review +
       counts.posts_pending_reports +
-      counts.post_comments_pending_reports >
+      counts.post_comments_pending_reports +
+      counts.departments_pending_reports +
+      counts.courses_pending_reports +
+      counts.course_offerings_pending_reports >
       0;
   const administrationPending = (counts?.ban_threads_pending_reply ?? 0) > 0;
 

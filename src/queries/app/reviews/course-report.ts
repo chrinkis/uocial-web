@@ -10,6 +10,7 @@ import {
   resolveCourseReport,
   suggestCourse,
 } from "@/api/app/reviews/course-report";
+import { invalidateModerationCounts } from "@/queries/app/moderation-counts";
 import type { ReportFilter } from "@/models/app/reviews/ReportFilter";
 import type { DepartmentReportPayload } from "@/api/app/reviews/department-report";
 
@@ -93,6 +94,7 @@ export function useResolveCourseReport() {
       await queryClient.invalidateQueries({
         queryKey: COURSE_REPORT_QUERY_KEYS.all(),
       });
+      invalidateModerationCounts(queryClient);
     },
   });
 }
