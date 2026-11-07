@@ -2,13 +2,17 @@ import { useMemo } from "react";
 import {
   Anchor,
   Breadcrumbs,
+  Button,
   Group,
   Paper,
   Stack,
   Text,
   Title,
 } from "@mantine/core";
+import { IconFlag } from "@tabler/icons-react";
 import { NavLink, useParams, useSearchParams } from "react-router";
+import { OfferingReportModal } from "@/components/app/reviews/OfferingReportModal";
+import { useModals } from "@/providers/modals/hook";
 import { useCarriedFilters } from "@/hooks/useCarriedFilters";
 import invariant from "tiny-invariant";
 import { useDepartment } from "@/queries/app/reviews/department";
@@ -40,6 +44,7 @@ export default function Page() {
   invariant(departmentId);
   invariant(courseId);
 
+  const modals = useModals();
   const { data: department } = useDepartment(departmentId);
   const [searchParams, setSearchParams] = useSearchParams();
   const instructorIds = useMemo(
@@ -127,6 +132,26 @@ export default function Page() {
                 }}
               />
             </Group>
+
+            <Button
+              variant="subtle"
+              size="compact-sm"
+              leftSection={<IconFlag size={14} />}
+              onClick={() => {
+                modals.open({
+                  title: "Report a missing offering",
+                  children: (
+                    <OfferingReportModal
+                      departmentId={departmentId}
+                      courseId={courseId}
+                    />
+                  ),
+                  centered: true,
+                });
+              }}
+            >
+              Can't find an offering?
+            </Button>
 
             <InfiniteScrolling
               useQuery={useCourseOfferings}
